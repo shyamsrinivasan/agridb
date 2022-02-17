@@ -79,11 +79,23 @@ class PySQLtable:
         # call mySQL connector to add new table to SQl db
 
 
-class PySQlNewTable:
-    def __init__(self):
+class PySQLNewTable:
+    def __init__(self, dbname=None, table_name=None):
         self.create_query = ''
         self.create_info = None
-        self.DBname = ''
+        if dbname is not None:
+            self.DBname = dbname
+        else:
+            self.DBname = ''
+        if table_name is not None:
+            self.name = table_name
+        else:
+            self.name = ''
+        self.properties = None
+
+    def set_table_properties(self, info):
+        """set table properties for creating new table based on given info"""
+        self.properties = info
 
     def add_table(self):
         # add table referred by table object to self.DBname DB
