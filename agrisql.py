@@ -42,7 +42,6 @@ class PySQL:
         query_db(self)
 
 
-
 class PySQLtable:
     def __init__(self, db_obj, init):
         self.DBname = init['database']
@@ -78,4 +77,18 @@ class PySQLtable:
         for i_col in table_properties:
             self.column_names.append(i_col['column_name'])
         # call mySQL connector to add new table to SQl db
+
+
+class PySQlNewTable:
+    def __init__(self):
+        self.create_query = ''
+        self.create_info = None
+        self.DBname = ''
+
+    def add_table(self):
+        # add table referred by table object to self.DBname DB
+        # call to accessdb function
+        return
+
+
 
