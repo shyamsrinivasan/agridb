@@ -92,10 +92,22 @@ class PySQLNewTable:
         else:
             self.name = ''
         self.properties = None
+        self.column_names = None
+        self.column_dtype = None
+        self.is_null = None
+        self.default = None
+        self.primary_key = None
 
     def set_table_properties(self, info):
         """set table properties for creating new table based on given info"""
         self.properties = info
+        self.column_names = info['column_names']
+        self.column_dtype = info['column_dtype']
+        self.is_null = info['column_is_null']
+        if info.get('default_value') is not None:
+            self.default = info['default_value']
+        if info.get('primary_key') is not None:
+            self.primary_key = info['primary_key']
 
     def add_table(self):
         # add table referred by table object to self.DBname DB
