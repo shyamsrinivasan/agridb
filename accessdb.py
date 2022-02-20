@@ -1,10 +1,8 @@
 import mysql.connector
 from mysql.connector import errorcode
 
-import agrisql
 
-
-def query_db(sqlobj: agrisql.PySQL, printflag=False):
+def query_db(sqlobj, printflag=False):
     """connect to mysql db using connector and query, add to or
     update db using relevant queries passed as input"""
 
@@ -44,7 +42,7 @@ def query_db(sqlobj: agrisql.PySQL, printflag=False):
     return flag
 
 
-def getinfo(sqlobj: agrisql.PySQL, tables=False, columns=False):
+def getinfo(sqlobj, tables=False, columns=False):
     """get entries from db using given query. Fetch all relevant details from all tables in db"""
 
     result = None

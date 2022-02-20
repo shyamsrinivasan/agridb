@@ -18,16 +18,17 @@ class PySQL:
 
         # get DB table info
         self.query = ("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE "
-                      "TABLE_TYPE = 'BASE TABLE AND TABLE_SCHEMA = %(db_name)s")
+                      "TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = %(db_name)s")
         self.query_args = {'db_name': self.DBname}
         table_info = getinfo(self, tables=True)
 
         # create PySQltable objects for each table and create list of table objects
         # {'table_names': table_names, 'column_names': column_names}
-        for i_table in table_info['table_names']:
-            i_table_info = {'database': self.DBname, 'table_name': i_table}
-            table_obj = PySQLtable(self, i_table_info)
-            self.tables.append(table_obj)
+        if table_info['table_names']:
+            for i_table in table_info['table_names']:
+                i_table_info = {'database': self.DBname, 'table_name': i_table}
+                table_obj = PySQLtable(self, i_table_info)
+                self.tables.append(table_obj)
 
     def add_table(self, info):
         """add table corresponding to table object to selected DB schema using MySQL connector"""

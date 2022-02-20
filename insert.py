@@ -49,11 +49,13 @@ def add_table(obj: PySQL, table_name=None):
         start += "PRIMARY KEY ("
         npkey = len(new_obj.primary_key)
         for ip, pkey in enumerate(new_obj.primary_key):
-            start += "`%{}s`".format(pkey)
+            start += "`{}`".format(pkey)
             if ip < npkey-1:
                 start += ", "
             elif ip == npkey-1:
                 start += ")"
+    # add unique index
+    # if new_obj.unique_index
     # add foreign key constraint
     # end CREATE TABLE block
     start += ") "
