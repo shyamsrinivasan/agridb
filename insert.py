@@ -8,11 +8,15 @@ def table_def(obj: PySQLNewTable):
     if obj.name:
         # add table to schema (unique id and foregin keys to be included)
         # table_name, col_name, col_type, index, foreign_index
-        table_property = {'table_name': obj.name, 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date', 'to_date', 'serial_number'],
-                          'column_dtype': ['TINYINT(8)', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP', 'TIMESTAMP', 'TINYINT(8)'],
+        table_property = {'table_name': obj.name, 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date',
+                                                                   'to_date', 'serial_number'],
+                          'column_dtype': ['TINYINT(8)', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
+                                           'TIMESTAMP', 'TINYINT(8)'],
                           'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL', 'NOT NULL'],
                           'default_value': ['', '', '', '', 'CURRENT_TIMESTAMP', '', ''],
-                          'primary_key': ['serial_number'], 'unique_index_name': ['serial_num_idx'], 'unique_index': ['serial_number']}
+                          'primary_key': ['serial_number'], 'unique_index_name': ['serial_num_idx'],
+                          'unique_index': ['serial_number'], 'key': ['itemid', 'name', 'cost'],
+                          'key_name': ['itemid_idx', 'name_idx', 'cost_idx']}
         obj.set_table_properties(table_property)
     return obj
 
@@ -69,6 +73,7 @@ def add_table(obj: PySQL, table_name=None):
             elif ip == nuid-1:
                 start += ")"
 
+    # add additional keys for use with foreign key constraints
     # add foreign key constraint
     # end CREATE TABLE block
     start += ") "
