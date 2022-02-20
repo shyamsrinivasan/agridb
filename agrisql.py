@@ -98,6 +98,8 @@ class PySQLNewTable:
         self.is_null = None
         self.default = None
         self.primary_key = None
+        self.unique_index = None
+        self.unique_index_name = None
 
     def set_table_properties(self, info):
         """set table properties for creating new table based on given info"""
@@ -109,6 +111,10 @@ class PySQLNewTable:
             self.default = info['default_value']
         if info.get('primary_key') is not None:
             self.primary_key = info['primary_key']
+        if info.get('unique_index') is not None:
+            self.unique_index = info['unique_index']
+        if info.get('unique_index_name') is not None:
+            self.unique_index_name = info['unique_index_name']
 
     def add_table(self):
         # add table referred by table object to self.DBname DB

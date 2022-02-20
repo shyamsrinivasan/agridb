@@ -8,11 +8,11 @@ def table_def(obj: PySQLNewTable):
     if obj.name:
         # add table to schema (unique id and foregin keys to be included)
         # table_name, col_name, col_type, index, foreign_index
-        table_property = {'table_name': obj.name, 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date', 'to_date'],
-                          'column_dtype': ['TINYINT(8)', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP', 'TIMESTAMP'],
-                          'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL'],
-                          'default_value': ['', '', '', '', '', ''],
-                          'primary_key': ['itemid']}
+        table_property = {'table_name': obj.name, 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date', 'to_date', 'serial_number'],
+                          'column_dtype': ['TINYINT(8)', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP', 'TIMESTAMP', 'TINYINT(8)'],
+                          'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL', 'NOT NULL'],
+                          'default_value': ['', '', '', '', 'CURRENT_TIMESTAMP', '', ''],
+                          'primary_key': ['serial_number'], 'unique_index_name': ['serial_num_idx'], 'unique_index': ['serial_number']}
         obj.set_table_properties(table_property)
     return obj
 
@@ -28,6 +28,7 @@ def add_table(obj: PySQL, table_name=None):
     # set query with ADD
     # query = ("CREATE TABLE `{}`.`table_name` (`column_name` int(11) NULL, `column_2` varchar(55) NOT NULL, "
     #          "PRIMARY KEY (`column_name`), KEY `column_name` (`index_name`), "
+    #          "UNIQUE INDEX `index_name` (`column_name`)
     #          "CONSTRAINT `constraint_name` FOREIGN KEY (`indexed_column_name`) "
     #          "REFERENCES `table_name` (`column_in_foreign_table`) ON DELETE CASCADE".format(self.DBname))
     # build query statement CREATE TABLE
@@ -44,6 +45,7 @@ def add_table(obj: PySQL, table_name=None):
                     start += ", "
             else:
                 start += ", "
+
     # add primary key
     if new_obj.primary_key is not None:
         start += "PRIMARY KEY ("
@@ -54,8 +56,19 @@ def add_table(obj: PySQL, table_name=None):
                 start += ", "
             elif ip == npkey-1:
                 start += ")"
+
     # add unique index
-    # if new_obj.unique_index
+    if new_obj.unique_index is not None:
+        start += ", UNIQUE INDEX "
+        nuid = len(new_obj.unique_index)
+        for ip, uind in enumerate(new_obj.unique_index):
+            start += new_obj.unique_index_name[ip]
+            start += " (`{}`".format(uind)
+            if ip < nuid-1:
+                start += ", "
+            elif ip == nuid-1:
+                start += ")"
+
     # add foreign key constraint
     # end CREATE TABLE block
     start += ") "
