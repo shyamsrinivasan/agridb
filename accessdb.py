@@ -34,6 +34,8 @@ def query_db(sqlobj, printflag=False):
                 print("SQL Error: Database does not exist")
             elif err.errno == errorcode.ER_KEY_COLUMN_DOES_NOT_EXITS:
                 print('SQL Error: Column specified in query does not exist')
+            elif err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                print('SQL Error: Table with name to be added already exists in DB')
             else:
                 print(err)
             cnx.rollback()
