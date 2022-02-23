@@ -129,16 +129,48 @@ class PySQLNewTable:
             self.key = info['key']
         if info.get('key_name') is not None:
             self.key_name = info['key_name']
+
         # foreign key details
-        # if info.get('constraint') is None or info.get('foreign_key') is None
-        if info.get('constraint') is not None:
-            self.constraint = info['constraint']
-        if info.get('foreign_key') is not None:
-            self.foreign_key = info['foreign_key']
-        if info.get('ref_table') is not None:
-            self.ref_table = info['ref_table']
-        if info.get('ref_column') is not None:
-            self.ref_column = info['ref_column']
+        fkey_flag = False
+        if info.get('constraint') is None or info.get('foreign_key') is None or info.get('ref_table') is None or \
+                info.get('ref_column') is None:
+            print('Missing details to specify foreign key constraints.\nForeign constraints will not be added')
+            fkey_flag = True
+        else:
+            # foreign keys
+            if info.get('foreign_key') is not None:
+                if len(info['foreign_key']) == len(info['constraint']):
+                    self.foreign_key = info['foreign_key']
+                else:
+                    print('Number of foreign keys is NOT SAME as number of given constraint names')
+                    fkey_flag = True
+            else:
+                print('Foreign key NOT GIVEN for foreign key constraints')
+                fkey_flag = True
+            # reference tables
+            if info.get('ref_table') is not None:
+                if len(info['ref_table']) == len(info['constraint']):
+                    self.ref_table = info['ref_table']
+                else:
+                    print('Number of reference table names is NOT SAME as number of given constraint names')
+                    fkey_flag = True
+            else:
+                print('Reference table NOT GIVEN for foreign key constraints')
+                fkey_flag = True
+            # reference columns
+            if info.get('ref_column') is not None:
+                if len(info['ref_column']) == len(info['constraint']):
+                    self.ref_column = info['ref_column']
+                else:
+                    print('Number of reference columns is NOT SAME as number of given constraint names')
+                    fkey_flag = True
+            else:
+                print('Reference column NOT GIVEN for foreign key constraints')
+                fkey_flag = True
+            # constraint names
+            if not fkey_flag:
+                self.constraint = info['constraint']
+        # on delete condition
         if info.get('on_delete') is not None:
             self.on_delete = info['on_delete']
 

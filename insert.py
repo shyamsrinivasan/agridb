@@ -93,13 +93,13 @@ def add_table(obj: PySQL, table_name=None):
     # add foreign key constraint
     #          "CONSTRAINT `constraint_name` FOREIGN KEY (`indexed_column_name`) "
     #          "REFERENCES `table_name` (`column_in_foreign_table`) ON DELETE CASCADE".format(self.DBname))
-    if new_obj.foreign_key is not None:
+    if new_obj.foreign_key is not None and new_obj.constraint is not None:
         ncons = len(new_obj.foreign_key)
         for ifk, frnkey in enumerate(new_obj.foreign_key):
-            start += ", CONSTRAINT `{}` FOREIGN KEY (`{}`) REFERENCES `{}` (`{}`) ".format(new_obj.constraint[ifk],
-                                                                                           frnkey,
-                                                                                           new_obj.ref_table[ifk],
-                                                                                           new_obj.ref_column[ifk])
+            start += ", CONSTRAINT `{}` FOREIGN KEY (`{}`) REFERENCES `{}` (`{}`)".format(new_obj.constraint[ifk],
+                                                                                          frnkey,
+                                                                                          new_obj.ref_table[ifk],
+                                                                                          new_obj.ref_column[ifk])
             if new_obj.on_delete is not None:
                 start += " ON DELETE {}".format(new_obj.on_delete[ifk])
     # end CREATE TABLE block
