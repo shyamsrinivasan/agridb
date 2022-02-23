@@ -1,6 +1,6 @@
 import os.path
 from agrisql import PySQL
-from insert import add_table
+from insert import create_new_table
 
 
 if __name__ == '__main__':
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     db = PySQL(dbconfig)
 
     # add table to schema
-    add_table(db, table_name='items')
+    create_new_table(db, table_name='items')
     # create new table object with given table name
     # new_table = PySQLNewTable(DBname='agridb', table_name='items')
     # table_properties = table_def('items')

@@ -26,7 +26,7 @@ def table_def(obj: PySQLNewTable):
     return obj
 
 
-def add_table(obj: PySQL, table_name=None):
+def create_new_table(obj: PySQL, table_name=None):
     """add table to existing db schema"""
 
     # create new table object
@@ -106,7 +106,7 @@ def add_table(obj: PySQL, table_name=None):
     start += ") "
 
     # call func to db to make changes and commit
-    # flag = query_db()
+    new_obj.add_table(obj, start)
     return
 
 

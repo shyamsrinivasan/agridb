@@ -9,6 +9,7 @@ class PySQL:
         # query and query arguments (change for different query calls)
         self.query = ''
         self.query_args = None
+        self.query_flag = None
         # get info on all tables (table name, column names) in db
         self.tables = []
         self._get_tables()
@@ -30,17 +31,14 @@ class PySQL:
                 table_obj = PySQLtable(self, i_table_info)
                 self.tables.append(table_obj)
 
-    def add_table(self, info):
+    def add_table(self, query, query_args=None):
         """add table corresponding to table object to selected DB schema using MySQL connector"""
 
-        # table_name, col_name, col_type, index, foreign_index
-        # query = ("CREATE TABLE `table_name` ")
-        self.query = ("CREATE TABLE `{}`.`table_name` (`column_name` int(11) NULL, `column_2` varchar(55) NOT NULL, "
-                      "PRIMARY KEY (`column_name`), KEY `column_name` (`index_name`), "
-                      "CONSTRAINT `constraint_name` FOREIGN KEY (`indexed_column_name`) "
-                      "REFERENCES `table_name` (`column_in_foreign_table`) ON DELETE CASCADE".format(self.DBname))
-        self.query_args = None
-        query_db(self)
+        self.query = query
+        if query_args is not None:
+            self.query_args = query_args
+        flag = query_db(self)
+        self.query_flag = flag
 
 
 class PySQLtable:
@@ -82,7 +80,7 @@ class PySQLtable:
 
 class PySQLNewTable:
     def __init__(self, dbname=None, table_name=None):
-        self.create_query = ''
+        self.create_query = None
         self.create_info = None
         if dbname is not None:
             self.DBname = dbname
@@ -107,6 +105,8 @@ class PySQLNewTable:
         self.ref_table = None
         self.ref_column = None
         self.on_delete = None
+
+        self.add_flag = None
 
     def set_table_properties(self, info):
         """set table properties for creating new table based on given info"""
@@ -174,9 +174,16 @@ class PySQLNewTable:
         if info.get('on_delete') is not None:
             self.on_delete = info['on_delete']
 
-    def add_table(self):
-        # add table referred by table object to self.DBname DB
-        # call to accessdb function
+    def add_table(self, db_obj: PySQL, query, query_args=None):
+        """add table referred by table object to db_obj.DBname DB by calling to accessdb function"""
+
+        if query and query_args is None:
+            self.create_query = query
+            db_obj.add_table(self.create_query)
+        elif query_args is not None:
+            self.create_info = query_args
+            db_obj.add_table(self.create_query, self.create_info)
+        self.add_flag = db_obj.query_flag
         return
 
 
