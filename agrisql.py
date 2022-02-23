@@ -102,6 +102,11 @@ class PySQLNewTable:
         self.unique_index_name = None
         self.key = None
         self.key_name = None
+        self.constraint = None
+        self.foreign_key = None
+        self.ref_table = None
+        self.ref_column = None
+        self.on_delete = None
 
     def set_table_properties(self, info):
         """set table properties for creating new table based on given info"""
@@ -111,16 +116,31 @@ class PySQLNewTable:
         self.is_null = info['column_is_null']
         if info.get('default_value') is not None:
             self.default = info['default_value']
+        # primary key details
         if info.get('primary_key') is not None:
             self.primary_key = info['primary_key']
+        # unique index details
         if info.get('unique_index') is not None:
             self.unique_index = info['unique_index']
         if info.get('unique_index_name') is not None:
             self.unique_index_name = info['unique_index_name']
+        # index details
         if info.get('key') is not None:
             self.key = info['key']
         if info.get('key_name') is not None:
             self.key_name = info['key_name']
+        # foreign key details
+        # if info.get('constraint') is None or info.get('foreign_key') is None
+        if info.get('constraint') is not None:
+            self.constraint = info['constraint']
+        if info.get('foreign_key') is not None:
+            self.foreign_key = info['foreign_key']
+        if info.get('ref_table') is not None:
+            self.ref_table = info['ref_table']
+        if info.get('ref_column') is not None:
+            self.ref_column = info['ref_column']
+        if info.get('on_delete') is not None:
+            self.on_delete = info['on_delete']
 
     def add_table(self):
         # add table referred by table object to self.DBname DB
