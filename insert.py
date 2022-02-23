@@ -10,18 +10,18 @@ def table_def(obj: PySQLNewTable):
         # table_name, col_name, col_type, index, foreign_index
         table_property = {'table_name': obj.name, 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date',
                                                                    'to_date', 'serial_number'],
-                          'column_dtype': ['TINYINT(8)', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
+                          'column_dtype': ['TINYINT', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
                                            'TIMESTAMP', 'TINYINT(8)'],
                           'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL', 'NOT NULL'],
                           'default_value': ['', '', '', '', 'CURRENT_TIMESTAMP', '', ''],
                           'primary_key': ['serial_number'], 'unique_index_name': ['serial_num_idx'],
                           'unique_index': ['serial_number'], 'key': ['itemid', 'name', 'cost'],
-                          'key_name': ['itemid_idx', 'name_idx', 'cost_idx'],
-                          'constraint': ['cons_name_1'],
-                          'foreign_key': ['column_name_in_current_table'],
-                          'ref_table': ['foreign_table'],
-                          'ref_column': ['foreign_table_column'],
-                          'on_delete': ['cascade']}
+                          'key_name': ['itemid_idx', 'name_idx', 'cost_idx']}
+                          # 'constraint': ['cons_name_1'],
+                          # 'foreign_key': ['column_name_in_current_table'],
+                          # 'ref_table': ['foreign_table'],
+                          # 'ref_column': ['foreign_table_column'],
+                          # 'on_delete': ['cascade']}
         obj.set_table_properties(table_property)
     return obj
 
