@@ -30,6 +30,7 @@ def create_new_table(obj: PySQL, table_name=None):
     """add table to existing db schema"""
 
     # create new table object
+    create_table_flag = False
     new_obj = PySQLNewTable(dbname=obj.DBname, table_name=table_name)
 
     # define table properties (cols and other properties)
@@ -107,7 +108,13 @@ def create_new_table(obj: PySQL, table_name=None):
 
     # call func to db to make changes and commit
     new_obj.add_table(obj, start)
-    return
+    if new_obj.add_flag:
+        print('Table with name {} created in database {}'.format(new_obj.name, obj.DBname))
+        create_table_flag = True
+    else:
+        print('Could not create table {} in database {}'.format(new_obj.name, obj.DBname))
+
+    return create_table_flag
 
 
 def add_column():

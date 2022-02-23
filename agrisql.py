@@ -52,8 +52,14 @@ class PySQLtable:
         self.column_default = None
         self.columns = 0
         self._get_columns(db_obj)
-        self.keys = init['key']
-        self.foreign_key = init['foreign_key']
+        if init.get('key') is not None:
+            self.keys = init['key']
+        else:
+            self.keys = None
+        if init.get('foreign_key') is not None:
+            self.foreign_key = init['foreign_key']
+        else:
+            self.foreign_key = None
 
     def _get_columns(self, db_obj):
         """get all column names for listed tables in DB"""

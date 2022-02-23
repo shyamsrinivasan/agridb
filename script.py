@@ -13,11 +13,8 @@ if __name__ == '__main__':
     db = PySQL(dbconfig)
 
     # add table to schema
-    create_new_table(db, table_name='items')
-    # create new table object with given table name
-    # new_table = PySQLNewTable(DBname='agridb', table_name='items')
-    # table_properties = table_def('items')
-    # db.add_table(table_properties)
+    flag = create_new_table(db, table_name='items')
+
     # add data to table
     # col_name, values
     # db.add_entry()
