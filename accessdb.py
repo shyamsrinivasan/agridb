@@ -29,9 +29,11 @@ def query_db(sqlobj, printflag=False):
 
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Username or password")
+                print("SQL Error: Username or password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
+                print("SQL Error: Database does not exist")
+            elif err.errno == errorcode.ER_KEY_COLUMN_DOES_NOT_EXITS:
+                print('SQL Error: Column specified in query does not exist')
             else:
                 print(err)
             cnx.rollback()
@@ -59,7 +61,8 @@ def getinfo(sqlobj, tables=False, columns=False):
                 table_names.append(row['TABLE_NAME'])
             if columns:
                 column_names.append(row['COLUMN_NAME'])
-        result = {'table_names': table_names, 'column_names': column_names}
+        result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': [], 'is_null': [],
+                  'default': []}
         cursor.close()
         cnx.close()
     except mysql.connector.Error as err:
