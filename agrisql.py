@@ -116,10 +116,18 @@ class PySQLNewTable:
 
     def set_table_properties(self, info):
         """set table properties for creating new table based on given info"""
+
         self.properties = info
-        self.column_names = info['column_names']
-        self.column_dtype = info['column_dtype']
-        self.is_null = info['column_is_null']
+        if info is None:
+            print('No properties provided for new table. No new table can be created.')
+            return self
+
+        if info.get('column_names') is not None:
+            self.column_names = info['column_names']
+        if info.get('column_dtype') is not None:
+            self.column_dtype = info['column_dtype']
+        if info.get('column_is_null') is not None:
+            self.is_null = info['column_is_null']
         if info.get('default_value') is not None:
             self.default = info['default_value']
         # primary key details
@@ -179,6 +187,8 @@ class PySQLNewTable:
         # on delete condition
         if info.get('on_delete') is not None:
             self.on_delete = info['on_delete']
+
+        return self
 
     def add_table(self, db_obj: PySQL, query, query_args=None):
         """add table referred by table object to db_obj.DBname DB by calling to accessdb function"""

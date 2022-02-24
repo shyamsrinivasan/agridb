@@ -1,32 +1,7 @@
 from agrisql import PySQL, PySQLNewTable
 
 
-def table_def(obj: PySQLNewTable):
-    """define table properties for creating table in db"""
-
-    table_property = None
-    if obj.name:
-        # add table to schema (unique id and foregin keys to be included)
-        # table_name, col_name, col_type, index, foreign_index
-        table_property = {'table_name': obj.name, 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date',
-                                                                   'to_date', 'serial_number'],
-                          'column_dtype': ['TINYINT', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
-                                           'TIMESTAMP', 'TINYINT(8)'],
-                          'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL', 'NOT NULL'],
-                          'default_value': ['', '', '', '', 'CURRENT_TIMESTAMP', '', ''],
-                          'primary_key': ['serial_number'], 'unique_index_name': ['serial_num_idx'],
-                          'unique_index': ['serial_number'], 'key': ['itemid', 'name', 'cost'],
-                          'key_name': ['itemid_idx', 'name_idx', 'cost_idx']}
-                          # 'constraint': ['cons_name_1'],
-                          # 'foreign_key': ['column_name_in_current_table'],
-                          # 'ref_table': ['foreign_table'],
-                          # 'ref_column': ['foreign_table_column'],
-                          # 'on_delete': ['cascade']}
-        obj.set_table_properties(table_property)
-    return obj
-
-
-def create_new_table(obj: PySQL, table_name=None):
+def create_new_table(obj: PySQL, table_name=None, table_property=None):
     """add table to existing db schema"""
 
     # create new table object
@@ -34,8 +9,8 @@ def create_new_table(obj: PySQL, table_name=None):
     new_obj = PySQLNewTable(dbname=obj.DBname, table_name=table_name)
 
     # define table properties (cols and other properties)
-    new_obj = table_def(new_obj)
-    # set query with ADD
+    new_obj = new_obj.set_table_properties(table_property)
+
     # query = ("CREATE TABLE `{}`.`table_name` (`column_name` int(11) NULL, `column_2` varchar(55) NOT NULL, "
     #          "PRIMARY KEY (`column_name`), KEY `column_name` (`index_name`), "
     #          "UNIQUE INDEX `index_name` (`column_name`),
