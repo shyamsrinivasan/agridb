@@ -34,17 +34,45 @@ class PySQL:
     def add_table(self, query, query_args=None):
         """add table corresponding to table object to selected DB schema using MySQL connector"""
 
+        self._reset_query_flag()
         self.query = query
         if query_args is not None:
             self.query_args = query_args
-        flag = query_db(self)
-        self.query_flag = flag
+        self.query_flag = query_db(self)
+
+    def remove_table(self, table_name=None):
+        """remove a table in given db object"""
+
+        self._reset_query_flag()
+        if table_name is not None:
+            db_tables = [i_table.name for i_table in self.tables]
+            if table_name in db_tables:
+                self.query = ("DROP TABLE `{}`.`{}`".format(self.DBname, table_name))
+                self.query_args = None
+                if self.query_flag is None:
+                    self.query_flag = query_db(self)
+
+                if self.query_flag:
+                    # get new list of tables in db
+                    self.tables = []
+                    self._get_tables()
+            else:
+                print("Table `{}` is not present in DB `{}`".format(table_name, self.DBname))
+
+    def _reset_query_flag(self):
+        """reset query flag to None before running new queries if flag is not None"""
+
+        if self.query_flag is not None:
+            self.query_flag = None
+            print('Query flag reset to None')
+        else:
+            print('Query flag is already None')
 
 
 class PySQLtable:
     def __init__(self, db_obj, init):
         self.DBname = init['database']
-        self.table_name = init['table_name']
+        self.name = init['table_name']
         # get info on all columns in table
         self.column_names = None
         self.column_dtype = None
@@ -67,7 +95,7 @@ class PySQLtable:
         # get column names, column type, column nullablity and column default
         db_obj.query = ("SELECT COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_DEFAULT, IS_NULLABLE, COLUMN_KEY "
                         "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %(table_name)s")
-        db_obj.query_args = {'table_name': self.table_name}
+        db_obj.query_args = {'table_name': self.name}
         column_info = getinfo(db_obj, columns=True)
         self.column_names = column_info['column_names']
         self.column_dtype = column_info['column_dtype']

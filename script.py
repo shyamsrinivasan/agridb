@@ -12,6 +12,9 @@ if __name__ == '__main__':
     # create table object for further use with all config details
     db = PySQL(dbconfig)
 
+    # drop table from db
+    db.remove_table(table_name='items')
+
     # define new table properties
     table_property = {'table_name': 'items', 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date',
                                                                'to_date', 'serial_number'],
