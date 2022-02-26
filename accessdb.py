@@ -46,7 +46,7 @@ def query_db(sqlobj, printflag=False):
     return flag
 
 
-def getinfo(sqlobj, id=False, tables=False, columns=False):
+def getinfo(sqlobj, items=False, id_only=False, tables=False, columns=False):
     """get entries from db using given query. Fetch all relevant details from all tables in db"""
 
     result = None
@@ -57,8 +57,8 @@ def getinfo(sqlobj, id=False, tables=False, columns=False):
             cursor.execute(sqlobj.query)
         else:
             cursor.execute(sqlobj.query, sqlobj.query_args)  # execute given query in mysql object
-        table_names, item_id = [], []
-        column_names, column_dtype, column_default, is_null = [], [], [], []
+        item_id, item_name, item_type = [], [], []
+        table_names, column_names, column_dtype, column_default, is_null = [], [], [], [], []
         for row in cursor:
             if tables:
                 table_names.append(row['TABLE_NAME'])
@@ -67,12 +67,16 @@ def getinfo(sqlobj, id=False, tables=False, columns=False):
                 column_dtype.append(row['DATA_TYPE'])
                 column_default.append(row['COLUMN_DEFAULT'])
                 is_null.append(row['IS_NULLABLE'])
-            if id:
+            if id_only:
                 item_id.append(row['id'])
-        if tables or columns:
-            result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': column_dtype,
-                      'is_null': is_null, 'default': column_default}
-        elif id:
+            if items:
+                item_id.append(row['id'])
+                item_name.append(row['name'])
+                item_type.append(row['type'])
+        result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': column_dtype,
+                  'is_null': is_null, 'default': column_default, 'item_id': item_id, 'item_name': item_name,
+                  'item_type': item_type}
+        if id_only:
             result = {'id': item_id}
         cursor.close()
         cnx.close()
