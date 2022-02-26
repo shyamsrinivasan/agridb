@@ -12,16 +12,25 @@ if __name__ == '__main__':
     # create table object for further use with all config details
     db = PySQL(dbconfig)
 
+    # add data to table - read data from excel file and write to mysql db
+    # col_name, values
+    # db.add_entry()
+    # file_name = os.path.join(os.getcwd(), 'sampleinfo.xlsx')
+    # db
+    # data = read_info(file_name)
+    # loadclientinfo(data, dbconfig)
+
     # drop table from db
     db.remove_table(table_name='items')
 
     # define new table properties
-    table_property = {'table_name': 'items', 'column_names': ['itemid', 'name', 'type', 'cost', 'from_date',
-                                                               'to_date', 'serial_number'],
+    table_property = {'table_name': 'items', 'column_names': ['id', 'name', 'type', 'cost', 'from_date',
+                                                              'to_date', 'serial_number'],
                       'column_dtype': ['TINYINT', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
                                        'TIMESTAMP', 'TINYINT'],
                       'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL', 'NOT NULL'],
                       'default_value': ['', '', '', '', 'CURRENT_TIMESTAMP', '', ''],
+                      'other_value': ['', '', '', '', '', '', 'AUTO_INCREMENT'],
                       'primary_key': ['serial_number'], 'unique_index_name': ['serial_num_idx'],
                       'unique_index': ['serial_number'], 'key': ['itemid', 'name', 'cost'],
                       'key_name': ['itemid_idx', 'name_idx', 'cost_idx']}
@@ -34,9 +43,7 @@ if __name__ == '__main__':
     # add table to schema
     flag = create_new_table(db, table_name='items', table_property=table_property)
 
-    # add data to table
-    # col_name, values
-    # db.add_entry()
+
     # update data in table
     # col_name, values
     # db.update_entry()

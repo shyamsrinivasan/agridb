@@ -53,6 +53,7 @@ class PySQL:
                     self.query_flag = query_db(self)
 
                 if self.query_flag:
+                    print("Table {} removed from DB {}".format(table_name, self.DBname))
                     # get new list of tables in db
                     self.tables = []
                     self._get_tables()
@@ -129,6 +130,7 @@ class PySQLNewTable:
         self.column_dtype = None
         self.is_null = None
         self.default = None
+        self.other_value = None
         self.primary_key = None
         self.unique_index = None
         self.unique_index_name = None
@@ -158,6 +160,8 @@ class PySQLNewTable:
             self.is_null = info['column_is_null']
         if info.get('default_value') is not None:
             self.default = info['default_value']
+        if info.get('other_value') is not None:
+            self.other_value = info['other_value']
         # primary key details
         if info.get('primary_key') is not None:
             self.primary_key = info['primary_key']

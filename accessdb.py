@@ -46,7 +46,7 @@ def query_db(sqlobj, printflag=False):
     return flag
 
 
-def getinfo(sqlobj, tables=False, columns=False):
+def getinfo(sqlobj, id=False, tables=False, columns=False):
     """get entries from db using given query. Fetch all relevant details from all tables in db"""
 
     result = None
@@ -57,14 +57,23 @@ def getinfo(sqlobj, tables=False, columns=False):
             cursor.execute(sqlobj.query)
         else:
             cursor.execute(sqlobj.query, sqlobj.query_args)  # execute given query in mysql object
-        table_names, column_names = [], []
+        table_names, item_id = [], []
+        column_names, column_dtype, column_default, is_null = [], [], [], []
         for row in cursor:
             if tables:
                 table_names.append(row['TABLE_NAME'])
             if columns:
                 column_names.append(row['COLUMN_NAME'])
-        result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': [], 'is_null': [],
-                  'default': []}
+                column_dtype.append(row['DATA_TYPE'])
+                column_default.append(row['COLUMN_DEFAULT'])
+                is_null.append(row['IS_NULLABLE'])
+            if id:
+                item_id.append(row['id'])
+        if tables or columns:
+            result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': column_dtype,
+                      'is_null': is_null, 'default': column_default}
+        elif id:
+            result = {'id': item_id}
         cursor.close()
         cnx.close()
     except mysql.connector.Error as err:
