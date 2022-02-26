@@ -24,7 +24,9 @@ def create_new_table(obj: PySQL, table_name=None, table_property=None):
         if icol <= ncols-1:
             start += "`{}` {} {}".format(cols, new_obj.column_dtype[icol], new_obj.is_null[icol])
             if new_obj.default is not None:
-                if new_obj.default[icol]:
+                if new_obj.other_value is not None and (new_obj.other_value[icol] and not new_obj.default[icol]):
+                    start += " {}, ".format(new_obj.other_value[icol])
+                elif new_obj.default[icol]:
                     start += " DEFAULT {}, ".format(new_obj.default[icol])
                 else:
                     start += ", "
