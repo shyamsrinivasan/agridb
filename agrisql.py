@@ -154,6 +154,14 @@ class PySQL:
         dbinfo = getinfo(self, items=True)
         return dbinfo
 
+    def add_item(self, query, query_args):
+        """call query_db to add entry to table in DB"""
+
+        self.query = query
+        self.query_args = query_args
+        self._reset_query_flag()
+        self.query_flag = query_db(self)
+
 
 class PySQLtable:
     def __init__(self, db_obj, init):
@@ -210,7 +218,11 @@ class PySQLtable:
         """convert dictionary of list to list of dictionaries for info obtained from db"""
 
         new_list, new_dict = [], {}
-        nvals = max([len(info_dict[key]) for key, _ in info_dict.items() if info_dict[key]])  # size of new final list
+        nvals = [len(info_dict[key]) for key, _ in info_dict.items() if info_dict[key]]  # size of new final list
+        if any(nvals):
+            nvals = max(nvals)
+        else:
+            nvals = 0
 
         for ival in range(0, nvals):
             for key, _ in info_dict.items():
@@ -234,6 +246,31 @@ class PySQLtable:
             print("Table {} is not present in DB {}".format(self.name, self.DBname))
 
         return db_info
+
+    def _add_item(self, db_obj, query_args):
+        """call db_obj.add_item to add entry to relevant table"""
+
+        query = ("INSERT INTO {}.{} "
+                 "(id, description, type, cost) "
+                 "VALUES (%(id)s, %(description)s, %(type)s, %(cost)s)".format(self.DBname, self.name))
+        db_obj = db_obj.add_item(query, query_args)
+        if db_obj.query_flag:
+            print("Entry with id `{}` and description `{}` added to {} in {}".format(query_args['id'],
+                                                                                     query_args['description'],
+                                                                                     self.name, self.DBname))
+        else:
+            print("Entry with description {} NOT added to {}".format(query_args['description'], self.name))
+
+    def _add_single_entry(self, db_obj, data, add_type=-1):
+        """add a single new entry to existing table in existing DB
+        add_type == 1 for add item only"""
+
+        if add_type == 1:  # add client only
+            self._add_item(db_obj, data)
+        else:
+            self._add_item(db_obj, data)
+            # add items to other tables as well
+        return
 
     def add_data(self, data, db_obj=None):
         """load client info from dataframe to db"""
@@ -265,7 +302,7 @@ class PySQLtable:
         #             print("{} with ID {} has same address in DB. "
         #                   "No changes made".format(i_client['name'], i_client['clientid']))
         #     else:  # else add new entry
-        #         loadsingleclientinfo(dbconfig, i_client)
+            self._add_single_entry(db_obj, i_entry)
         # return
 
     def add_column(self, table_properties):
