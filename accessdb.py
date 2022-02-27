@@ -76,7 +76,7 @@ def getinfo(sqlobj, items=False, id_only=False, tables=False, columns=False):
         result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': column_dtype,
                   'is_null': is_null, 'default': column_default}
         if items:
-            result = {'item_id': item_id, 'item_name': item_name, 'item_type': item_type}
+            result = {'id': item_id, 'description': item_name, 'type': item_type}
         if id_only:
             result = {'id': item_id}
         cursor.close()
