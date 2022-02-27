@@ -23,8 +23,8 @@ if __name__ == '__main__':
     # define new table properties
     table_property = {'table_name': 'items', 'column_names': ['id', 'description', 'type', 'cost', 'from_date',
                                                               'to_date', 'serial_number'],
-                      'column_dtype': ['TINYINT', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
-                                       'TIMESTAMP', 'TINYINT'],
+                      'column_dtype': ['INT', 'VARCHAR(30)', 'VARCHAR(15)', 'DECIMAL(10,2)', 'TIMESTAMP',
+                                       'TIMESTAMP', 'INT'],
                       'column_is_null': ['NOT NULL', 'NULL', 'NULL', 'NULL', 'NOT NULL', 'NULL', 'NOT NULL'],
                       'default_value': ['', '', '', '', 'CURRENT_TIMESTAMP', '', ''],
                       'other_value': ['', '', '', '', '', '', 'AUTO_INCREMENT'],
