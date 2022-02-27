@@ -130,8 +130,8 @@ class PySQL:
 
         # search db for latest clientid
         self._reset_query_flag()
-        self.query = "SELECT %(id_column)s FROM {}.{}".format(self.DBname, table_obj.name)
-        self.query_args = {'id_column': id_col}
+        self.query = "SELECT {} FROM {}.{}".format(id_col, self.DBname, table_obj.name)
+        # self.query_args = {'id_column': id_col}
         db_info = getinfo(self, id_only=True)
 
         if db_info is not None:
@@ -238,7 +238,7 @@ class PySQLtable:
 
         db_info = None
         if self.name == 'items':
-            query = ("SELECT description, type FROM {}.{} "
+            query = ("SELECT description, type, id FROM {}.{} "
                      "WHERE description = %(description)s OR type = %(type)s OR "
                      "id = %(id)s".format(self.DBname, self.name))
             db_info = db_obj.check_db(query, info)
@@ -279,7 +279,6 @@ class PySQLtable:
         data = self._assign_id(db_obj, data)
 
         data_list = data.to_dict('records')
-        # loadclientinfo(data, dbconfig)
         for idx, i_entry in enumerate(data_list):
             # check if new entry in db (same name/pan)
             db_info = self._check_table(i_entry, db_obj)
