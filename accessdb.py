@@ -71,7 +71,7 @@ def getinfo(sqlobj, items=False, id_only=False, tables=False, columns=False):
                 item_id.append(row['id'])
             if items:
                 item_id.append(row['id'])
-                item_name.append(row['name'])
+                item_name.append(row['description'])
                 item_type.append(row['type'])
         result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': column_dtype,
                   'is_null': is_null, 'default': column_default, 'item_id': item_id, 'item_name': item_name,
