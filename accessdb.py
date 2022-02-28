@@ -57,7 +57,7 @@ def getinfo(sqlobj, items=False, id_only=False, tables=False, columns=False):
             cursor.execute(sqlobj.query)
         else:
             cursor.execute(sqlobj.query, sqlobj.query_args)  # execute given query in mysql object
-        item_id, item_name, item_type = [], [], []
+        item_id, item_name, item_type, item_cost = [], [], [], []
         table_names, column_names, column_dtype, column_default, is_null = [], [], [], [], []
         for row in cursor:
             if tables:
@@ -73,10 +73,11 @@ def getinfo(sqlobj, items=False, id_only=False, tables=False, columns=False):
                 item_id.append(row['id'])
                 item_name.append(row['description'])
                 item_type.append(row['type'])
+                item_cost.append(row['cost'])
         result = {'table_names': table_names, 'column_names': column_names, 'column_dtype': column_dtype,
                   'is_null': is_null, 'default': column_default}
         if items:
-            result = {'id': item_id, 'description': item_name, 'type': item_type}
+            result = {'id': item_id, 'description': item_name, 'type': item_type, 'cost': item_cost}
         if id_only:
             result = {'id': item_id}
         cursor.close()

@@ -117,12 +117,15 @@ class PySQL:
                     print(format(i_table.name))
         else:
             # find table to which data needs to be added - compare columns in data and tables
-            db_columns = [i_table.column_names for i_table in self.tables]
-            chosen_col = [[True if i_col in i_table else False for i_col in data.columns.values] for i_table in db_columns]
-            chosen_table = [True for i_table in chosen_col if all(i_table)]
-            tab_idx = [idx for idx, val in enumerate(chosen_table) if val][0]
-            print('Chosen table for data entry: {}'.format(self.tables[tab_idx].name))
-            self.tables[tab_idx].add_data(data, self)
+            if self.tables:
+                db_columns = [i_table.column_names for i_table in self.tables]
+                chosen_col = [[True if i_col in i_table else False for i_col in data.columns.values] for i_table in db_columns]
+                chosen_table = [True for i_table in chosen_col if all(i_table)]
+                tab_idx = [idx for idx, val in enumerate(chosen_table) if val][0]
+                print('Chosen table for data entry: {}'.format(self.tables[tab_idx].name))
+                self.tables[tab_idx].add_data(data, self)
+            else:
+                print('No tables in DB to add data to. First create table in DB before adding data')
             # if all(col_in_db_col):
 
     def last_item_id(self, table_obj, id_col):
@@ -154,13 +157,14 @@ class PySQL:
         dbinfo = getinfo(self, items=True)
         return dbinfo
 
-    def add_item(self, query, query_args):
-        """call query_db to add entry to table in DB"""
+    def change_table_entry(self, query, query_args):
+        """call query_db to add/update entry in table"""
 
         self.query = query
         self.query_args = query_args
         self._reset_query_flag()
         self.query_flag = query_db(self)
+        return self
 
 
 class PySQLtable:
@@ -238,9 +242,8 @@ class PySQLtable:
 
         db_info = None
         if self.name == 'items':
-            query = ("SELECT description, type, id FROM {}.{} "
-                     "WHERE description = %(description)s OR type = %(type)s OR "
-                     "id = %(id)s".format(self.DBname, self.name))
+            query = ("SELECT description, type, cost, id FROM {}.{} "
+                     "WHERE ((description = %(description)s OR id = %(id)s) AND to_date IS NULL)".format(self.DBname, self.name))
             db_info = db_obj.check_db(query, info)
         else:
             print("Table {} is not present in DB {}".format(self.name, self.DBname))
@@ -253,7 +256,7 @@ class PySQLtable:
         query = ("INSERT INTO {}.{} "
                  "(id, description, type, cost) "
                  "VALUES (%(id)s, %(description)s, %(type)s, %(cost)s)".format(self.DBname, self.name))
-        db_obj = db_obj.add_item(query, query_args)
+        db_obj = db_obj.change_table_entry(query, query_args)
         if db_obj.query_flag:
             print("Entry with id `{}` and description `{}` added to {} in {}".format(query_args['id'],
                                                                                      query_args['description'],
@@ -261,16 +264,65 @@ class PySQLtable:
         else:
             print("Entry with description {} NOT added to {}".format(query_args['description'], self.name))
 
-    def _add_single_entry(self, db_obj, data, add_type=-1):
+    def _add_single_entry(self, db_obj: PySQL, data, add_type=-1):
         """add a single new entry to existing table in existing DB
         add_type == 1 for add item only"""
 
-        if add_type == 1:  # add client only
+        if add_type == 1:  # add item only
             self._add_item(db_obj, data)
         else:
             self._add_item(db_obj, data)
             # add items to other tables as well
         return
+
+    def _update_cost(self, db_obj: PySQL, dbinfo: dict, data: dict):
+        """check address fields that are different and update only these fields"""
+
+        # check address fields that are different
+        up_query = None
+        if data['cost'] != dbinfo['cost']:
+            # update to_date to reflect current timestamp
+            up_query = ("UPDATE {}.{} SET {}.to_date = CURRENT_TIMESTAMP WHERE {}.id = %(id)s".format(self.DBname,
+                                                                                                      self.name,
+                                                                                                      self.name,
+                                                                                                      self.name))
+            db_obj = db_obj.change_table_entry(up_query, data)
+            # add new cost entry with from_date = CURRENT_TIMESTAMP
+            self._add_single_entry(db_obj, data, add_type=1)
+        if db_obj.query_flag:
+            print("Cost of `{}` changed from {} to {} in {}".format(data['description'], dbinfo['cost'], data['cost'],
+                                                                    self.name))
+        else:
+            print("Cost of `{}` NOT CHANGED from {} in {}".format(data['description'], dbinfo['cost'], self.name))
+
+        return
+
+    def _update_entry(self, db_obj:PySQL, dbinfo: dict, data: dict, entry_type=-1):
+        """update a single/single type of entry in db
+        entry_type == 1 for update cost only"""
+
+        if entry_type == 1:  # update cost only (items)
+            self._update_cost(db_obj, dbinfo, data)
+        else:
+            self._update_cost(db_obj, dbinfo, data)
+            # update entries in other tables
+        return
+
+    @staticmethod
+    def _compare_info(info: dict, dbinfo: dict, check_item=False, check_cost=False):
+        """compare given information with information obtained from db and see what the difference is"""
+
+        item_check = False
+        if check_item:
+            if info['description'] == dbinfo['description'] and info['type'] == dbinfo['type']:
+                item_check = True
+
+        cost_check = False
+        if check_cost:
+            if info['cost'] == dbinfo['cost']:
+                cost_check = True
+
+        return item_check, cost_check
 
     def add_data(self, data, db_obj=None):
         """load client info from dataframe to db"""
@@ -283,25 +335,24 @@ class PySQLtable:
             # check if new entry in db (same name/pan)
             db_info = self._check_table(i_entry, db_obj)
             info_list = self._list2dict(db_info)
-        #     name_check, _, _, _ = compare_info(i_client, info_list[0])
-        #     if name_check:  # if present, only update existing entry (address) or return error
-        #         print("Client {} is present in DB with ID {}. "
-        #               "Proceeding to update existing entry".format(i_client['name'], info_list[0]['clientid']))
-        #         # change client id to one obtained from db
-        #         i_client['clientid'] = info_list[0]['clientid']
-        #
-        #         # get existing client info (pan,address) using client info from db
-        #         db_info = check_db(dbconfig, i_client, qtype=1, get_address=True)
-        #         info_list = list2dict(db_info)
-        #         # check if same address in DB
-        #         _, _, _, add_check = compare_info(i_client, info_list[0], check_address=True)
-        #         if not add_check:
-        #             update1entry(dbconfig, info_list[0], i_client)  # update DB if address is not same
-        #         else:
-        #             print("{} with ID {} has same address in DB. "
-        #                   "No changes made".format(i_client['name'], i_client['clientid']))
-        #     else:  # else add new entry
-            self._add_single_entry(db_obj, i_entry)
+            if info_list:
+                item_check, _ = self._compare_info(i_entry, info_list[0], check_item=True)
+            else:
+                item_check = False
+            if item_check:  # if present, only update existing entry (cost) or return error
+                print("Item {} is present in DB with ID {}. "
+                      "Proceeding to update cost".format(i_entry['description'], info_list[0]['id']))
+                # change id to one obtained from db
+                i_entry['id'] = info_list[0]['id']
+                # check if same cost in DB
+                _, cost_check = self._compare_info(i_entry, info_list[0], check_cost=True)
+                if not cost_check:
+                    self._update_entry(db_obj, info_list[0], i_entry)  # update DB if cost is not same
+                else:
+                    print("{} with ID {} has same cost {} in DB. "
+                          "No changes made".format(i_entry['description'], i_entry['id'], info_list[0]['cost']))
+            else:  # else add new entry
+                self._add_single_entry(db_obj, i_entry)
         # return
 
     def add_column(self, table_properties):
