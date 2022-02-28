@@ -370,6 +370,7 @@ class PySQLtable:
     def add_column(self, table_properties):
         """add column to specific table using ADD"""
 
+        # query = ("ALTER TABLE {} alter_option".format())
         # add column to table object
         for i_col in table_properties:
             self.column_names.append(i_col['column_name'])

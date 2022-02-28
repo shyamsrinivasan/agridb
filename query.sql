@@ -22,5 +22,5 @@ CONSTRAINT `constraint_name` FOREIGN KEY (`column_name`) REFERENCES `table_name`
   PRIMARY KEY (`itemid`, `item_num`),
   UNIQUE INDEX `item_num_UNIQUE` (`item_num` ASC) VISIBLE);*/
   
-  SELECT description, type, cost, id, to_date FROM agridb.items 
-  WHERE description = 'Male wage' AND to_date IS NULL
+  SELECT description, type, cost, id FROM agridb.items 
+  WHERE (description = 'Male wage' OR id = 1001) AND to_date IS NULL
