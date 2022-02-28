@@ -42,7 +42,7 @@ class PySQL:
             self.query_args = query_args
         self.query_flag = query_db(self)
 
-    def remove_table(self, table_name=None):
+    def _remove_single_table(self, table_name=None):
         """remove a table in given db object"""
 
         self._reset_query_flag()
@@ -61,6 +61,18 @@ class PySQL:
                     self._get_tables()
             else:
                 print("Table `{}` is not present in DB `{}`".format(table_name, self.DBname))
+
+    def remove_table(self, table_name=None):
+        """remove a table in given db object"""
+
+        if table_name is not None:
+            if isinstance(table_name, list):
+                for i_name in table_name:
+                    self._remove_single_table(table_name=i_name)
+            else:
+                self._remove_single_table(table_name=table_name)
+        else:
+            print('No table name given to be removed')
 
     def _reset_query_flag(self):
         """reset query flag to None before running new queries if flag is not None"""
