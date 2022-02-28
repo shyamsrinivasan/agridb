@@ -11,7 +11,7 @@ WHERE TABLE_NAME = 'film'*/
 PRIMARY KEY (`column_name`), KEY `index_name` (`column_name`), 
 CONSTRAINT `constraint_name` FOREIGN KEY (`column_name`) REFERENCES `table_name` (`column_in_foreign_table`) ON DELETE CASCADE)*/
 
-CREATE TABLE `testdb`.`items` (
+/*CREATE TABLE `testdb`.`items` (
   `itemid` INT NOT NULL,
   `name` VARCHAR(30) NULL,
   `type` VARCHAR(15) NULL DEFAULT 'undefined',
@@ -20,4 +20,7 @@ CREATE TABLE `testdb`.`items` (
   `item_num` INT NOT NULL AUTO_INCREMENT,
   `to_date` TIMESTAMP(3) NULL DEFAULT NULL,
   PRIMARY KEY (`itemid`, `item_num`),
-  UNIQUE INDEX `item_num_UNIQUE` (`item_num` ASC) VISIBLE);
+  UNIQUE INDEX `item_num_UNIQUE` (`item_num` ASC) VISIBLE);*/
+  
+  SELECT description, type, cost, id, to_date FROM agridb.items 
+  WHERE description = 'Male wage' AND to_date IS NULL
