@@ -39,18 +39,18 @@
 		    <a class="nav-link" href="{{ url_for('admin.homepage') }}">Home</a>
 		  </li>
 		  <li class="nav-item dropdown">
-		    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+		    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">User</a>
 		    <div class="dropdown-menu">
-		      <a class="dropdown-item" href="#">Action</a>
-		      <a class="dropdown-item" href="#">Another action</a>
-		      <a class="dropdown-item" href="#">Something else here</a>
-		      <div class="dropdown-divider"></div>
-		      <a class="dropdown-item" href="#">Separated link</a>
+
+		    	<a class="dropdown-item" href="{{ url_for('user.login') }}">Login</a>
+		      	<a class="dropdown-item" href="#">Dashboard</a>
+		      	<a class="dropdown-item" href="{{ url_for('user.add_user') }}">Add</a>
+		      	<a class="dropdown-item" href="#">Search</a>
+		      	<a class="dropdown-item" href="#">Remove</a>
+		      	<div class="dropdown-divider"></div>
+		      	<a class="dropdown-item" href="#">Logout</a>
 		    </div>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="#">Link</a>
-		  </li>
+		  </li>		  
 		  <li class="nav-item">
 		    <a class="nav-link disabled" href="{{ url_for('admin.faq') }}">FAQs</a>
 		  </li>
@@ -67,8 +67,7 @@
 		    <a class="nav-link disabled" href="#">Logout</a>
 		  </li>
 		</ul>		
-	</div>
-	
+	</div>	
 	{% endblock %}
 
 	<div class="col-md-12 mt-1 px-2">
