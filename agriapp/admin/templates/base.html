@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+    <meta name="author" content="Shyam Srinivasan from Bootstap v5.0">
+    <meta name="generator" content="Hugo 0.84.0">
+    
+    <title>
+	{% block title %}
+	{% endblock %}	
+	</title>
+
+	
+	{% block basestyles %}
+	<!-- Bootstrap Min -->
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+	<!-- Core Fontawesome CSS -->
+	<link href="{{ url_for('static', filename='css/fontawesome-free/fontawesome.min.css') }}" rel="stylesheet"/>
+	<!-- Other Fontawesome CSS -->
+	<link href="{{ url_for('static', filename='css/fontawesome-free/regular.min.css') }}" rel="stylesheet"/>
+	<link href="{{ url_for('static', filename='css/fontawesome-free/solid.min.css') }}" rel="stylesheet"/>  
+	{% endblock %}
+
+	{% block styles %}		
+	{% endblock %}	
+</head>
+
+<body>
+	{% block symbols %}		
+	{% endblock %}
+
+	{% block navbar %}	
+	<div class="container-fluid my-1">
+		<ul class="nav nav-pills bg-light">
+		  <li class="nav-item">
+		    <a class="nav-link" href="{{ url_for('admin.homepage') }}">Home</a>
+		  </li>
+		  <li class="nav-item dropdown">
+		    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+		    <div class="dropdown-menu">
+		      <a class="dropdown-item" href="#">Action</a>
+		      <a class="dropdown-item" href="#">Another action</a>
+		      <a class="dropdown-item" href="#">Something else here</a>
+		      <div class="dropdown-divider"></div>
+		      <a class="dropdown-item" href="#">Separated link</a>
+		    </div>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="#">Link</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link disabled" href="{{ url_for('admin.faq') }}">FAQs</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link disabled" href="{{ url_for('admin.about') }}">About</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link disabled" href="{{ url_for('admin.contact_us') }}">Contact</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="{{ url_for('user.login') }}">Login</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link disabled" href="#">Logout</a>
+		  </li>
+		</ul>		
+	</div>
+	
+	{% endblock %}
+
+	<div class="col-md-12 mt-1 px-2">
+		{% with messages = get_flashed_messages(with_categories=True) %}
+			{% if messages %}					
+				{% for category, message in messages %}
+					{% if category == 'error' %}
+					<div class="alert-warning alert alert-dismissible fade show align-text-center " role="alert">
+						<p class="text-center">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
+					</div>
+					{% elif category == 'success' %}
+					<div class="alert-success alert alert-dismissible fade show align-text-center " role="alert">
+						<p class="text-center">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
+					</div>
+					{% elif category == 'primary' %}
+					<div class="alert-primary alert alert-dismissible fade show align-text-center " role="alert">
+						<p class="text-center">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
+					</div>
+					{% else %}
+					<div class="{{ category }} alert alert-dismissible fade show align-text-center " role="alert">
+						<p class="text-center">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
+					</div>
+					{% endif %}					
+				{% endfor %}								
+			{% endif %}
+		{% endwith %}
+
+
+		{% block content %}
+		{% endblock %}
+
+		{% block main %}
+		{% endblock %}
+
+		{% block footer %}
+		{% endblock %}		
+	</div>	
+
+	{% block basescript %}
+	<!-- Bootstrap core JavaScript-->
+	<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>	
+	
+	<!-- Fontawesome core script for icons -->
+	<script src="{{ url_for('static', filename='js/fontawesome-free/fontawesome.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/fontawesome-free/regular.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/fontawesome-free/solid.min.js') }}"></script>
+	{% endblock %}
+
+	{% block script %}
+	{% endblock %}
+
+</body>
+</html>

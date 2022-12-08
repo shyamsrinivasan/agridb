@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+Homepage
+{% endblock %}
+
+{% block styles %}
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+<!--<link href="{{ url_for('static', filename='css/sidebars.css') }}" rel="stylesheet">-->
+<!--<link href="{{ url_for('static', filename='css/home.css') }}" type="text/css" rel="stylesheet" /> -->
+{% endblock %}
+
+{% block content %}
+<!-- Main canvas info banner -->
+<div class="col align-self-start mx-1">
+	<div class="jumbotron p-2 bg-light text-dark rounded">
+		<h1 class="text-center">Demeter Farms Client Management System</h1> 
+		<hr class="my-4">  
+		<p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+	</div>
+</div>
+
+{% endblock %}
