@@ -8,21 +8,20 @@ class SignupForm(FlaskForm):
     """Form to signup as user in application"""
 
     # basic details
-    first_name = StringField('First Name', [DataRequired(message='Please provide your first name')])
-    last_name = StringField('Last Name', [DataRequired(message='Please provide your last name')])
-    email = EmailField('Email', [Email(message='Not a valid email address'), Optional()])
+    firstname = StringField('First Name', [DataRequired(message='Please provide your first name')])
+    lastname = StringField('Last Name', [DataRequired(message='Please provide your last name')])
 
     # login details
     username = StringField('Username', [DataRequired(),
                                         Length(min=6,
                                                message='Your username should be minimum 6 characters')])
-    user_type = SelectField('Employee Type', [DataRequired()], choices=[('Administrator', 'admin'),
-                                                                        ('User', 'user')])
+    type = SelectField('Employee Type', [DataRequired()], choices=[('admin', 'Admin'),
+                                                                   ('user', 'User')], default='user')
     password = PasswordField('Password', [DataRequired(message='Please enter a password'),
                                           Length(min=8,
                                                  message='Password should be at least 8 characters')])
-    confirm_pass = PasswordField('ConfirmPassword', [EqualTo('password',
-                                                             message='Passwords must match')])
+    confirm_pass = PasswordField('Confirm Password', [EqualTo('password',
+                                                              message='Passwords must match')])
 
     # recaptcha = RecaptchaField()
     submit = SubmitField('Sign up')

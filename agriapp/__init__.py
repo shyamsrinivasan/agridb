@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-# from flask_login import LoginManager
-# from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 import os
 from . import config
@@ -11,8 +11,8 @@ from . import config
 db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
-# login_manager = LoginManager()
-# flask_bcrypt = Bcrypt()
+login_manager = LoginManager()
+flask_bcrypt = Bcrypt()
 
 
 def create_app():
@@ -24,10 +24,10 @@ def create_app():
     # app.config.from_pyfile('config.py')
 
     csrf.init_app(app)
-    # login_manager.init_app(app)
-    # login_manager.login_view = 'user.login'
-    # login_manager.login_message = 'Please log in for further access'
-    # login_manager.login_message_category = 'error'
+    login_manager.init_app(app)
+    login_manager.login_view = 'user.login'
+    login_manager.login_message = 'Please log in for further access'
+    login_manager.login_message_category = 'error'
 
     # ensure the instance folder exists
     try:
