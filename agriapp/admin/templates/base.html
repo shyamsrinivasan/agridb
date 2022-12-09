@@ -46,9 +46,11 @@
 		    	{% else %}
 		      	<a class="dropdown-item" href="#">Dashboard</a>
 		      	<a class="dropdown-item" href="{{ url_for('user.add_user') }}">Add</a>
-		      	<a class="dropdown-item" href="#">Search</a>
-		      	<a class="dropdown-item" href="#">Remove</a>
+		      	<a class="dropdown-item disabled" href="#">Search</a>
+		      	<a class="dropdown-item disabled" href="#">Remove</a>
 		      	<div class="dropdown-divider"></div>
+		      	<a class="dropdown-item disabled" href="{{ url_for('user.logout') }}">Profile</a>
+		      	<a class="dropdown-item" href="{{ url_for('user.change_password', username=current_user.username) }}">Change Password</a>
 		      	<a class="dropdown-item" href="{{ url_for('user.logout') }}">Logout</a>
 		      	{% endif %}
 		    </div>

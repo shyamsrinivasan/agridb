@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import user_bp
-from .forms import LoginForm, SignupForm
+from .forms import LoginForm, SignupForm, ChangePassword
 from .models import User, UserLog
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
@@ -102,3 +102,50 @@ def add_user():
         # return redirect(url_for('user.dashboard', username=current_user.username))
 
     return render_template('add_user.html', form=form)
+
+
+@user_bp.route('/<username>/change-password', methods=['GET', 'POST'])
+def change_password(username):
+    """change password for logged in user"""
+    form = ChangePassword()
+    if form.validate_on_submit():
+        old_password = request.form['old_pass']
+        # new_password = request.form['password']
+        # check if current password is correct
+        check_user, user_obj = _check_user_password(username=current_user.username,
+                                                    password=old_password)
+        if check_user:
+            if not _compare_password(current_user.username,
+                                     new_password=request.form['password']):
+                user_obj.set_password(request.form['password'])
+                # user_obj.set_last_update()
+
+                # add user object to session and commit to db
+                db.session.add(user_obj)
+                db.session.commit()
+                flash('Password changed successfully',
+                      category='success')
+                return redirect(url_for('admin.homepage'))
+
+            flash('New password cannot be the same as old password.',
+                  category='error')
+            return render_template('change_password.html', form=form)
+
+        else:
+            flash('Wrong password. Enter correct current password to proceed',
+                  category='error')
+            return redirect(url_for('user.change_password',
+                                    username=current_user.username))
+
+    return render_template('change_password.html', form=form)
+
+
+def _compare_password(username, new_password):
+    """compare old and new password hashes"""
+    user_obj = db.session.query(User).filter(User.username == username).first()
+    if user_obj is not None:
+        if flask_bcrypt.check_password_hash(user_obj.password_hash, new_password.encode('utf-8')):
+            return True
+        else:
+            return False
+    return False
