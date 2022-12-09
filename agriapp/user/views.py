@@ -71,6 +71,10 @@ def add_user():
     user_obj = User()
     form = SignupForm(obj=user_obj)
 
+    # curr_user_obj = db.session.query(User).filter(User.username == current_user.username,
+    #                                               User.type == 'admin').first()
+    # if curr_user_obj is not None:
+
     if form.validate_on_submit():
         # process sign-up information using func into db add info to db here
         # generate user object
