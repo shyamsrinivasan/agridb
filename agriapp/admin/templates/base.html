@@ -41,14 +41,16 @@
 		  <li class="nav-item dropdown">
 		    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">User</a>
 		    <div class="dropdown-menu">
-
-		    	<a class="dropdown-item" href="{{ url_for('user.login') }}">Login</a>
+		    	{% if current_user.is_anonymous %}
+		    	<a class="dropdown-item" href="{{ url_for('user.login') }}"><i class="fa-solid fa-user fa-fw"></i>&nbsp;Login</a>
+		    	{% else %}
 		      	<a class="dropdown-item" href="#">Dashboard</a>
 		      	<a class="dropdown-item" href="{{ url_for('user.add_user') }}">Add</a>
 		      	<a class="dropdown-item" href="#">Search</a>
 		      	<a class="dropdown-item" href="#">Remove</a>
 		      	<div class="dropdown-divider"></div>
-		      	<a class="dropdown-item" href="#">Logout</a>
+		      	<a class="dropdown-item" href="{{ url_for('user.logout') }}">Logout</a>
+		      	{% endif %}
 		    </div>
 		  </li>		  
 		  <li class="nav-item">
@@ -60,12 +62,15 @@
 		  <li class="nav-item">
 		    <a class="nav-link disabled" href="{{ url_for('admin.contact_us') }}">Contact</a>
 		  </li>
+		  {% if current_user.is_anonymous %}
 		  <li class="nav-item">
 		    <a class="nav-link" href="{{ url_for('user.login') }}">Login</a>
 		  </li>
+		  {% else %}
 		  <li class="nav-item">
-		    <a class="nav-link disabled" href="#">Logout</a>
+		    <a class="nav-link" href="{{ url_for('user.logout') }}">Logout</a>
 		  </li>
+		  {% endif %}
 		</ul>		
 	</div>	
 	{% endblock %}

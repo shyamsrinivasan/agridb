@@ -48,7 +48,7 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"User(id={self.id!r}, name={self.fullname!r}, username={self.username!r}," \
-               f"type={self.type!r}, phone={self.phone!r})"
+               f"type={self.type!r})"
 
 
 @login_manager.user_loader
@@ -60,12 +60,13 @@ class UserLog(db.Model):
     __tablename__ = 'userlogs'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.String(20), db.ForeignKey('users.username', onupdate='CASCADE',
-                                                    ondelete='CASCADE'),
-                          nullable=False)
+    userid = db.Column(db.Integer)
+    username = db.Column(db.String(20), db.ForeignKey('users.username', onupdate='CASCADE',
+                                                      ondelete='CASCADE'),
+                         nullable=False)
     last_login = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
 
     def __repr__(self):
-        return f"User(id={self.id!r}, username={self.user_name!r}, " \
+        return f"User(id={self.userid!r}, username={self.username!r}, " \
                f"LastLogin={self.last_login!r})"
 
