@@ -5,6 +5,8 @@ class Fields(db.Model):
     __tablename__ = "fields"
 
     id = db.Column(db.Integer, primary_key=True)
+    model_id = db.Column(db.Integer, db.ForeignKey('fieldmodel.id',
+                                                   ondelete='CASCADE'))
     geotag = db.Column(db.String(30))
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', name='field_location'),
@@ -21,6 +23,16 @@ class Fields(db.Model):
                f"extent={self.extent!r})"
 
 
+class FieldModel(db.Model):
+    __tablename__ = "fieldmodel"
+
+    id = db.Column(db.Integer, primary_key=True)
+    fields = db.relationship('Fields')
+
+    def __repr__(self):
+        return f"FieldModel(id={self.id!r}, fields={self.fields!r})"
+
+
 class Equipments(db.Model):
     """all equipments (including water pumps)"""
 
@@ -32,8 +44,10 @@ class Equipments(db.Model):
                              name='equipment_type'), default='transplanter',
                      nullable=False)
     geotag = db.Column(db.String(30))
-    location = db.Column(db.Enum('tgudi', 'tpuram', 'none', name='field_location'),
-                         default='none')
+    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                                 'mannamuti', 'none', name='field_location'),
+                         default='none',
+                         nullable=False, index=True)
     last_service = db.Column(db.Date, onupdate=db.func.now())
 
     def __repr__(self):
@@ -55,15 +69,15 @@ class Yield(db.Model):
     bag_weight = db.Column(db.Float)
     bag_rate = db.Column(db.Float)
     buyer = db.Column(db.String(15))
+    income = db.Column(db.Float)
+    weight = db.Column(db.Float)
 
-    @db.hybrid_property
-    def income(self):
-        return self.bags * self.bag_rate
+    def set_income(self):
+        self.income = self.bags * self.bag_rate
 
-    @db.hybrid_property
-    def weight(self):
+    def set_weight(self):
         """yield in tonnes"""
-        return self.bags * self.bag_weight / 1000
+        self.weight = self.bags * self.bag_weight / 1000
 
     def __repr__(self):
         return f"Yield(id={self.id!r}, sowing_id={self.sowing_id!r}, bags={self.bags!r}, " \
@@ -74,8 +88,10 @@ class Account(db.Model):
     __tablename__ = "account"
 
     id = db.Column(db.Integer, primary_key=True)
-    field = db.Column(db.String(10), db.ForeignKey('fields.location', onupdate='CASCADE',
-                                                   ondelete='CASCADE'),
+    field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                              'mannamuti', name='field_location'),
+                      db.ForeignKey('fields.location', onupdate='CASCADE',
+                                    ondelete='CASCADE'),
                       index=True)
     type = db.Column(db.Enum('expense', 'income', name='expense_type'),
                      default='expense')
@@ -94,10 +110,10 @@ class Account(db.Model):
     item = db.Column(db.String(15))
     rate = db.Column(db.Float)
     quantity = db.Column(db.Float)
+    cost = db.Column(db.Float)
 
-    @db.hybrid_property
-    def cost(self):
-        return self.rate * self.quantity
+    def set_cost(self):
+        self.cost = self.rate * self.quantity
 
     def __repr__(self):
         return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
@@ -111,8 +127,10 @@ class Sowing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.String(4), nullable=False, index=True)
     season = db.Column(db.String(10), nullable=False, index=True)
-    location = db.Column(db.String(10), db.ForeignKey('fields.location', onupdate='CASCADE',
-                                                      ondelete='CASCADE'),
+    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                                 'mannamuti', name='field_location'),
+                         db.ForeignKey('fields.location', onupdate='CASCADE',
+                                       ondelete='CASCADE'),
                          index=True)
     variety = db.Column(db.String(10))
     field_area = db.Column(db.Float)
