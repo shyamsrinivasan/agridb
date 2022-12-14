@@ -28,7 +28,7 @@ class Fields(db.Model):
                                  'mannamuti', name='field_location'),
                          default='tgudi',
                          nullable=False, index=True)
-    extent = db.Column(db.Float)
+    field_extent = db.Column(db.Float)
 
     field_lands = db.relationship('Lands')
 
