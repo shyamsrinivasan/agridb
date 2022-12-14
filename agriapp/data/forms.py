@@ -34,10 +34,18 @@ class FieldEntry(FlaskForm):
     """form to enter field information in html page"""
 
     fields = FormField(FieldsForm, default=lambda: Fields())
-    # fields = FormField(FieldsForm)
     field_lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
 
     submit = SubmitField('Add Field')
+
+
+class FieldModify(FlaskForm):   # change class to LandEntry
+    """modify field information by adding lands to given field"""
+
+    fields = FormField(FieldsForm, default=lambda: Fields())
+    field_lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
+
+    submit = SubmitField('Add Land(s) to Field')
 
 
 class LandEntry(FlaskForm):
@@ -50,9 +58,11 @@ class LandEntry(FlaskForm):
                                                                         ('mannamuti', 'Mannamutti'),
                                                                         ('none', 'Not Applicable')],
                                  default='tgudi')
-    lands = FormField(LandsForm)
 
-    submit = SubmitField('Add Land')
+    # lands = FormField(LandsForm)
+    lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
+
+    submit = SubmitField('Add Land(s) to Field')
 
 
 class YieldEntry(FlaskForm):
