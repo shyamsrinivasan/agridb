@@ -56,11 +56,28 @@
 		    </div>
 		  </li>		
 		  <li class="nav-item dropdowm">
-		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Data</a>
+		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Add Data</a>
 		  	<div class="dropdown-menu">
-		  		<a class="dropdown-item" href="{{ url_for('data.add_field') }}">Add field</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.add_field') }}">Field</a>
+		  		<a class="dropdown-item" href="#">Land</a>
+		  		<a class="dropdown-item" href="#">Equipment</a>
+		  		<a class="dropdown-item" href="#">Sowing</a>
+		  		<a class="dropdown-item" href="#">Yield</a>
 		  	</div>		  	
 		  </li>  
+		  {% if current_user.is_anonymous %}
+		  {% else %}
+		  <li class="nav-item dropdowm">
+		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Remove Data</a>
+		  	<div class="dropdown-menu">
+		  		<a class="dropdown-item" href="{{ url_for('data.remove_field') }}">Field</a>
+		  		<a class="dropdown-item" href="#">Land</a>
+		  		<a class="dropdown-item" href="#">Equipment</a>
+		  		<a class="dropdown-item" href="#">Sowing</a>
+		  		<a class="dropdown-item" href="#">Yield</a>
+		  	</div>		  	
+		  </li>  
+		  {% endif %}
 		  <li class="nav-item">
 		    <a class="nav-link disabled" href="{{ url_for('admin.faq') }}">FAQs</a>
 		  </li>

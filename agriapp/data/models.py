@@ -1,24 +1,6 @@
 from agriapp import db
 
 
-# class FieldModel(db.Model):
-#     __tablename__ = "fieldmodel"
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     fields = db.relationship('Fields')
-#
-#     def __repr__(self):
-#         return f"FieldModel(id={self.id!r}, fields={self.fields!r})"
-#
-#
-# class LandModel(db.Model):
-#     __tablename__ = "landmodel"
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     lands = db.relationship('Lands')
-#
-#     def __repr__(self):
-#         return f"LandModel(id={self.id!r}, lands={self.lands!r})"
 class Fields(db.Model):
     """table of basic fields with locations"""
 
@@ -34,7 +16,7 @@ class Fields(db.Model):
 
     def __repr__(self):
         return f"Fields(id={self.id!r}, location={self.location!r}, " \
-               f"extent={self.extent!r})"
+               f"extent={self.field_extent!r})"
 
 
 class Lands(db.Model):

@@ -3,13 +3,12 @@ from wtforms import StringField, SelectField, DecimalField, DateField
 from wtforms import RadioField, IntegerField, HiddenField, SubmitField
 from wtforms import FormField, FieldList
 from wtforms.validators import DataRequired, Length, Optional, NumberRange
-from .models import Fields
+from .models import Fields, Lands
 
 
 class FieldsForm(FlaskForm):
-    """form to enter field information as part of FieldList"""
+    """form to enter field information as part of FormField"""
 
-    geotag = StringField('GeoTag', [Optional()])
     location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
                                                                   ('pallachi', 'Pallachi'),
                                                                   ('potteri', 'Potteri'),
@@ -17,8 +16,15 @@ class FieldsForm(FlaskForm):
                                                                   ('mannamuti', 'Mannamutti'),
                                                                   ('none', 'Not Applicable')],
                            default='tgudi')
-    extent = DecimalField('Extent', [Optional()], places=1, rounding=None, default=0.0)
-    nickname = StringField('Nickname', [DataRequired()])
+    field_extent = DecimalField('Extent (Acres)', [DataRequired()], places=1, rounding=None, default=0.0)
+    # nickname = StringField('Nickname', [DataRequired()])
+
+
+class LandsForm(FlaskForm):
+    """form to enter land information as part of FieldList and FormField"""
+
+    extent = DecimalField('Extent', [DataRequired()], places=1, rounding=None, default=0.0)
+    geotag = StringField('GeoTag', [Optional()])
     owner = StringField('Owner', [Optional()])
     survey = StringField('Survey #', [Optional()])
     deed = StringField('Deed #', [Optional()])
@@ -27,10 +33,26 @@ class FieldsForm(FlaskForm):
 class FieldEntry(FlaskForm):
     """form to enter field information in html page"""
 
-    # id = IntegerField('ID', [DataRequired(message='entry id required')])
-    fields = FieldList(FormField(FieldsForm, default=lambda: Fields()))
+    fields = FormField(FieldsForm, default=lambda: Fields())
+    # fields = FormField(FieldsForm)
+    field_lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
 
     submit = SubmitField('Add Field')
+
+
+class LandEntry(FlaskForm):
+    """form to enter land info separately from field info"""
+
+    field_location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
+                                                                        ('pallachi', 'Pallachi'),
+                                                                        ('potteri', 'Potteri'),
+                                                                        ('pokonanthoki', 'Pokananthoki'),
+                                                                        ('mannamuti', 'Mannamutti'),
+                                                                        ('none', 'Not Applicable')],
+                                 default='tgudi')
+    lands = FormField(LandsForm)
+
+    submit = SubmitField('Add Land')
 
 
 class YieldEntry(FlaskForm):

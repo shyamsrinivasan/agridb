@@ -1,26 +1,40 @@
 from flask import render_template, redirect, url_for, flash
+from flask import request
 from . import data_bp
 from .forms import FieldEntry
-from .models import Fields, FieldModel
+from .models import Fields, Lands
 from agriapp import db
 
 
-@data_bp.route('/add-field', methods=['GET', 'POST'])
+@data_bp.route('/add/field', methods=['GET', 'POST'])
 def add_field():
     """add field data to agri db"""
 
     # empty field_obj to get first box in html
-    field_obj = FieldModel()
-    # field_obj = Fields(location='tgudi', extent=0.0, nickname='field 1')
-    if field_obj is None or len(field_obj.fields) == 0:
-        field_obj.fields = [Fields(nickname='field 1')]
+    field_obj = Fields()
+    if field_obj is None or len(field_obj.field_lands) == 0:
+        field_obj.field_lands = [Lands(field_location='tgudi', extent=0.1, owner='nobody',
+                                       survey='1/1', deed='1/1')]
 
     form = FieldEntry(obj=field_obj)
     if form.validate_on_submit():
-        flash(message='form validated', category='info')
+        form.populate_obj(field_obj)
+        new_obj = field_obj.fields
+        new_obj.field_lands = field_obj.field_lands
+
+        db.session.add(new_obj)
+        db.session.commit()
+
+        flash(message='New field successfully added to database', category='success')
         return redirect(url_for('admin.homepage'))
 
     return render_template('add_field.html', form=form)
+
+
+@data_bp.route('/remove/field', methods=['GET', 'POST'])
+def remove_field():
+    """remove field from db"""
+    return render_template('remove_field.html')
 
 
 @data_bp.route('/add-yield', methods=['GET', 'POST'])

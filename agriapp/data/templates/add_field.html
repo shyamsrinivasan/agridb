@@ -13,39 +13,44 @@ Multi Model Dynamic Form
     <form action="#", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
     	{{ form.csrf_token() }}
 
-    	<div data-toggle="fieldset" class="col mt-1" id="phone-fieldset">
-            <span>Add field&nbsp;<button type="button" class="btn btn-warning my-1" data-toggle="fieldset-add-row" data-target="#phone-fieldset">+</button></span>
+        <!-- row 1-->
+        <div class="row">
+            <div class="form-group col">
+                {{ form.fields.location.label }}
+                {{ form.fields.location(class="form-control", id="floatingInput") }}
+                {% for error in form.fields.location.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>    
+            <div class="form-group col">
+                {{ form.fields.field_extent.label }}
+                {{ form.fields.field_extent(class="form-control", id="floatingInput", placeholder="0.0") }}
+                {% for error in form.fields.field_extent.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>           
+        </div>
 
-            {% for member in form.fields %}
-            <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry">  
+    	<!-- row 2 -->
+        <div data-toggle="fieldset" class="col mt-1" id="phone-fieldset">
+            <span>Add land&nbsp;<button type="button" class="btn btn-warning my-1" data-toggle="fieldset-add-row" data-target="#phone-fieldset">+</button></span>
+
+            {% for member in form.field_lands %}
+            <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry"> 
+                <div class="col">
+                    {{ member.extent.label }}
+                    {{ member.extent(class="form-control", placeholder="0.0") }}     
+                    {% for err in member.extent.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}                              
+                </div> 
                 <div class="col">
                 	{{ member.geotag.label }}
                     {{ member.geotag(class="form-control", palceholder="geo tag") }}
                     {% for err in member.geotag.errors %}
                     <small class="form-text text-muted">{{ err }}</small>
                     {% endfor %}
-                </div>
-                <div class="col-md-2">
-                	{{ member.location.label }}
-                    {{ member.location(class="form-control") }}     
-                    {% for err in member.location.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
-                </div>
-                <div class="col">
-                	{{ member.extent.label }}
-                    {{ member.extent(class="form-control", placeholder="0.0") }}     
-                    {% for err in member.extent.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
-                </div>
-                <div class="col">
-                	{{ member.nickname.label }}
-                    {{ member.nickname(class="form-control", placeholder="field 2a") }}     
-                    {% for err in member.nickname.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
-                </div>
+                </div>                 
                 <div class="col">
                 	{{ member.owner.label }}
                     {{ member.owner(class="form-control", placeholder="nobody") }}     
@@ -69,7 +74,7 @@ Multi Model Dynamic Form
                 </div>
 
                 <div class="col mt-4">
-                    <!-- remove row button -->                
+                    <!-- remove row button -->               
                     <button class="btn btn-warning" type="button" data-toggle="fieldset-remove-row" id="item-{{loop.index0}}-remove">-</button>
                 </div>                              
             </div>
