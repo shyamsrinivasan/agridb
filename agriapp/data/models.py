@@ -1,36 +1,60 @@
 from agriapp import db
 
 
+# class FieldModel(db.Model):
+#     __tablename__ = "fieldmodel"
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     fields = db.relationship('Fields')
+#
+#     def __repr__(self):
+#         return f"FieldModel(id={self.id!r}, fields={self.fields!r})"
+#
+#
+# class LandModel(db.Model):
+#     __tablename__ = "landmodel"
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     lands = db.relationship('Lands')
+#
+#     def __repr__(self):
+#         return f"LandModel(id={self.id!r}, lands={self.lands!r})"
 class Fields(db.Model):
-    __tablename__ = "fields"
+    """table of basic fields with locations"""
 
+    __tablename__ = "fields"
     id = db.Column(db.Integer, primary_key=True)
-    model_id = db.Column(db.Integer, db.ForeignKey('fieldmodel.id',
-                                                   ondelete='CASCADE'))
-    geotag = db.Column(db.String(30))
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', name='field_location'),
                          default='tgudi',
                          nullable=False, index=True)
     extent = db.Column(db.Float)
-    nickname = db.Column(db.String(10), nullable=False, index=True)
+
+    field_lands = db.relationship('Lands')
+
+    def __repr__(self):
+        return f"Fields(id={self.id!r}, location={self.location!r}, " \
+               f"extent={self.extent!r})"
+
+
+class Lands(db.Model):
+    """table of all formal lands (uses fields as FK)"""
+
+    __tablename__ = "lands"
+    id = db.Column(db.Integer, primary_key=True)
+    field_location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                                       'mannamuti', name='field_location'),
+                               db.ForeignKey('fields.location', ondelete='CASCADE',
+                                             onupdate='CASCADE'))
+    extent = db.Column(db.Float)
+    geotag = db.Column(db.String(15))
     owner = db.Column(db.String(30))
     survey = db.Column(db.String(10))
     deed = db.Column(db.String(10))
 
     def __repr__(self):
-        return f"Fields(id={self.id!r}, location={self.location!r}, nickname={self.nickname!r}," \
-               f"extent={self.extent!r})"
-
-
-class FieldModel(db.Model):
-    __tablename__ = "fieldmodel"
-
-    id = db.Column(db.Integer, primary_key=True)
-    fields = db.relationship('Fields')
-
-    def __repr__(self):
-        return f"FieldModel(id={self.id!r}, fields={self.fields!r})"
+        return f"Lands(id={self.id!r}, location={self.field_location!r}, " \
+               f"extent={self.extent!r}, survey={self.survey!r}, deed={self.deed!r})"
 
 
 class Equipments(db.Model):
