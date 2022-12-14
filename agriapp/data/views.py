@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import data_bp
-from .forms import FieldEntry
+from .forms import FieldEntry, LandEntry
 from .models import Fields, Lands
 from agriapp import db
 
@@ -25,7 +25,7 @@ def add_field():
         db.session.add(new_obj)
         db.session.commit()
 
-        flash(message='New field successfully added to database', category='success')
+        flash(message='New field with lands successfully added to database', category='success')
         return redirect(url_for('admin.homepage'))
 
     return render_template('add_field.html', form=form)
@@ -35,6 +35,29 @@ def add_field():
 def remove_field():
     """remove field from db"""
     return render_template('remove_field.html')
+
+
+@data_bp.route('/add/sowing', methods=['GET', 'POST'])
+def add_sowing():
+    """add sowing data"""
+    return render_template('add_sowing.html')
+
+
+@data_bp.route('/add/lands', methods=['GET', 'POST'])
+def add_land():
+    """add land info to go with field info"""
+
+    field_obj = Fields()
+    field_obj.field_lands = [Lands(field_location='tgudi', extent=0.1, owner='nobody',
+                                   survey='1/1', deed='1/1')]
+
+    form = LandEntry(obj=field_obj)
+    if form.validate_on_submit():
+
+        flash(message='New lands successfully added to given fields', category='success')
+        return redirect(url_for('admin.homepage'))
+
+    return render_template('add_land.html', form=form)
 
 
 @data_bp.route('/add-yield', methods=['GET', 'POST'])
