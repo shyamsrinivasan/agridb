@@ -10,7 +10,7 @@ Add Fields
       <p class="fs-4">Enter field information</p>
     </div>
 
-    <form action="#", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+    <form action="{{ url_for('data.add_field') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
     	{{ form.csrf_token() }}
 
         <!-- row 1-->
