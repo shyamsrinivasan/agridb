@@ -22,6 +22,13 @@ def add_field():
         new_obj = field_obj.fields
         new_obj.field_lands = field_obj.field_lands
 
+        # check if field is present
+        if new_obj.is_present():
+            # check if land is present
+
+            flash(message='Field {} already present. Cannot be added'.format(new_obj.location), category='error')
+            return redirect(url_for('data.add_field'))
+
         db.session.add(new_obj)
         db.session.commit()
 
@@ -29,6 +36,16 @@ def add_field():
         return redirect(url_for('admin.homepage'))
 
     return render_template('add_field.html', form=form)
+
+
+# def check_land_present(land_objs):
+#     """check if all given land objects are present in db"""
+#
+#     survey_check = [obj.survey_present() for obj in land_objs]
+#     deed_check = [obj.deed_present() for obj in land_objs]
+#     # survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
+#     for obj in land_objs:
+#         survey_present, deed_present = obj.is_present()
 
 
 @data_bp.route('/remove/field', methods=['GET', 'POST'])

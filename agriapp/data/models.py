@@ -18,6 +18,13 @@ class Fields(db.Model):
         return f"Fields(id={self.id!r}, location={self.location!r}, " \
                f"extent={self.field_extent!r})"
 
+    def is_present(self):
+        field_obj = db.session.query(Fields).filter(Fields.location == self.location).first()
+        if field_obj and field_obj is not None:
+            return True
+        else:
+            return False
+
 
 class Lands(db.Model):
     """table of all formal lands (uses fields as FK)"""
@@ -37,6 +44,31 @@ class Lands(db.Model):
     def __repr__(self):
         return f"Lands(id={self.id!r}, location={self.field_location!r}, " \
                f"extent={self.extent!r}, survey={self.survey!r}, deed={self.deed!r})"
+
+    def survey_present(self):
+        survey_test = db.session.query(Lands).filter(Lands.field_location == self.field_location,
+                                                     Lands.survey == self.survey).all()
+        if survey_test and survey_test is not None:
+            return True
+        else:
+            return False
+
+    def deed_present(self):
+        deed_test = db.session.query(Lands).filter(Lands.field_location == self.field_location,
+                                                   Lands.deed == self.deed).all()
+        if deed_test and deed_test is not None:
+            return True
+        else:
+            return False
+
+    def survey_deed_present(self):
+        test_obj = db.session.query(Lands).filter(Lands.field_location == self.field_location,
+                                                  Lands.survey == self.survey,
+                                                  Lands.deed == self.deed).all()
+        if test_obj and test_obj is not None:
+            return True
+        else:
+            return False
 
 
 class Equipments(db.Model):
