@@ -68,8 +68,10 @@ def select_field(category):
     if form.validate_on_submit():
         location = request.form['location']
         field_obj = db.session.query(Fields).filter(Fields.location == location).first()
-        if field_obj is not None:
+
+        if field_obj is not None:   # if field is present
             if category == 'land':
+                # add land for existing field
                 flash(message='Add lands to fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.add_land', location=location))
 
@@ -99,7 +101,7 @@ def add_land(location):
 
         if form.validate_on_submit():
 
-            # check if provided is not altered
+            # check if provided data is not altered
             if request.form['field_location'] != field_obj.location:
                 form.field_location.data = field_obj.location
             if request.form['field_extent'] != field_obj.field_extent:
@@ -107,16 +109,31 @@ def add_land(location):
 
             form.populate_obj(field_obj)
 
+            unadded_lands = []
             for lands in field_obj.field_lands:
                 # change location in child relationship object
                 if lands.field_location != field_obj.location:
                     lands.field_location = field_obj.location
 
-                # add child object to db session and commit changes
-                db.session.add(lands)
-                db.session.commit()
+                # check if land is present
+                if not lands.survey_deed_present():
+                    # add child object to db session and commit changes
+                    db.session.add(lands)
+                    db.session.commit()
+                else:
+                    unadded_lands.append(lands)
 
-            flash(message='New lands successfully added to {} fields'.format(location), category='success')
+            if unadded_lands:
+                unadded_survey = [(unadded_land_obj.survey,
+                                   unadded_land_obj.deed)
+                                  for unadded_land_obj in unadded_lands]
+                flash(message='Lands at {} with survey # {} '
+                              'already present'.format(location, unadded_survey),
+                      category='error')
+                return render_template('add_land.html', form=form, location=location)
+
+            flash(message='New lands successfully added to {} fields'.format(location),
+                  category='success')
             return redirect(url_for('admin.homepage'))
 
         form.field_location.data = field_obj.location
