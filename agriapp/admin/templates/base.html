@@ -105,7 +105,7 @@
 			{% if messages %}					
 				{% for category, message in messages %}
 					{% if category == 'error' %}
-					<div class="alert-warning alert alert-dismissible fade show align-text-center " role="alert">
+					<div class="alert-danger alert alert-dismissible fade show align-text-center " role="alert">
 						<p class="text-center">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
 					</div>
 					{% elif category == 'success' %}
