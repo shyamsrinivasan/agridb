@@ -22,12 +22,18 @@ def add_field():
         new_obj = field_obj.fields
         new_obj.field_lands = field_obj.field_lands
 
-        # check if field is present
-        if new_obj.is_present():
+        if new_obj.is_present():    # check if field is present
             # check if land is present
+            survey_deed_check = check_land_present(new_obj.field_lands)
+            if all(survey_deed_check):
+                flash(message='Field {} and all lands already present. '
+                              'Cannot be added'.format(new_obj.location), category='error')
+                return redirect(url_for('data.add_field'))
 
-            flash(message='Field {} already present. Cannot be added'.format(new_obj.location), category='error')
-            return redirect(url_for('data.add_field'))
+            flash(message='Field {} already present. '
+                          'Add lands to fields.'.format(new_obj.location), category='error')
+            return redirect(url_for('admin.homepage'))
+            # return redirect(url_for('data.add_land', location=new_obj.location))
 
         db.session.add(new_obj)
         db.session.commit()
@@ -38,14 +44,15 @@ def add_field():
     return render_template('add_field.html', form=form)
 
 
-# def check_land_present(land_objs):
-#     """check if all given land objects are present in db"""
-#
-#     survey_check = [obj.survey_present() for obj in land_objs]
-#     deed_check = [obj.deed_present() for obj in land_objs]
-#     # survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
-#     for obj in land_objs:
-#         survey_present, deed_present = obj.is_present()
+def check_land_present(land_objs):
+    """check if all given land objects are present in db"""
+
+    survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
+    # deed_check = [obj.deed_present() for obj in land_objs]
+    # survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
+    # for obj in land_objs:
+    #     survey_present, deed_present = obj.is_present()
+    return survey_deed_check
 
 
 @data_bp.route('/remove/field', methods=['GET', 'POST'])
@@ -116,7 +123,7 @@ def add_land(location):
                     lands.field_location = field_obj.location
 
                 # check if land is present
-                if not lands.survey_deed_present():
+                # if not lands.survey_deed_present():
                     # add child object to db session and commit changes
                     db.session.add(lands)
                     db.session.commit()
