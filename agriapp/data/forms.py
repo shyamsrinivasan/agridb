@@ -39,28 +39,27 @@ class FieldEntry(FlaskForm):
     submit = SubmitField('Add Field')
 
 
-class FieldModify(FlaskForm):   # change class to LandEntry
+class SelectFieldLocation(FlaskForm):
     """modify field information by adding lands to given field"""
 
-    fields = FormField(FieldsForm, default=lambda: Fields())
-    field_lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
+    location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
+                                                                  ('pallachi', 'Pallachi'),
+                                                                  ('potteri', 'Potteri'),
+                                                                  ('pokonanthoki', 'Pokananthoki'),
+                                                                  ('mannamuti', 'Mannamutti'),
+                                                                  ('none', 'Not Applicable')],
+                           default='tgudi')
 
-    submit = SubmitField('Add Land(s) to Field')
+    submit = SubmitField('Select Field Location')
 
 
 class LandEntry(FlaskForm):
     """form to enter land info separately from field info"""
 
-    field_location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
-                                                                        ('pallachi', 'Pallachi'),
-                                                                        ('potteri', 'Potteri'),
-                                                                        ('pokonanthoki', 'Pokananthoki'),
-                                                                        ('mannamuti', 'Mannamutti'),
-                                                                        ('none', 'Not Applicable')],
-                                 default='tgudi')
+    field_location = StringField('Location', [DataRequired()])
+    field_extent = StringField('Extent (Acres)', [DataRequired()])
 
-    # lands = FormField(LandsForm)
-    lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
+    field_lands = FieldList(FormField(LandsForm, default=lambda: Lands()))
 
     submit = SubmitField('Add Land(s) to Field')
 
