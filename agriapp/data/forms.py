@@ -64,6 +64,34 @@ class LandEntry(FlaskForm):
     submit = SubmitField('Add Land(s) to Field')
 
 
+class SowingEntry(FlaskForm):
+    """form to enter owing information"""
+
+    year = DateField('Year', [DataRequired(message='Enter year of sowing')])
+    season = RadioField('Season', choices=[('summer', 'Kuruvai'),
+                                           ('monsoon', 'Thaaladi')],
+                        default='summer')
+    location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
+                                                ('pallachi', 'Pallachi'),
+                                                ('potteri', 'Potteri'),
+                                                ('pokonanthoki', 'Pokananthoki'),
+                                                ('mannamuti', 'Mannamutti')],
+                           default='tgudi')
+    variety = StringField('Seed variety', [DataRequired(message='Seed variety required')])
+    field_area = DecimalField('Area sown (acres)', [DataRequired(message='Enter area in acres')])
+    bags = IntegerField('Seed bags sown', [DataRequired(message='# seed bags sown'),
+                                           NumberRange(max=9999, message='# bags cannot be over 9999')],
+                        default=0)
+    sowing_date = DateField('Date Sown', [DataRequired(message='Date of sowing required')])
+    duration = IntegerField('Typical Crop Duration (days)',
+                            [DataRequired(message='Total crop duration in days required'),
+                             NumberRange(min=0, max=200,
+                                         message='Crop duration should be < 200 days')],
+                            default=120)
+
+    submit = SubmitField('Add Sowing Data')
+
+
 class YieldEntry(FlaskForm):
     """form to yield information"""
 
@@ -105,30 +133,4 @@ class EquipmentEntry(FlaskForm):
 
 class ExpenseEntry(FlaskForm):
     """form to enter expense information"""
-
-
-class SowingEntry(FlaskForm):
-    """form to enter owing information"""
-
-    year = DateField('Year', [DataRequired(message='Enter year of sowing')])
-    season = RadioField('Season', choices=[('summer', 'Kuruvai'),
-                                           ('monsoon', 'Thaaladi')],
-                        default='summer')
-    location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
-                                                ('pallachi', 'Pallachi'),
-                                                ('potteri', 'Potteri'),
-                                                ('pokonanthoki', 'Pokananthoki'),
-                                                ('mannamuti', 'Mannamutti')],
-                           default='tgudi')
-    variety = StringField('Seed variety', [DataRequired(message='Seed variety required')])
-    field_area = DecimalField('Area sown (acres)', [DataRequired(message='Enter area in acres')])
-    bags = IntegerField('Seed bags sown', [DataRequired(message='# seed bags sown'),
-                                           NumberRange(max=9999, message='# bags cannot be over 9999')],
-                        default=0)
-    sowing_date = DateField('Date Sown', [DataRequired(message='Date of sowing required')])
-    duration = IntegerField('Typical Crop Duration (days)',
-                            [DataRequired(message='Total crop duration in days required'),
-                             NumberRange(min=0, max=200,
-                                         message='Crop duration should be < 200 days')],
-                            default=120)
 

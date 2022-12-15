@@ -71,6 +71,33 @@ class Lands(db.Model):
             return False
 
 
+class Sowing(db.Model):
+    __tablename__ = "sowing"
+
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.String(4), nullable=False, index=True)
+    season = db.Column(db.String(10), nullable=False, index=True)
+    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                                 'mannamuti', name='field_location'),
+                         db.ForeignKey('fields.location', onupdate='CASCADE',
+                                       ondelete='CASCADE'),
+                         index=True)
+    variety = db.Column(db.String(10))
+    field_area = db.Column(db.Float)
+    bags = db.Column(db.Integer)
+    sowing_date = db.Column(db.Date)
+    expected_harvest = db.Column(db.Date)
+
+    def calculate_harvest(self, days):
+        self.expected_harvest = self.sowing_date + days
+
+    def __repr__(self):
+        return f"Sowing(id={self.id!r}, year={self.year!r}, season={self.season!r}, " \
+               f"location={self.location!r}, variety={self.variety!r}" \
+               f"bags={self.bags!r}, sowed_on={self.sowing_date!r}, " \
+               f"harvest={self.expected_harvest!r})"
+
+
 class Equipments(db.Model):
     """all equipments (including water pumps)"""
 
@@ -157,32 +184,3 @@ class Account(db.Model):
         return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
                f"operation={self.operation!r}, field={self.field!r}" \
                f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
-
-
-class Sowing(db.Model):
-    __tablename__ = "sowing"
-
-    id = db.Column(db.Integer, primary_key=True)
-    year = db.Column(db.String(4), nullable=False, index=True)
-    season = db.Column(db.String(10), nullable=False, index=True)
-    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                 'mannamuti', name='field_location'),
-                         db.ForeignKey('fields.location', onupdate='CASCADE',
-                                       ondelete='CASCADE'),
-                         index=True)
-    variety = db.Column(db.String(10))
-    field_area = db.Column(db.Float)
-    bags = db.Column(db.Integer)
-    sowing_date = db.Column(db.Date)
-    expected_harvest = db.Column(db.Date)
-
-    def calculate_harvest(self, days):
-        self.expected_harvest = self.sowing_date + days
-
-    def __repr__(self):
-        return f"Sowing(id={self.id!r}, year={self.year!r}, season={self.season!r}, " \
-               f"location={self.location!r}, variety={self.variety!r}" \
-               f"bags={self.bags!r}, sowed_on={self.sowing_date!r}, " \
-               f"harvest={self.expected_harvest!r})"
-
-

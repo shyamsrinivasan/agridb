@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Lands
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+	<div class="col text-center">      
+      <p class="fs-4">Enter field information</p>
+    </div>
+
+    <form action="{{ url_for('data.add_sowing') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+    	{{ form.csrf_token() }}
+
+        <!-- row 1-->
+        <div class="row mb-2">
+            <div class="form-group col">
+                {{ form.year.label }}
+                {{ form.year(class="form-control", id="floatingInput") }}
+                {% for error in form.year.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div> 
+            <div class="form-group col">
+                {{ form.season.label }}
+                {{ form.season(class="form-control", id="floatingInput") }}
+                {% for error in form.season.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>          
+        </div>
+
+    	<!-- row 2 -->
+        <div class="row mb-2">
+            <div class="form-group col">
+                {{ form.location.label }}
+                {{ form.location(class="form-control", id="floatingInput") }}
+                {% for error in form.location.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>              
+            <div class="form-group col">
+                {{ form.field_area.label }}
+                {{ form.field_area(class="form-control", id="floatingInput") }}
+                {% for error in form.field_area.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>             
+        </div>
+
+        <!-- row 3 -->
+        <div class="row mb-2">
+            <div class="form-group col">
+                {{ form.variety.label }}
+                {{ form.variety(class="form-control", id="floatingInput") }}
+                {% for error in form.variety.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>       
+            <div class="form-group col">
+                {{ form.bags.label }}
+                {{ form.bags(class="form-control", id="floatingInput") }}
+                {% for error in form.bags.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>            
+            <div class="form-group col">
+                {{ form.sowing_date.label }}
+                {{ form.sowing_date(class="form-control", id="floatingInput") }}
+                {% for error in form.sowing_date.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div> 
+            <div class="form-group col">
+                {{ form.duration.label }}
+                {{ form.duration(class="form-control", id="floatingInput") }}
+                {% for error in form.duration.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div> 
+        </div>
+        
+
+        <div class="col align-items-center text-center mb-1">
+            {{ form.submit(class="w-50 align-items-center btn btn-primary") }}
+        </div>        
+    	
+    </form>
+    	
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- dynamic form js and jquery files-->
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/page.js') }}"></script>
+{% endblock %}

@@ -2,7 +2,8 @@ from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
-from .models import Fields, Lands
+from .forms import SowingEntry
+from .models import Fields, Lands, Sowing
 from agriapp import db
 
 
@@ -64,7 +65,19 @@ def remove_field():
 @data_bp.route('/add/sowing', methods=['GET', 'POST'])
 def add_sowing():
     """add sowing data"""
-    return render_template('add_sowing.html')
+    sow_obj = Sowing()
+    form = SowingEntry(obj=sow_obj)
+
+    if form.validate_on_submit():
+        form.populate_obj(sow_obj)
+
+        db.session.add(sow_obj)
+        db.session.commit()
+
+        flash(message='Sowing data succesfully added', category='success')
+        return redirect(url_for('admin.homepage'))
+
+    return render_template('add_sowing.html', form=form)
 
 
 @data_bp.route('/select/field/<category>', methods=['GET', 'POST'])
