@@ -56,8 +56,9 @@ def select_field(category):
                 flash(message='Add lands to fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.add_land', location=location))
 
-        flash(message='No fields with given location. Provide different location', category='error')
-        # return render_template('select_field.html', form=form)
+        flash(message='No fields with given location. Provide different location or got to Add Field',
+              category='error')
+        return render_template('select_field.html', form=form)
 
     return render_template('select_field.html', form=form)
 
