@@ -64,6 +64,20 @@ class LandEntry(FlaskForm):
     submit = SubmitField('Add Land(s) to Field')
 
 
+class RemoveFields(FlaskForm):
+    """remove all fields(and lands) from given location"""
+
+    location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
+                                                                  ('pallachi', 'Pallachi'),
+                                                                  ('potteri', 'Potteri'),
+                                                                  ('pokonanthoki', 'Pokananthoki'),
+                                                                  ('mannamuti', 'Mannamutti'),
+                                                                  ('none', 'Not Applicable')],
+                           default='none')
+    land_id = StringField('Land ID', [DataRequired(message='provide comma separated land ids to remove')])
+    submit = SubmitField('Remove all lands/fields from Location')
+
+
 class SowDetails(FlaskForm):
     """seed information"""
 
@@ -82,7 +96,6 @@ class SowDetails(FlaskForm):
 class SowingEntry(FlaskForm):
     """form to enter owing information"""
 
-    # year = DateField('Year', [DataRequired(message='Enter year of sowing')], format='%Y')
     season = RadioField('Season', [DataRequired()],
                         choices=[('summer', 'Kuruvai'),
                                  ('monsoon', 'Thaaladi'),

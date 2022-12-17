@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+Remove Fields
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">	
+
+	{% if option == 'display' %}
+	<div class="col text-center">      
+      <p class="fs-4">Available Fields and Lands for {{ result.field_extent }} acres at {{ result.location }}</p>
+    </div>
+
+    <hr class="my-3">
+
+    <table class="table table-hover">
+    	<thead> 
+    		<tr>
+    			<th scope="col">ID</th>    			
+    			<th scope="col">Extent</th>
+    			<th scope="col">Owner</th>
+    			<th scope="col" class="align-center">Survey #</th>
+    			<th scope="col">Deed</th>
+    		</tr>   		
+    	</thead>
+    	<tbody>  
+    		{% for lands in result.field_lands %}
+    		<tr>
+    			<td>{{ lands.id }}</td>    			
+    			<td>{{ lands.extent }}</td>
+    			<td>{{ lands.owner }}</td>
+    			<td>{{ lands.survey }}</td>
+    			<td>{{ lands.deed }}</td>
+    		</tr>
+    		{% endfor %}
+    	</tbody>    	
+    </table>
+
+    <hr class="my-4">
+
+    <div class="col text-center">      
+      <p class="fs-4">Enter Land Information to Remove</p>
+    </div>
+
+    <form action="{{ url_for('data.remove_field', location=result.location, call_option='select') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+    	{{ form.csrf_token() }}
+
+        <!-- row 1-->
+        <div class="row mb-2">                        
+            <div class="form-group col">
+                {{ form.location.label }}
+                {{ form.location(class="form-control", id="floatingInput") }}
+                {% for error in form.location.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>  
+
+            <div class="form-group col">
+                {{ form.land_id.label }}
+                {{ form.land_id(class="form-control", id="floatingInput") }}
+                {% for error in form.land_id.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div> 
+
+            <div class="col align-items-center text-center mb-1">
+	            {{ form.submit(class="w-50 align-items-center btn btn-primary") }}
+	        </div>                 
+        </div>    	
+    </form>
+
+	{% endif %}
+
+	
+
+    
+    	
+</div>
+{% endblock %}
