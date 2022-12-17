@@ -74,9 +74,13 @@ def remove_field(location, call_option):
             land_survey = []
             if land_id:
                 # get land survey
-                land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
-                                                              Lands.id == item).first().survey
-                               for item in land_id]
+                try:
+                    land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
+                                                                  Lands.id == item).first().survey
+                                   for item in land_id]
+                except AttributeError:
+                    flash(message='Field location/land id not provided properly', category='error')
+                    return redirect(url_for('data.select_field', category='remove_field'))
 
                 # delete lands before deleting fields (FK)
                 for item in land_id:
@@ -91,9 +95,11 @@ def remove_field(location, call_option):
             flash(message='Field at {} and lands with '
                           'survey # {} deleted'.format(location, land_survey),
                   category='success')
-            return redirect(url_for('admin.select_field', category='remove_field'))
+            return redirect(url_for('data.select_field', category='remove_field'))
 
-        return redirect(url_for('data.select_field', category='remove_field'))
+        flash(message='Field location/land id not provided properly', category='error')
+        # return render_template('remove_field.html', option=call_option, location=location, form=form)
+        return redirect(url_for('data.remove_field', location=location, call_option='display'))
 
     flash(message='Invalid call option given. Redirected to home.')
     return redirect(url_for('admin.homepage'))
