@@ -5,6 +5,7 @@ from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry
 from .models import Fields, Lands, Sowing
 from agriapp import db
+from datetime import datetime as dt
 
 
 @data_bp.route('/add/field', methods=['GET', 'POST'])
@@ -69,8 +70,15 @@ def add_sowing():
     form = SowingEntry(obj=sow_obj)
 
     if form.validate_on_submit():
-        form.populate_obj(sow_obj)
 
+        sow_obj = Sowing(year=dt.strptime(request.form['sowing_date'], '%Y-%m-%d').year,
+                         season=request.form['season'],
+                         location=request.form['location'],
+                         sowing_date=dt.strptime(request.form['sowing_date'], '%Y-%m-%d'),
+                         field_area=request.form['sow_info-field_area'],
+                         variety=request.form['sow_info-variety'],
+                         bags=request.form['sow_info-bags'])
+        sow_obj.calculate_harvest(request.form['sow_info-duration'])
         db.session.add(sow_obj)
         db.session.commit()
 

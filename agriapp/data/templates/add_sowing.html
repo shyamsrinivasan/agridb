@@ -14,73 +14,63 @@ Add Lands
     	{{ form.csrf_token() }}
 
         <!-- row 1-->
-        <div class="row mb-2">
-            <div class="form-group col">
-                {{ form.year.label }}
-                {{ form.year(class="form-control", id="floatingInput") }}
-                {% for error in form.year.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
-            </div> 
+        <div class="row mb-2">            
             <div class="form-group col">
                 {{ form.season.label }}
-                {{ form.season(class="form-control", id="floatingInput") }}
-                {% for error in form.season.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
-            </div>          
-        </div>
-
-    	<!-- row 2 -->
-        <div class="row mb-2">
+                <div class="mt-2">
+                {% for subfield in form.season %}                                           
+                    {{ subfield(id="floatingInput") }}
+                    {{ subfield.label }}                                    
+                {% endfor %} 
+                </div>         
+            </div>   
             <div class="form-group col">
                 {{ form.location.label }}
                 {{ form.location(class="form-control", id="floatingInput") }}
                 {% for error in form.location.errors %}
                 <small class="form-text text-muted">{{ error }}</small>  
                 {% endfor %}
-            </div>              
-            <div class="form-group col">
-                {{ form.field_area.label }}
-                {{ form.field_area(class="form-control", id="floatingInput") }}
-                {% for error in form.field_area.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
-            </div>             
-        </div>
-
-        <!-- row 3 -->
-        <div class="row mb-2">
-            <div class="form-group col">
-                {{ form.variety.label }}
-                {{ form.variety(class="form-control", id="floatingInput") }}
-                {% for error in form.variety.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
-            </div>       
-            <div class="form-group col">
-                {{ form.bags.label }}
-                {{ form.bags(class="form-control", id="floatingInput") }}
-                {% for error in form.bags.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
-            </div>            
+            </div>  
             <div class="form-group col">
                 {{ form.sowing_date.label }}
                 {{ form.sowing_date(class="form-control", id="floatingInput") }}
                 {% for error in form.sowing_date.errors %}
                 <small class="form-text text-muted">{{ error }}</small>  
                 {% endfor %}
-            </div> 
+            </div>         
+        </div>
+
+    	<!-- row 2 -->
+        <div class="row mb-2">   
             <div class="form-group col">
-                {{ form.duration.label }}
-                {{ form.duration(class="form-control", id="floatingInput") }}
-                {% for error in form.duration.errors %}
+                {{ form.sow_info.variety.label }}
+                {{ form.sow_info.variety(class="form-control", id="floatingInput") }}
+                {% for error in form.sow_info.variety.errors %}
                 <small class="form-text text-muted">{{ error }}</small>  
                 {% endfor %}
-            </div> 
-        </div>
-        
+            </div>                      
+            <div class="form-group col">
+                {{ form.sow_info.field_area.label }}
+                {{ form.sow_info.field_area(class="form-control", id="floatingInput") }}
+                {% for error in form.sow_info.field_area.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>             
+            <div class="form-group col">
+                {{ form.sow_info.bags.label }}
+                {{ form.sow_info.bags(class="form-control", id="floatingInput") }}
+                {% for error in form.sow_info.bags.errors %}
+                <small class="form-text text-warning">{{ error }}</small>  
+                {% endfor %}
+            </div>   
+            <div class="form-group col">
+                {{ form.sow_info.duration.label }}
+                {{ form.sow_info.duration(class="form-control", id="floatingInput") }}
+                {% for error in form.sow_info.duration.errors %}
+                <small class="form-text text-muted">{{ error }}</small>  
+                {% endfor %}
+            </div>         
+        </div>             
 
         <div class="col align-items-center text-center mb-1">
             {{ form.submit(class="w-50 align-items-center btn btn-primary") }}

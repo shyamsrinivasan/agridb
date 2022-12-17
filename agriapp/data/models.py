@@ -1,4 +1,5 @@
 from agriapp import db
+from datetime import timedelta
 
 
 class Fields(db.Model):
@@ -88,8 +89,13 @@ class Sowing(db.Model):
     sowing_date = db.Column(db.Date)
     expected_harvest = db.Column(db.Date)
 
-    def calculate_harvest(self, days):
-        self.expected_harvest = self.sowing_date + days
+    def calculate_harvest(self, days=None):
+        # if days is not None:
+        self.expected_harvest = self.sowing_date + timedelta(days=int(days))
+        # else:
+        #     self.expected_harvest = self.sowing_date + self.duration
+
+    # def __init__(self, year, season, location, variety, field_area, bags, sowing_date):
 
     def __repr__(self):
         return f"Sowing(id={self.id!r}, year={self.year!r}, season={self.season!r}, " \

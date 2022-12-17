@@ -64,12 +64,29 @@ class LandEntry(FlaskForm):
     submit = SubmitField('Add Land(s) to Field')
 
 
+class SowDetails(FlaskForm):
+    """seed information"""
+
+    field_area = DecimalField('Area sown (acres)', [DataRequired(message='area in acres required')])
+    variety = StringField('Seed variety', [DataRequired(message='Seed variety required')])
+    bags = IntegerField('Seed bags sown', [DataRequired(message='Should be integer less than 9999'),
+                                           NumberRange(max=9999, message='should be less than 9999')],
+                        default=0)
+    duration = IntegerField('Typical Crop Duration (days)',
+                            [DataRequired(message='Duration in days required'),
+                             NumberRange(min=0, max=200,
+                                         message='Crop duration should be < 200 days')],
+                            default=120)
+
+
 class SowingEntry(FlaskForm):
     """form to enter owing information"""
 
-    year = DateField('Year', [DataRequired(message='Enter year of sowing')])
-    season = RadioField('Season', choices=[('summer', 'Kuruvai'),
-                                           ('monsoon', 'Thaaladi')],
+    # year = DateField('Year', [DataRequired(message='Enter year of sowing')], format='%Y')
+    season = RadioField('Season', [DataRequired()],
+                        choices=[('summer', 'Kuruvai'),
+                                 ('monsoon', 'Thaaladi'),
+                                 ('other', 'Others')],
                         default='summer')
     location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
                                                 ('pallachi', 'Pallachi'),
@@ -77,17 +94,9 @@ class SowingEntry(FlaskForm):
                                                 ('pokonanthoki', 'Pokananthoki'),
                                                 ('mannamuti', 'Mannamutti')],
                            default='tgudi')
-    variety = StringField('Seed variety', [DataRequired(message='Seed variety required')])
-    field_area = DecimalField('Area sown (acres)', [DataRequired(message='Enter area in acres')])
-    bags = IntegerField('Seed bags sown', [DataRequired(message='# seed bags sown'),
-                                           NumberRange(max=9999, message='# bags cannot be over 9999')],
-                        default=0)
     sowing_date = DateField('Date Sown', [DataRequired(message='Date of sowing required')])
-    duration = IntegerField('Typical Crop Duration (days)',
-                            [DataRequired(message='Total crop duration in days required'),
-                             NumberRange(min=0, max=200,
-                                         message='Crop duration should be < 200 days')],
-                            default=120)
+
+    sow_info = FormField(SowDetails)
 
     submit = SubmitField('Add Sowing Data')
 
