@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
-from .forms import SowingEntry, RemoveFields
+from .forms import SowingEntry, RemoveFields, RemoveLand
 from .models import Fields, Lands, Sowing
 from agriapp import db
 from datetime import datetime as dt
@@ -66,11 +66,8 @@ def remove_field(location, call_option):
         field_obj = db.session.query(Fields).filter(Fields.location == location).first()
         return render_template('remove_field.html', option=call_option, result=field_obj, form=form)
 
-    elif call_option == 'select':
+    elif call_option == 'select_field':
         if form.validate_on_submit():
-            # location = request.form['location']
-            # land_id = request.form['land_id'].split(",")
-
             # get land survey #
             lands = db.session.query(Lands).filter(Lands.field_location == location).all()
             land_survey = [item.survey for item in lands]
@@ -78,23 +75,6 @@ def remove_field(location, call_option):
             # delete all lands associated with field location
             db.session.query(Lands).filter(Lands.field_location == location).delete()
             db.session.commit()
-
-            # land_survey = []
-            # if land_id:
-            #     # get land survey
-            #     try:
-            #         land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
-            #                                                       Lands.id == item).first().survey
-            #                        for item in land_id]
-            #     except AttributeError:
-            #         flash(message='Field location/land id not provided properly', category='error')
-            #         return redirect(url_for('data.select_field', category='remove_field'))
-            #
-            #     # delete lands before deleting fields (FK)
-            #     for item in land_id:
-            #         db.session.query(Lands).filter(Lands.field_location == location,
-            #                                        Lands.id == item).delete()
-            #         db.session.commit()
 
             # delete all fields at location
             db.session.query(Fields).filter(Fields.location == location).delete()
@@ -112,6 +92,49 @@ def remove_field(location, call_option):
     flash(message='Invalid call option given. Redirected to home.')
     return redirect(url_for('admin.homepage'))
     # return render_template('remove_field.html', form=form, call_time=call_time)
+
+
+@data_bp.route('/remove/land/<location>/<call_option>', methods=['GET', 'POST'])
+def remove_land(location, call_option):
+    """remove specific land from given field"""
+
+    form = RemoveLand()
+    if call_option == 'display':
+        field_obj = db.session.query(Fields).filter(Fields.location == location).first()
+        return render_template('remove_field.html', option=call_option, result=field_obj, form=form)
+
+    elif call_option == 'select_land':
+        if form.validate_on_submit():
+            location = request.form['location']
+            land_id = request.form['land_id'].split(",")
+
+            land_survey = []
+            if land_id:
+                # get land survey
+                try:
+                    land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
+                                                                  Lands.id == item).first().survey
+                                   for item in land_id]
+                except AttributeError:
+                    flash(message='Field location/land id not provided properly', category='error')
+                    return redirect(url_for('data.select_field', category='remove_field'))
+
+                # delete lands before deleting fields (FK)
+                for item in land_id:
+                    db.session.query(Lands).filter(Lands.field_location == location,
+                                                   Lands.id == item).delete()
+                    db.session.commit()
+
+                flash(message='Lands with survey # {} '
+                              'at {} deleted'.format(land_survey, location),
+                      category='success')
+                return redirect(url_for('data.select_field', category='remove_land'))
+
+        flash(message='Field location/land id not provided properly', category='error')
+        return redirect(url_for('data.remove_land', location=location, call_option='display'))
+
+    flash(message='Invalid call option given. Redirected to home.')
+    return redirect(url_for('admin.homepage'))
 
 
 @data_bp.route('/add/sowing', methods=['GET', 'POST'])
@@ -158,6 +181,11 @@ def select_field(category):
                 # remove existing land and/or field
                 flash(message='Remove lands/fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.remove_field', location=location, call_option='display'))
+
+            elif category == 'remove_land':
+                # remove existing land
+                flash(message='Remove lands/fields in {}'.format(location), category='primary')
+                return redirect(url_for('data.remove_land', location=location, call_option='display'))
 
         flash(message='No fields with given location. Provide different location or Add Field',
               category='error')
