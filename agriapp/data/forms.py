@@ -67,14 +67,14 @@ class LandEntry(FlaskForm):
 class RemoveFields(FlaskForm):
     """remove all fields(and lands) from given location"""
 
-    location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
-                                                                  ('pallachi', 'Pallachi'),
-                                                                  ('potteri', 'Potteri'),
-                                                                  ('pokonanthoki', 'Pokananthoki'),
-                                                                  ('mannamuti', 'Mannamutti'),
-                                                                  ('none', 'Not Applicable')],
-                           default='none')
-    land_id = StringField('Land ID', [DataRequired(message='provide comma separated land ids to remove')])
+    # location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
+    #                                                               ('pallachi', 'Pallachi'),
+    #                                                               ('potteri', 'Potteri'),
+    #                                                               ('pokonanthoki', 'Pokananthoki'),
+    #                                                               ('mannamuti', 'Mannamutti'),
+    #                                                               ('none', 'Not Applicable')],
+    #                        default='none')
+    # land_id = StringField('Land ID', [DataRequired(message='provide comma separated land ids to remove')])
     submit = SubmitField('Remove all lands/fields from Location')
 
 

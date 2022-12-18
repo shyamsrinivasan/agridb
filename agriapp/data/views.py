@@ -68,25 +68,33 @@ def remove_field(location, call_option):
 
     elif call_option == 'select':
         if form.validate_on_submit():
-            location = request.form['location']
-            land_id = request.form['land_id'].split(",")
+            # location = request.form['location']
+            # land_id = request.form['land_id'].split(",")
 
-            land_survey = []
-            if land_id:
-                # get land survey
-                try:
-                    land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
-                                                                  Lands.id == item).first().survey
-                                   for item in land_id]
-                except AttributeError:
-                    flash(message='Field location/land id not provided properly', category='error')
-                    return redirect(url_for('data.select_field', category='remove_field'))
+            # get land survey #
+            lands = db.session.query(Lands).filter(Lands.field_location == location).all()
+            land_survey = [item.survey for item in lands]
 
-                # delete lands before deleting fields (FK)
-                for item in land_id:
-                    db.session.query(Lands).filter(Lands.field_location == location,
-                                                   Lands.id == item).delete()
-                    db.session.commit()
+            # delete all lands associated with field location
+            db.session.query(Lands).filter(Lands.field_location == location).delete()
+            db.session.commit()
+
+            # land_survey = []
+            # if land_id:
+            #     # get land survey
+            #     try:
+            #         land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
+            #                                                       Lands.id == item).first().survey
+            #                        for item in land_id]
+            #     except AttributeError:
+            #         flash(message='Field location/land id not provided properly', category='error')
+            #         return redirect(url_for('data.select_field', category='remove_field'))
+            #
+            #     # delete lands before deleting fields (FK)
+            #     for item in land_id:
+            #         db.session.query(Lands).filter(Lands.field_location == location,
+            #                                        Lands.id == item).delete()
+            #         db.session.commit()
 
             # delete all fields at location
             db.session.query(Fields).filter(Fields.location == location).delete()
