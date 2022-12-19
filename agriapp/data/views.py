@@ -101,7 +101,7 @@ def remove_land(location, call_option):
     form = RemoveLand()
     if call_option == 'display':
         field_obj = db.session.query(Fields).filter(Fields.location == location).first()
-        return render_template('remove_field.html', option=call_option, result=field_obj, form=form)
+        return render_template('remove_land.html', option=call_option, result=field_obj, form=form)
 
     elif call_option == 'select_land':
         if form.validate_on_submit():

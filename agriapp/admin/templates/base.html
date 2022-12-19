@@ -74,7 +74,7 @@
 		  		<div class="dropdown-divider"></div>
 		  		<a class="dropdown-item" href="{{ url_for('data.add_field') }}">Field</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.add_land', location='None') }}">Land</a>
-		  		<a class="dropdown-item" href="#">Equipment</a>		  		
+		  		<a class="dropdown-item disabled" href="#">Equipment</a>		  		
 		  	</div>		  	
 		  </li>  
 		  {% if current_user.is_anonymous %}
@@ -83,10 +83,10 @@
 		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Remove Data</a>
 		  	<div class="dropdown-menu">
 		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='remove_field') }}">Field</a>
-		  		<a class="dropdown-item" href="#">Land</a>
-		  		<a class="dropdown-item" href="#">Equipment</a>
-		  		<a class="dropdown-item" href="#">Sowing</a>
-		  		<a class="dropdown-item" href="#">Yield</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='remove_land') }}">Land</a>
+		  		<a class="dropdown-item disabled" href="#">Equipment</a>
+		  		<a class="dropdown-item disabled" href="#">Sowing</a>
+		  		<a class="dropdown-item disabled" href="#">Yield</a>
 		  	</div>		  	
 		  </li>  
 		  {% endif %}

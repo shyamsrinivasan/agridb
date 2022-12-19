@@ -80,7 +80,7 @@ class RemoveLand(FlaskForm):
                                                                   ('none', 'Not Applicable')],
                            default='none')
     land_id = StringField('Land ID', [DataRequired(message='provide comma separated land ids to remove')])
-    submit = SubmitField('Remove all lands/fields from Location')
+    submit = SubmitField('Remove all lands from Location')
 
 
 class SowDetails(FlaskForm):
