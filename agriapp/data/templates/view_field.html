@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+View Fields
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+  <div class="col text-center mt-2">      
+    <p class="fs-4">Showing All Available Fields</p>
+  </div>    	
+
+  {% if result is defined %}
+  <table class="table table-hover">
+    <thead> 
+      <tr>
+        <th scope="col">ID</th>   
+        <th scope="col">Location</th>      
+        <th scope="col">Extent</th>
+        <th scope="col"># Lands</th>        
+      </tr>       
+    </thead>
+    <tbody>  
+      {% for fields in result %}
+      <tr>
+        <td>{{ fields.id }}</td>         
+        <td>{{ fields.location }}</td>
+        <td>{{ fields.field_extent }}</td>
+        <td>{{ fields.field_lands|length }}</td>        
+      </tr>
+      {% endfor %}
+    </tbody>      
+  </table>          
+
+  {% else %}
+  <div class="col text-center">      
+    <p class="fs-4">No Fields present in database</p>
+  </div>
+  {% endif %}
+
+    	
+</div>
+{% endblock %}

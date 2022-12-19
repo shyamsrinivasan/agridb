@@ -177,10 +177,19 @@ def select_field(category):
                 flash(message='Add lands to fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.add_land', location=location))
 
+            elif category == 'view_field':
+                # view all available fields
+                # return redirect(url_for('data.view_field', location=location))
+                pass
+
             elif category == 'remove_field':
                 # remove existing land and/or field
                 flash(message='Remove lands/fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.remove_field', location=location, call_option='display'))
+
+            elif category == 'view_land':
+                # view all lands in given field location
+                return redirect(url_for('data.view_land', location=location))
 
             elif category == 'remove_land':
                 # remove existing land
@@ -257,7 +266,31 @@ def add_land(location):
     return redirect(url_for('data.select_field', category='land'))
 
 
-@data_bp.route('/add-yield', methods=['GET', 'POST'])
+@data_bp.route('/view/lands/<location>', methods=['GET', 'POST'])
+def view_land(location):
+    """view all available lands for given field"""
+
+    field_obj = db.session.query(Fields).filter(Fields.location == location).first()
+    if field_obj and field_obj is not None:
+        return render_template('view_land.html', location=location, result=field_obj)
+
+    return redirect(url_for('data.select_field', category='view_field'))
+
+
+@data_bp.route('/view/fields')
+def view_field():
+    """view all available fields and field extents"""
+
+    field_obj = db.session.query(Fields).all()
+    if field_obj and field_obj is not None:
+        return render_template('view_field.html', result=field_obj)
+
+    flash(message='No fields present in database')
+    return redirect(url_for('admin.homepage'))
+
+
+
+@data_bp.route('/add/yield', methods=['GET', 'POST'])
 def add_yield():
     """add yield data to agri db"""
     return render_template('add_yield.html')
