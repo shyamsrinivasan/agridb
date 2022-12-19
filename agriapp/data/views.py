@@ -46,17 +46,6 @@ def add_field():
     return render_template('add_field.html', form=form)
 
 
-def check_land_present(land_objs):
-    """check if all given land objects are present in db"""
-
-    survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
-    # deed_check = [obj.deed_present() for obj in land_objs]
-    # survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
-    # for obj in land_objs:
-    #     survey_present, deed_present = obj.is_present()
-    return survey_deed_check
-
-
 @data_bp.route('/remove/field/<location>/<call_option>', methods=['GET', 'POST'])
 def remove_field(location, call_option):
     """remove field from db"""
@@ -94,72 +83,16 @@ def remove_field(location, call_option):
     # return render_template('remove_field.html', form=form, call_time=call_time)
 
 
-@data_bp.route('/remove/land/<location>/<call_option>', methods=['GET', 'POST'])
-def remove_land(location, call_option):
-    """remove specific land from given field"""
+@data_bp.route('/view/fields')
+def view_field():
+    """view all available fields and field extents"""
 
-    form = RemoveLand()
-    if call_option == 'display':
-        field_obj = db.session.query(Fields).filter(Fields.location == location).first()
-        return render_template('remove_land.html', option=call_option, result=field_obj, form=form)
+    field_obj = db.session.query(Fields).all()
+    if field_obj and field_obj is not None:
+        return render_template('view_field.html', result=field_obj)
 
-    elif call_option == 'select_land':
-        if form.validate_on_submit():
-            location = request.form['location']
-            land_id = request.form['land_id'].split(",")
-
-            land_survey = []
-            if land_id:
-                # get land survey
-                try:
-                    land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
-                                                                  Lands.id == item).first().survey
-                                   for item in land_id]
-                except AttributeError:
-                    flash(message='Field location/land id not provided properly', category='error')
-                    return redirect(url_for('data.select_field', category='remove_field'))
-
-                # delete lands before deleting fields (FK)
-                for item in land_id:
-                    db.session.query(Lands).filter(Lands.field_location == location,
-                                                   Lands.id == item).delete()
-                    db.session.commit()
-
-                flash(message='Lands with survey # {} '
-                              'at {} deleted'.format(land_survey, location),
-                      category='success')
-                return redirect(url_for('data.select_field', category='remove_land'))
-
-        flash(message='Field location/land id not provided properly', category='error')
-        return redirect(url_for('data.remove_land', location=location, call_option='display'))
-
-    flash(message='Invalid call option given. Redirected to home.')
+    flash(message='No fields present in database')
     return redirect(url_for('admin.homepage'))
-
-
-@data_bp.route('/add/sowing', methods=['GET', 'POST'])
-def add_sowing():
-    """add sowing data"""
-    sow_obj = Sowing()
-    form = SowingEntry(obj=sow_obj)
-
-    if form.validate_on_submit():
-
-        sow_obj = Sowing(year=dt.strptime(request.form['sowing_date'], '%Y-%m-%d').year,
-                         season=request.form['season'],
-                         location=request.form['location'],
-                         sowing_date=dt.strptime(request.form['sowing_date'], '%Y-%m-%d'),
-                         field_area=request.form['sow_info-field_area'],
-                         variety=request.form['sow_info-variety'],
-                         bags=request.form['sow_info-bags'])
-        sow_obj.calculate_harvest(request.form['sow_info-duration'])
-        db.session.add(sow_obj)
-        db.session.commit()
-
-        flash(message='Sowing data succesfully added', category='success')
-        return redirect(url_for('admin.homepage'))
-
-    return render_template('add_sowing.html', form=form)
 
 
 @data_bp.route('/select/field/<category>', methods=['GET', 'POST'])
@@ -266,6 +199,49 @@ def add_land(location):
     return redirect(url_for('data.select_field', category='land'))
 
 
+@data_bp.route('/remove/land/<location>/<call_option>', methods=['GET', 'POST'])
+def remove_land(location, call_option):
+    """remove specific land from given field"""
+
+    form = RemoveLand()
+    if call_option == 'display':
+        field_obj = db.session.query(Fields).filter(Fields.location == location).first()
+        return render_template('remove_land.html', option=call_option, result=field_obj, form=form)
+
+    elif call_option == 'select_land':
+        if form.validate_on_submit():
+            location = request.form['location']
+            land_id = request.form['land_id'].split(",")
+
+            land_survey = []
+            if land_id:
+                # get land survey
+                try:
+                    land_survey = [db.session.query(Lands).filter(Lands.field_location == location,
+                                                                  Lands.id == item).first().survey
+                                   for item in land_id]
+                except AttributeError:
+                    flash(message='Field location/land id not provided properly', category='error')
+                    return redirect(url_for('data.select_field', category='remove_field'))
+
+                # delete lands before deleting fields (FK)
+                for item in land_id:
+                    db.session.query(Lands).filter(Lands.field_location == location,
+                                                   Lands.id == item).delete()
+                    db.session.commit()
+
+                flash(message='Lands with survey # {} '
+                              'at {} deleted'.format(land_survey, location),
+                      category='success')
+                return redirect(url_for('data.select_field', category='remove_land'))
+
+        flash(message='Field location/land id not provided properly', category='error')
+        return redirect(url_for('data.remove_land', location=location, call_option='display'))
+
+    flash(message='Invalid call option given. Redirected to home.')
+    return redirect(url_for('admin.homepage'))
+
+
 @data_bp.route('/view/lands/<location>', methods=['GET', 'POST'])
 def view_land(location):
     """view all available lands for given field"""
@@ -277,17 +253,29 @@ def view_land(location):
     return redirect(url_for('data.select_field', category='view_field'))
 
 
-@data_bp.route('/view/fields')
-def view_field():
-    """view all available fields and field extents"""
+@data_bp.route('/add/sowing', methods=['GET', 'POST'])
+def add_sowing():
+    """add sowing data"""
+    sow_obj = Sowing()
+    form = SowingEntry(obj=sow_obj)
 
-    field_obj = db.session.query(Fields).all()
-    if field_obj and field_obj is not None:
-        return render_template('view_field.html', result=field_obj)
+    if form.validate_on_submit():
 
-    flash(message='No fields present in database')
-    return redirect(url_for('admin.homepage'))
+        sow_obj = Sowing(year=dt.strptime(request.form['sowing_date'], '%Y-%m-%d').year,
+                         season=request.form['season'],
+                         location=request.form['location'],
+                         sowing_date=dt.strptime(request.form['sowing_date'], '%Y-%m-%d'),
+                         field_area=request.form['sow_info-field_area'],
+                         variety=request.form['sow_info-variety'],
+                         bags=request.form['sow_info-bags'])
+        sow_obj.calculate_harvest(request.form['sow_info-duration'])
+        db.session.add(sow_obj)
+        db.session.commit()
 
+        flash(message='Sowing data succesfully added', category='success')
+        return redirect(url_for('admin.homepage'))
+
+    return render_template('add_sowing.html', form=form)
 
 
 @data_bp.route('/add/yield', methods=['GET', 'POST'])
@@ -306,6 +294,17 @@ def add_pump():
 def add_expense():
     """add expense data to agri db"""
     return render_template('add_expense.html')
+
+
+def check_land_present(land_objs):
+    """check if all given land objects are present in db"""
+
+    survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
+    # deed_check = [obj.deed_present() for obj in land_objs]
+    # survey_deed_check = [obj.survey_deed_present() for obj in land_objs]
+    # for obj in land_objs:
+    #     survey_present, deed_present = obj.is_present()
+    return survey_deed_check
 
 
 
