@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
-from .forms import SowingEntry, RemoveFields, RemoveLand
+from .forms import SowingEntry, RemoveFields, RemoveLand, SowView
 from .models import Fields, Lands, Sowing
 from agriapp import db
 from datetime import datetime as dt
@@ -257,7 +257,6 @@ def view_all_lands():
     return render_template('view_all_land.html', result=land_obj_list, total=n_lands)
 
 
-
 @data_bp.route('/add/sowing', methods=['GET', 'POST'])
 def add_sowing():
     """add sowing data"""
@@ -281,6 +280,26 @@ def add_sowing():
         return redirect(url_for('admin.homepage'))
 
     return render_template('add_sowing.html', form=form)
+
+
+@data_bp.route('/view/sowing', methods=['GET', 'POST'])
+def view_sowing():
+    """view sowing data for given season"""
+
+    form = SowView()
+    if form.validate_on_submit():
+        year = request.form['year']
+        season = request.form['season']
+
+        # search data for year and season in db
+        sow_data = db.session.query(Sowing).filter(Sowing.year == year,
+                                                   Sowing.season == season).all()
+        if sow_data and sow_data is not None:
+            render_template('view_sowing', result=sow_data, year=year, season=season)
+        else:
+            flash(message='No sowing data available for requested period.', category='primary')
+
+    return render_template('view_sowing.html', form=form)
 
 
 @data_bp.route('/add/yield', methods=['GET', 'POST'])

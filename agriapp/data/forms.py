@@ -119,6 +119,19 @@ class SowingEntry(FlaskForm):
     submit = SubmitField('Add Sowing Data')
 
 
+class SowView(FlaskForm):
+    """choose year and season to view sowing data"""
+
+    year = StringField('Year', [Length(message='year should be a four digits', min=4, max=4),
+                                DataRequired(message='enter year of sowing')])
+    season = RadioField('Season', [DataRequired()],
+                        choices=[('summer', 'Kuruvai'),
+                                 ('monsoon', 'Thaaladi'),
+                                 ('other', 'Others')],
+                        default='summer')
+    submit = SubmitField('View Sowing Data for Season')
+
+
 class YieldEntry(FlaskForm):
     """form to yield information"""
 
