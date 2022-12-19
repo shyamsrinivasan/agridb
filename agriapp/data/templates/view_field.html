@@ -13,17 +13,15 @@ View Fields
   {% if result is defined %}
   <table class="table table-hover">
     <thead> 
-      <tr>
-        <th scope="col">ID</th>   
+      <tr>          
         <th scope="col">Location</th>      
-        <th scope="col">Extent</th>
+        <th scope="col">Extent (Acres)</th>
         <th scope="col"># Lands</th>        
       </tr>       
     </thead>
     <tbody>  
       {% for fields in result %}
-      <tr>
-        <td>{{ fields.id }}</td>         
+      <tr>              
         <td>{{ fields.location }}</td>
         <td>{{ fields.field_extent }}</td>
         <td>{{ fields.field_lands|length }}</td>        
