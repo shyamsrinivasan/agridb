@@ -89,6 +89,8 @@ class Sowing(db.Model):
     sowing_date = db.Column(db.Date)
     expected_harvest = db.Column(db.Date)
 
+    yield_info = db.relationship('Yield', back_populates='sow_info', cascade='all, delete', uselist=False)
+
     def calculate_harvest(self, days=None):
         # if days is not None:
         self.expected_harvest = self.sowing_date + timedelta(days=int(days))
@@ -142,6 +144,8 @@ class Yield(db.Model):
     buyer = db.Column(db.String(15))
     income = db.Column(db.Float)
     weight = db.Column(db.Float)
+
+    sow_info = db.relationship('Sowing', back_populates='yield_info', cascade='all, delete')
 
     def set_income(self):
         self.income = self.bags * self.bag_rate

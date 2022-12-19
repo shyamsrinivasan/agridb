@@ -3,7 +3,8 @@ from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, SowView
-from .models import Fields, Lands, Sowing
+from .forms import YieldEntry
+from .models import Fields, Lands, Sowing, Yield
 from agriapp import db
 from datetime import datetime as dt
 
@@ -118,6 +119,10 @@ def select_field(category):
                 # remove existing land
                 flash(message='Remove lands/fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.remove_land', location=location, call_option='display'))
+
+            elif category == 'add_yield':
+                # add yield data for location
+                return redirect(url_for('data.add_yield', location=location))
 
             elif category == 'remove_field':
                 # remove existing land and/or field
@@ -302,10 +307,15 @@ def view_sowing():
     return render_template('view_sowing.html', form=form)
 
 
-@data_bp.route('/add/yield', methods=['GET', 'POST'])
-def add_yield():
+@data_bp.route('/add/yield/<location>', methods=['GET', 'POST'])
+def add_yield(location):
     """add yield data to agri db"""
-    return render_template('add_yield.html')
+    form = YieldEntry()
+    if form.validate_on_submit():
+        pass
+        # year, season,
+        # harvest_date, sell_date, bags, bag_weight, bag_rate, buyer
+    return render_template('add_yield.html', form=form, location=location)
 
 
 @data_bp.route('/add-pumps', methods=['GET', 'POST'])

@@ -132,8 +132,8 @@ class SowView(FlaskForm):
     submit = SubmitField('View Sowing Data for Season')
 
 
-class YieldEntry(FlaskForm):
-    """form to yield information"""
+class YieldDetails(FlaskForm):
+    """form for yield information"""
 
     # id = db.Column(db.Integer, primary_key=True)
     # sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
@@ -148,6 +148,27 @@ class YieldEntry(FlaskForm):
     bag_rate = DecimalField('Amount per bag (Rs)', [DataRequired(message='Amount given per bag')])
     buyer = StringField('Sold to', [DataRequired(message='Buyer designation required'),
                                     Length(max=15, message='Should be < 15 characters')])
+
+
+class YieldEntry(FlaskForm):
+    """form to enter yield information"""
+
+    year = StringField('Year', [Length(message='year should be a four digits', min=4, max=4),
+                                DataRequired(message='enter year of sowing')])
+    season = RadioField('Season', [DataRequired()],
+                        choices=[('summer', 'Kuruvai'),
+                                 ('monsoon', 'Thaaladi'),
+                                 ('other', 'Others')],
+                        default='summer')
+    location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
+                                                ('pallachi', 'Pallachi'),
+                                                ('potteri', 'Potteri'),
+                                                ('pokonanthoki', 'Pokananthoki'),
+                                                ('mannamuti', 'Mannamutti')],
+                           default='tgudi')
+    yield_info = FieldsForm(YieldDetails)
+
+    submit = SubmitField('Enter Yield Data for Season')
 
 
 class EquipmentEntry(FlaskForm):
