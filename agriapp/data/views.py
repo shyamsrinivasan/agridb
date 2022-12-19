@@ -241,6 +241,23 @@ def view_land(location):
     return redirect(url_for('data.select_field', category='view_field'))
 
 
+@data_bp.route('/view/lands/all')
+def view_all_lands():
+    """view all lands irrespective of location"""
+
+    # get all locations
+    field_location = db.session.query(Fields.location).all()
+    # locations = [i_loc[0] for i_loc in field_location]
+
+    # get all lands for each location
+    lands = [db.session.query(Lands).filter(Lands.field_location == i_loc[0]).all() for i_loc in field_location]
+    land_obj_list = [j_land_obj for i_land in lands for j_land_obj in i_land]
+    n_lands = len(land_obj_list)
+
+    return render_template('view_all_land.html', result=land_obj_list, total=n_lands)
+
+
+
 @data_bp.route('/add/sowing', methods=['GET', 'POST'])
 def add_sowing():
     """add sowing data"""

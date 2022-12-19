@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}
+View Field and Lands
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">	
+
+	{% if result is defined and result %}
+	<div class="col text-center mt-2">      
+    <p class="fs-4">Showing all {{ total }} Fields and Lands </p>
+  </div>    
+    
+  <table class="table table-hover">
+  	<thead> 
+  		<tr>  
+        <th scope="col">#</th>  
+        <th scope="col">Location</th>						
+  			<th scope="col">Extent (Acres)</th>
+  			<th scope="col">Owner</th>
+  			<th scope="col" class="align-center">Survey #</th>
+  			<th scope="col">Deed</th>
+  		</tr>   		
+  	</thead>
+  	<tbody>  
+  		{% for lands in result %}
+  		<tr>    	
+        <td>{{ loop.index }}</td>			
+        <td>{{ lands.field_location }}</td>
+  			<td>{{ lands.extent }}</td>
+  			<td>{{ lands.owner }}</td>
+  			<td>{{ lands.survey }}</td>
+  			<td>{{ lands.deed }}</td>
+  		</tr>
+  		{% endfor %}
+  	</tbody>    	
+  </table>   
+
+  {% else %}    
+  <div class="col text-center">      
+    <p class="fs-4">No Fields or Lands</p>
+  </div>      
+
+	{% endif %}    
+    	
+</div>
+{% endblock %}
