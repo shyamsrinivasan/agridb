@@ -56,7 +56,7 @@ class SelectFieldLocation(FlaskForm):
 class LandEntry(FlaskForm):
     """form to enter land info separately from field info"""
 
-    field_location = StringField('Location', [DataRequired()])
+    location = StringField('Location', [DataRequired()])
     field_extent = StringField('Extent (Acres)', [DataRequired()])
 
     field_lands = FieldList(FormField(LandsForm, default=lambda: Lands()))

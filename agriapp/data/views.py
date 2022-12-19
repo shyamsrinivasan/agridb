@@ -105,20 +105,10 @@ def select_field(category):
         field_obj = db.session.query(Fields).filter(Fields.location == location).first()
 
         if field_obj is not None:   # if field is present
-            if category == 'land':
+            if category == 'add_land':
                 # add land for existing field
-                flash(message='Add lands to fields in {}'.format(location), category='primary')
+                # flash(message='Add lands to fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.add_land', location=location))
-
-            elif category == 'view_field':
-                # view all available fields
-                # return redirect(url_for('data.view_field', location=location))
-                pass
-
-            elif category == 'remove_field':
-                # remove existing land and/or field
-                flash(message='Remove lands/fields in {}'.format(location), category='primary')
-                return redirect(url_for('data.remove_field', location=location, call_option='display'))
 
             elif category == 'view_land':
                 # view all lands in given field location
@@ -128,6 +118,11 @@ def select_field(category):
                 # remove existing land
                 flash(message='Remove lands/fields in {}'.format(location), category='primary')
                 return redirect(url_for('data.remove_land', location=location, call_option='display'))
+
+            elif category == 'remove_field':
+                # remove existing land and/or field
+                flash(message='Remove lands/fields in {}'.format(location), category='primary')
+                return redirect(url_for('data.remove_field', location=location, call_option='display'))
 
         flash(message='No fields with given location. Provide different location or Add Field',
               category='error')
@@ -140,63 +135,56 @@ def select_field(category):
 def add_land(location):
     """add land info to go with field info"""
 
-    if location != 'None':
-        land_objs = db.session.query(Lands).filter(Lands.field_location == location).all()
-        field_obj = db.session.query(Fields).filter(Fields.location == location).first()
+    # get existing land and field objects for location
+    land_objs = db.session.query(Lands).filter(Lands.field_location == location).all()
+    field_obj = db.session.query(Fields).filter(Fields.location == location).first()
 
-        if len(field_obj.field_lands) == 0:
-            if land_objs and land_objs is not None:
-                field_obj.field_lands = land_objs
+    # check if land and field locations are not empty
+    if len(field_obj.field_lands) == 0:
+        # dummy land object when no lands are available for field objs
+        field_obj.field_lands = [Lands(field_location=location, extent=0.1, owner='nobody',
+                                       survey='1/1', deed='1/1')]
+    # new land entry form
+    form = LandEntry(obj=field_obj)
+
+    if form.validate_on_submit():
+        form.populate_obj(field_obj)
+
+        new_land_objs = [land for land in field_obj.field_lands]
+        db.session.close()
+        new_field_obj = db.session.query(Fields).filter(Fields.location == location).first()
+
+        land_is_present = check_land_present(new_land_objs)
+        n_lands = len(new_land_objs)
+        present_lands = [False] * n_lands
+        land_added = [True] * n_lands
+
+        for idx, lands in enumerate(new_land_objs):
+            # change location in child relationship object
+            if lands.field_location != field_obj.location:
+                lands.field_location = field_obj.location
+
+            # check if land is present
+            if not land_is_present[idx]:
+                # add child object to db session and commit changes
+                db.session.add(lands)
+                db.session.commit()
+                land_added[idx] = False
             else:
-                field_obj.field_lands = [Lands(field_location=location, extent=0.1, owner='nobody',
-                                               survey='1/1', deed='1/1')]
+                present_lands[idx] = True
 
-        form = LandEntry(obj=field_obj)
-
-        if form.validate_on_submit():
-
-            # check if provided data is not altered
-            if request.form['field_location'] != field_obj.location:
-                form.field_location.data = field_obj.location
-            if request.form['field_extent'] != field_obj.field_extent:
-                form.field_extent.data = field_obj.field_extent
-
-            form.populate_obj(field_obj)
-
-            unadded_lands = []
-            for lands in field_obj.field_lands:
-                # change location in child relationship object
-                if lands.field_location != field_obj.location:
-                    lands.field_location = field_obj.location
-
-                # check if land is present
-                # if not lands.survey_deed_present():
-                    # add child object to db session and commit changes
-                    db.session.add(lands)
-                    db.session.commit()
-                else:
-                    unadded_lands.append(lands)
-
-            if unadded_lands:
-                unadded_survey = [(unadded_land_obj.survey,
-                                   unadded_land_obj.deed)
-                                  for unadded_land_obj in unadded_lands]
-                flash(message='Lands at {} with survey # {} '
-                              'already present'.format(location, unadded_survey),
-                      category='error')
-                return render_template('add_land.html', form=form, location=location)
-
-            flash(message='New lands successfully added to {} fields'.format(location),
+        if any(present_lands):  # or all(lands_added)
+            survey = [new_land_objs[idx].survey for idx, value in enumerate(present_lands) if value]
+            flash(message='new lands successfully added to {} fields. '
+                          'Survey # {} not added to field database'.format(location, survey),
+                  category='primary')
+        else:
+            flash(message='All new lands successfully added to {} fields'.format(location),
                   category='success')
-            return redirect(url_for('admin.homepage'))
+        return redirect(url_for('admin.homepage'))
 
-        form.field_location.data = field_obj.location
-        form.field_extent.data = field_obj.field_extent
-
-        return render_template('add_land.html', form=form, location=location)
-
-    flash(message='Select field location to add lands to', category='primary')
-    return redirect(url_for('data.select_field', category='land'))
+    # return redirect(url_for('data.select_field', category='land'))
+    return render_template('add_land.html', form=form, location=location, result=land_objs)
 
 
 @data_bp.route('/remove/land/<location>/<call_option>', methods=['GET', 'POST'])
