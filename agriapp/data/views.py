@@ -3,7 +3,7 @@ from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, SowView
-from .forms import YieldEntry
+# from .forms import YieldEntry
 from .models import Fields, Lands, Sowing, Yield
 from agriapp import db
 from datetime import datetime as dt
@@ -310,12 +310,35 @@ def view_sowing():
 @data_bp.route('/add/yield/<location>', methods=['GET', 'POST'])
 def add_yield(location):
     """add yield data to agri db"""
-    form = YieldEntry()
-    if form.validate_on_submit():
-        pass
-        # year, season,
-        # harvest_date, sell_date, bags, bag_weight, bag_rate, buyer
-    return render_template('add_yield.html', form=form, location=location)
+    # form = YieldEntry()
+    # if form.validate_on_submit():
+    #     year = request.form['year']
+    #     season = request.form['season']
+    #     yield_obj = Yield(year=year,
+    #                       season=season,
+    #                       harvest_date=dt.strptime(request.form['harvest_date'], '%Y-%m-%d'),
+    #                       sell_date=dt.strptime(request.form['sell_date'], '%Y-%m-%d'),
+    #                       bags=request.form['bags'],
+    #                       bag_weight=request.form['bag_weight'],
+    #                       bag_rate=request.form['bag_rate'],
+    #                       buyer=request.form['buyer'])
+    #
+    #     # get corresponding sowing id if exists
+    #     sow_obj = db.session.query(Sowing).filter(Sowing.year == year,
+    #                                               Sowing.season == season,
+    #                                               Sowing.location == location).first()
+    #     if sow_obj and sow_obj is not None:
+    #         yield_obj.sowing_id = sow_obj.id
+    #
+    #     # db.session.add(yield_obj)
+    #     # db.session.commit()
+    #
+    #     flash(message='Yield for {}, {} at {} added'.format(season, year, location),
+    #           category='success')
+    #     return redirect(url_for('admin.homepage'))
+
+    # return render_template('add_yield.html', form=form, location=location)
+    return render_template('add_yield.html')
 
 
 @data_bp.route('/add-pumps', methods=['GET', 'POST'])
