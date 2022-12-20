@@ -44,9 +44,9 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(data_bp, url_prefix='/data')
 
-    db.init_app(app)
-    migrate.init_app(app, db)
     with app.app_context():
+        db.init_app(app)
+        migrate.init_app(app, db)
         db.create_all()
 
     return app
