@@ -14,6 +14,7 @@ class Fields(db.Model):
     field_extent = db.Column(db.Float)
 
     field_lands = db.relationship('Lands')
+    yields = db.relationship('Yields', foreign_keys="[Yields.location]")
 
     def __repr__(self):
         return f"Fields(id={self.id!r}, location={self.location!r}, " \
@@ -98,6 +99,8 @@ class Sowing(db.Model):
         #     self.expected_harvest = self.sowing_date + self.duration
 
     # def __init__(self, year, season, location, variety, field_area, bags, sowing_date):
+    # def __init__(self, **kwargs):
+    #     super(Sowing, self).__init__(**kwargs)
 
     def __repr__(self):
         return f"Sowing(id={self.id!r}, year={self.year!r}, season={self.season!r}, " \
@@ -133,6 +136,11 @@ class Yield(db.Model):
     __tablename__ = "yield"
 
     id = db.Column(db.Integer, primary_key=True)
+    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                                 'mannamuti', name='field_location'),
+                         db.ForeignKey('fields.location', onupdate='CASCADE',
+                                       ondelete='CASCADE'),
+                         index=True)
     sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
                                                     ondelete='CASCADE'), index=True)
     harvest_date = db.Column(db.Date)
@@ -146,6 +154,9 @@ class Yield(db.Model):
     weight = db.Column(db.Float)
 
     sow_info = db.relationship('Sowing', back_populates='yield_info', cascade='all, delete')
+
+    def __init__(self, **kwargs):
+        super(Yield, self).__init__(**kwargs)
 
     def set_income(self):
         self.income = self.bags * self.bag_rate
