@@ -90,7 +90,7 @@ class Sowing(db.Model):
     sowing_date = db.Column(db.Date)
     expected_harvest = db.Column(db.Date)
 
-    yield_info = db.relationship('Yield', back_populates='sow_info', cascade='all, delete', uselist=False)
+    # yield_info = db.relationship('Yields', back_populates='sow_info', cascade='all, delete', uselist=False)
 
     def calculate_harvest(self, days=None):
         # if days is not None:
@@ -132,17 +132,36 @@ class Equipments(db.Model):
                f"serviced_on={self.last_service!r})"
 
 
-class Yield(db.Model):
+# class YieldEntry(db.Model):
+#     __tablename__ = "yield_entry"
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     yield_entry_id = db.Column(db.Integer, db.ForeignKey('yield.id', onupdate='CASCADE', ondelete='CASCADE'))
+#     harvest_date = db.Column(db.Date)
+#     sell_date = db.Column(db.Date)
+#     bags = db.Column(db.Integer, nullable=False, default=0)
+#     bag_weight = db.Column(db.Float)
+#     bag_rate = db.Column(db.Float)
+#     buyer = db.Column(db.String(15))
+#
+#     def __repr__(self):
+#         return f"YieldEntry(harvested on={self.harvest_date!r}, sold on={self.sell_date!r}, bags={self.bags!r}, " \
+#                f"bag_rate={self.bag_rate!r}, buyer={self.buyer!r})"
+
+
+class Yields(db.Model):
     __tablename__ = "yield"
 
     id = db.Column(db.Integer, primary_key=True)
+    # year = db.Column(db.String(4), nullable=False, index=True)
+    # season = db.Column(db.String(10), nullable=False, index=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', name='field_location'),
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
-    sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
-                                                    ondelete='CASCADE'), index=True)
+    # sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
+    #                                                 ondelete='CASCADE'), index=True)
     harvest_date = db.Column(db.Date)
     sell_date = db.Column(db.Date)
 
@@ -153,10 +172,13 @@ class Yield(db.Model):
     income = db.Column(db.Float)
     weight = db.Column(db.Float)
 
-    sow_info = db.relationship('Sowing', back_populates='yield_info', cascade='all, delete')
+    # yield_info = db.relationship('YieldEntry')
+    # sow_info = db.relationship('Sowing', back_populates='yield_info', cascade='all, delete')
 
     def __init__(self, **kwargs):
-        super(Yield, self).__init__(**kwargs)
+        super(Yields, self).__init__(**kwargs)
+        self.set_weight()
+        self.set_income()
 
     def set_income(self):
         self.income = self.bags * self.bag_rate
@@ -166,7 +188,7 @@ class Yield(db.Model):
         self.weight = self.bags * self.bag_weight / 1000
 
     def __repr__(self):
-        return f"Yield(id={self.id!r}, sowing_id={self.sowing_id!r}, bags={self.bags!r}, " \
+        return f"Yield(id={self.id!r}, location={self.location!r}, bags={self.bags!r}, " \
                f"bag_rate={self.bag_rate!r}, buyer={self.buyer!r})"
 
 

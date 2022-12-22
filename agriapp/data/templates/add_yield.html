@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add yield
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+	<div class="col text-center">      
+      <p class="fs-4">Enter yield information for {{ location }}</p>
+    </div>
+
+    <form action="{{ url_for('data.add_yield', location=location) }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+    	{{ form.csrf_token() }}
+
+        <!-- row 1-->
+        <div class="row mb-2">            
+                             
+        </div>
+
+    	<!-- row 2 -->
+        <div data-toggle="fieldset" class="col mt-1" id="phone-fieldset">
+
+            <span>Add Yield&nbsp;<button type="button" class="btn btn-warning my-1" data-toggle="fieldset-add-row" data-target="#phone-fieldset">+</button></span>
+
+            {% for member in form.yields %}
+            <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry">                  
+                <div class="col">
+                    {{ member.harvest_date.label }}
+                    {{ member.harvest_date(class="form-control") }}     
+                    {% for err in member.harvest_date.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}                              
+                </div> 
+                <div class="col">
+                	{{ member.sell_date.label }}
+                    {{ member.sell_date(class="form-control") }}
+                    {% for err in member.sell_date.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}
+                </div>                 
+                <div class="col">
+                	{{ member.bags.label }}
+                    {{ member.bags(class="form-control", placeholder="1") }}     
+                    {% for err in member.bags.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}                              
+                </div>
+                <div class="col">
+                	{{ member.bag_weight.label }}
+                    {{ member.bag_weight(class="form-control", placeholder="60.5") }}     
+                    {% for err in member.bag_weight.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}                              
+                </div>
+                <div class="col">
+                	{{ member.bag_rate.label }}
+                    {{ member.bag_rate(class="form-control", placeholder="1000.0") }}     
+                    {% for err in member.bag_rate.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}                              
+                </div>
+                <div class="col">
+                	{{ member.buyer.label }}
+                    {{ member.buyer(class="form-control", placeholder="trader") }}     
+                    {% for err in member.buyer.errors %}
+                    <small class="form-text text-muted">{{ err }}</small>
+                    {% endfor %}                              
+                </div>
+
+                <div class="col mt-4">
+                    <!-- remove row button -->           
+                    <button class="btn btn-warning" type="button" data-toggle="fieldset-remove-row" id="item-{{loop.index0}}-remove">-</button>
+                </div>                              
+            </div>
+            {% endfor %}            
+        </div>           
+
+        <div class="col align-items-center text-center mb-1">
+            {{ form.submit(class="w-50 align-items-center btn btn-primary") }}
+        </div>        
+    	
+    </form>
+    	
+</div>
+{% endblock %}
+
+
+{% block script %}
+<!-- dynamic form js and jquery files-->
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/page.js') }}"></script>
+{% endblock %}
