@@ -165,10 +165,10 @@ class Yields(db.Model):
                f"season={self.season!r})"
 
 
-class Equipments(db.Model):
+class Equipment(db.Model):
     """all equipments (including water pumps)"""
 
-    __tablename__ = "equipment"
+    __tablename__ = "equipments"
 
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(10), unique=True, nullable=False, index=True)
