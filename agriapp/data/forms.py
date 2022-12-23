@@ -138,35 +138,28 @@ class YieldForm(FlaskForm):
     # id = db.Column(db.Integer, primary_key=True)
     # sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
     #                                                 ondelete='CASCADE'), index=True)
-    harvest_date = DateField('Harvested on', [DataRequired(message='Date of harvest required')])
+    harvest_date = DateField('Harvested on', [DataRequired(message='Harvest date required')])
     sell_date = DateField('Sold on', [Optional()])
     bags = IntegerField('# Bags', [DataRequired(message='# bags sold'),
                                            NumberRange(max=9999, message='# bags cannot be over 9999')],
                         default=1)
-    bag_weight = DecimalField('Kg/bag', [DataRequired(message='Weight of each bag')])
-    bag_rate = DecimalField('Rupees/bag', [DataRequired(message='Amount given per bag')])
-    buyer = StringField('Sold to', [DataRequired(message='Buyer designation required'),
+    bag_weight = DecimalField('Kg/bag', [DataRequired(message='Weight of one bag')])
+    bag_rate = DecimalField('Rupees/bag', [DataRequired(message='Amount per bag')])
+    buyer = StringField('Sold to', [DataRequired(message='give buyer name'),
                                     Length(max=15, message='Should be < 15 characters')])
 
 
 class YieldEntryForm(FlaskForm):
     """form to enter yield information"""
 
-    # year = StringField('Year', [Length(message='year should be four digits', min=4, max=4),
-    #                             DataRequired(message='enter year of sowing')])
-    # season = RadioField('Season', [DataRequired()],
-    #                     choices=[('summer', 'Kuruvai'),
-    #                              ('monsoon', 'Thaaladi'),
-    #                              ('other', 'Others')],
-    #                     default='summer')
-    location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
-                                                ('pallachi', 'Pallachi'),
-                                                ('potteri', 'Potteri'),
-                                                ('pokonanthoki', 'Pokananthoki'),
-                                                ('mannamuti', 'Mannamutti')],
-                           default='tgudi')
-    # field_extent = DecimalField('Extent (Acres)', [DataRequired()], places=1, rounding=None, default=0.0)
-
+    season = RadioField('Season', [DataRequired()],
+                        choices=[('summer', 'Kuruvai'),
+                                 ('monsoon', 'Thaaladi'),
+                                 ('other', 'Others')],
+                        default='summer')
+    year = StringField('Year', [Length(message='year should be four digits', min=4, max=4),
+                                DataRequired(message='enter year of sowing')])
+    location = StringField('location', [DataRequired(message='location of field required')])
     yields = FieldList(FormField(YieldForm), default=lambda: Yields())
 
     submit = SubmitField('Enter Yield Data for Season')

@@ -312,9 +312,6 @@ def view_sowing():
 def add_yield(location):
     """add yield data to agri db"""
 
-    # yield_obj = db.session.query(Yields).filter(Yields.location == location).all()
-    # field_obj = db.session.query(Fields).filter(Fields.location == location).first()
-    # if field_obj is None:
     field_obj = Fields(location=location)
     if field_obj is None or len(field_obj.yields) == 0:
         field_obj.yields = [Yields(location=location,
@@ -322,27 +319,14 @@ def add_yield(location):
                                    sell_date=date(2022, 12, 22),
                                    bags=30, bag_weight=62.0, bag_rate=1200,
                                    buyer='Trader')]
-    # elif field_obj and field_obj.yields is not None and len(field_obj.yields) == 0:
-    #     field_obj.yields = [Yields(harvest_date=date(2022, 12, 22),
-    #                                sell_date=date(2022, 12, 22),
-    #                                bags=30, bag_weight=62.0, bag_rate=1200,
-    #                                buyer='Trader')]
-    # elif field_obj and field_obj.yields is None:
-    #     field_obj.yields = [Yields(harvest_date=date(2022, 12, 22),
-    #                                sell_date=date(2022, 12, 22),
-    #                                bags=30, bag_weight=62.0, bag_rate=1200,
-    #                                buyer='Trader')]
 
     form = YieldEntryForm(obj=field_obj)
-    # form.location.data = location
-    # form.field_extent.data = field_obj.field_extent
     if form.validate_on_submit():
         # form.populate_obj(field_obj)
-        # year = request.form['year']
-        # season = request.form['season']
-        # input_yields = []
+        year = request.form['year']
+        season = request.form['season']
         for i_input in form.data['yields']:
-            input_yields = Yields(location=location,
+            input_yields = Yields(location=location, year=year, season=season,
                                   harvest_date=i_input['harvest_date'],
                                   sell_date=i_input['sell_date'],
                                   bags=i_input['bags'], bag_weight=i_input['bag_weight'],
@@ -353,23 +337,7 @@ def add_yield(location):
             db.session.add(input_yields)
             db.session.commit()
 
-    #     yield_obj = Yield(year=year,
-    #                       season=season,
-    #                       harvest_date=dt.strptime(request.form['harvest_date'], '%Y-%m-%d'),
-    #                       sell_date=dt.strptime(request.form['sell_date'], '%Y-%m-%d'),
-    #                       bags=request.form['bags'],
-    #                       bag_weight=request.form['bag_weight'],
-    #                       bag_rate=request.form['bag_rate'],
-    #                       buyer=request.form['buyer'])
-    #
-    #     # get corresponding sowing id if exists
-    #     sow_obj = db.session.query(Sowing).filter(Sowing.year == year,
-    #                                               Sowing.season == season,
-    #                                               Sowing.location == location).first()
-    #     if sow_obj and sow_obj is not None:
-    #         yield_obj.sowing_id = sow_obj.id
-
-        flash(message='Yield for {} season, {} at {} added'.format('none', 'none', location),
+        flash(message='Yield for {}, {} at {} added'.format(season, year, location),
               category='success')
         return redirect(url_for('admin.homepage'))
 
