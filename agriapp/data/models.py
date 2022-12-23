@@ -1,3 +1,5 @@
+import datetime
+
 from agriapp import db
 from datetime import timedelta
 
@@ -99,7 +101,13 @@ class Sowing(db.Model):
 
     def calculate_harvest(self):
         # self.expected_harvest = self.sowing_date + timedelta(days=int(days))
-        self.expected_harvest = self.sowing_date + timedelta(days=self.duration)
+        if type(self.sowing_date) == datetime.datetime:
+            if type(self.duration) == int:
+                self.expected_harvest = self.sowing_date + timedelta(days=self.duration)
+            else:
+                self.expected_harvest = self.sowing_date + timedelta(days=int(self.duration))
+        else:
+            self.expected_harvest = None
 
     def __init__(self, **kwargs):
         super(Sowing, self).__init__(**kwargs)
