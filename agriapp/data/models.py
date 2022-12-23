@@ -11,7 +11,7 @@ class Fields(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', 'trichy-home1', 'trichy-home2',
-                                 name='field_location'),
+                                 'house-yard', name='field_location'),
                          default='tgudi',
                          nullable=False, index=True)
     field_extent = db.Column(db.Float)
