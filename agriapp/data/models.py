@@ -19,6 +19,7 @@ class Fields(db.Model):
     field_lands = db.relationship('Lands')
     yields = db.relationship('Yields', foreign_keys="[Yields.location]")
     sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]")
+    equipment_info = db.relationship('Equipment', foreign_keys="[Equipment.location]")
 
     def __repr__(self):
         return f"Fields(id={self.id!r}, location={self.location!r}, " \
@@ -39,7 +40,7 @@ class Lands(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     field_location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                        'mannamuti', 'trichy-home1', 'trichy-home2',
-                                       name='field_location'),
+                                       'house-yard', name='field_location'),
                                db.ForeignKey('fields.location', ondelete='CASCADE',
                                              onupdate='CASCADE'))
     extent = db.Column(db.Float)
@@ -86,7 +87,7 @@ class Sowing(db.Model):
     season = db.Column(db.String(10), nullable=False, index=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', 'trichy-home1', 'trichy-home2',
-                                 name='field_location'),
+                                 'house-yard', name='field_location'),
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
@@ -128,7 +129,7 @@ class Yields(db.Model):
     season = db.Column(db.String(10), nullable=False, index=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', 'trichy-home1', 'trichy-home2',
-                                 name='field_location'),
+                                 'house-yard', name='field_location'),
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
@@ -177,9 +178,10 @@ class Equipment(db.Model):
                      nullable=False)
     geotag = db.Column(db.String(30))
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                 'mannamuti', 'none', name='field_location'),
-                         default='none',
-                         nullable=False, index=True)
+                                 'mannamuti', 'trichy-home1', 'trichy-home2',
+                                 'house-yard', name='field_location'),
+                         db.ForeignKey('fields.location', ondelete='CASCADE',
+                                       onupdate='CASCADE'))
     last_service = db.Column(db.Date, onupdate=db.func.now())
 
     def __repr__(self):
