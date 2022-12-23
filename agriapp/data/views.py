@@ -3,8 +3,8 @@ from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand
-from .forms import YieldEntryForm, YieldSowView
-from .models import Fields, Lands, Sowing, Yields
+from .forms import YieldEntryForm, YieldSowView, EquipmentEntry
+from .models import Fields, Lands, Sowing, Yields, Equipment
 from agriapp import db
 from datetime import datetime as dt
 from datetime import date
@@ -349,10 +349,23 @@ def add_yield(location):
     # return render_template('add_yield.html', location=location)
 
 
-@data_bp.route('/add-pumps', methods=['GET', 'POST'])
-def add_pump():
+@data_bp.route('/add-machinery', methods=['GET', 'POST'])
+def add_equipment():
     """add pump data to agri db"""
-    return render_template('add_pump.html')
+    form = EquipmentEntry()
+    if form.validate_on_submit():
+        equip_obj = Equipment(nickname=request.form['nickname'],
+                              type=request.form['type'],
+                              geotag=request.form['geotag'],
+                              location=request.form['location'])
+
+        db.session.add(equip_obj)
+        db.session.commit()
+
+        flash(message='Equipment successfully addedd', category='success')
+        return redirect(url_for('admin.homepage'))
+
+    return render_template('add_equipment.html', form=form)
 
 
 @data_bp.route('/add-expense', methods=['GET', 'POST'])

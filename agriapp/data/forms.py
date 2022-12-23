@@ -14,6 +14,9 @@ class FieldsForm(FlaskForm):
                                                                   ('potteri', 'Potteri'),
                                                                   ('pokonanthoki', 'Pokananthoki'),
                                                                   ('mannamuti', 'Mannamutti'),
+                                                                  ('trichy-home1', 'Home 1'),
+                                                                  ('trichy-home2', 'Home 2'),
+                                                                  ('house-yard', 'Therazhundhur'),
                                                                   ('none', 'Not Applicable')],
                            default='tgudi')
     field_extent = DecimalField('Extent (Acres)', [DataRequired()], places=1, rounding=None, default=0.0)
@@ -175,20 +178,26 @@ class EquipmentEntry(FlaskForm):
 
     nickname = StringField('Nickname', [DataRequired(message='Nickname for equipment required'),
                                         Length(max=10, message='Should be < 10 characters')])
-    type = SelectField(choices=[('motorbike', 'Motor Cycle'),
-                                ('pumps', 'Water Pump'),
-                                ('sprayer', 'Battery Sprayer'),
-                                ('tractor', 'Tractor'),
-                                ('transplanter', 'Transplanter')],
+    type = SelectField('Machinery Type', choices=[('motorbike', 'Motor Cycle'),
+                                                  ('pumps', 'Water Pump'),
+                                                  ('sprayer', 'Battery Sprayer'),
+                                                  ('tractor', 'Tractor'),
+                                                  ('transplanter', 'Transplanter')],
                        default='transplanter')
     geotag = StringField('GeoTag', [Optional()])
-    location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
-                                                ('pallachi', 'Pallachi'),
-                                                ('potteri', 'Potteri'),
-                                                ('pokonanthoki', 'Pokananthoki'),
-                                                ('mannamuti', 'Mannamutti')],
+    location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
+                                                                  ('pallachi', 'Pallachi'),
+                                                                  ('potteri', 'Potteri'),
+                                                                  ('pokonanthoki', 'Pokananthoki'),
+                                                                  ('mannamuti', 'Mannamutti'),
+                                                                  ('trichy-home1', 'Home 1'),
+                                                                  ('trichy-home2', 'Home 2'),
+                                                                  ('house-yard', 'Therazhundhur'),
+                                                                  ('none', 'Not Applicable')],
                            default='tgudi')
     last_service = DateField([Optional()])
+
+    submit = SubmitField('Add Equipment')
 
 
 class ExpenseEntry(FlaskForm):

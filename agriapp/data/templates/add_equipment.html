@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+Add Equipments/Pumps
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+	<div class="col text-center">      
+      <p class="fs-4">Enter equipment information</p>
+    </div>
+
+    <form action="{{ url_for('data.add_equipment') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+    	{{ form.csrf_token() }}
+
+        <!-- row 1-->
+        <div class="row mb-2">            
+            <div class="form-group col">
+                {{ form.nickname.label }}
+                {{ form.nickname(class="form-control", id="floatingInput", placeholder='nickname') }}
+                {{ macro.err_out(form.nickname.errors) }}                    
+            </div>   
+            <div class="form-group col">
+                {{ form.type.label }}
+                {{ form.type(class="form-control", id="floatingInput") }}                
+            </div>  
+            <div class="form-group col">
+                {{ form.location.label }}
+                {{ form.location(class="form-control", id="floatingInput") }}                
+            </div>   
+            <div class="form-group col">
+                {{ form.geotag.label }}
+                {{ form.geotag(class="form-control", id="floatingInput", placeholder='geotag') }}
+                {{ macro.err_out(form.geotag.errors) }}
+            </div>       
+        </div>    	     
+
+        <div class="col align-items-center text-center mb-1">
+            {{ form.submit(class="w-50 align-items-center btn btn-primary") }}
+        </div>        
+    	
+    </form>
+    	
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- dynamic form js and jquery files-->
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/page.js') }}"></script>
+{% endblock %}
