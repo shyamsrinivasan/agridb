@@ -277,8 +277,9 @@ def add_sowing():
                          sowing_date=dt.strptime(request.form['sowing_date'], '%Y-%m-%d'),
                          field_area=request.form['sow_info-field_area'],
                          variety=request.form['sow_info-variety'],
-                         bags=request.form['sow_info-bags'])
-        sow_obj.calculate_harvest(request.form['sow_info-duration'])
+                         bags=request.form['sow_info-bags'],
+                         duration=int(request.form['sow_info-duration']))
+        # sow_obj.calculate_harvest(request.form['sow_info-duration'])
         db.session.add(sow_obj)
         db.session.commit()
 
