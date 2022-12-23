@@ -298,11 +298,18 @@ def view_sowing():
         year = request.form['year']
         season = request.form['season']
 
-        # search data for year and season in db
-        sow_data = db.session.query(Sowing).filter(Sowing.year == year,
-                                                   Sowing.season == season).all()
+        if season == 'full_year':
+            # search data for all year
+            sow_data = db.session.query(Sowing).filter(Sowing.year == year).all()
+        elif season == 'all':
+            sow_data = db.session.query(Sowing).all()
+        else:
+            # search data for year and season in db
+            sow_data = db.session.query(Sowing).filter(Sowing.year == year,
+                                                       Sowing.season == season).all()
+
         if sow_data and sow_data is not None:
-            render_template('view_sowing', result=sow_data, year=year, season=season)
+            return render_template('view_sowing.html', result=sow_data, year=year, season=season)
         else:
             flash(message='No sowing data available for requested period.', category='primary')
 

@@ -127,7 +127,9 @@ class SowView(FlaskForm):
     season = RadioField('Season', [DataRequired()],
                         choices=[('summer', 'Kuruvai'),
                                  ('monsoon', 'Thaaladi'),
-                                 ('other', 'Others')],
+                                 ('other', 'Others'),
+                                 ('full_year', 'Full Year'),
+                                 ('all', 'All')],
                         default='summer')
     submit = SubmitField('View Sowing Data for Season')
 
