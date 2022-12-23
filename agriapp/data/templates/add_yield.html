@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macro %}
 
 {% block title %}
 Add yield
@@ -7,15 +8,33 @@ Add yield
 {% block content %}
 <div class="col align-self-start mx-1">
 	<div class="col text-center">      
-      <p class="fs-4">Enter yield information for {{ location }}</p>
+      <p class="fs-4">Enter yield information for {{ macro.loc_name(location) }}</p>
     </div>
 
     <form action="{{ url_for('data.add_yield', location=location) }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
     	{{ form.csrf_token() }}
 
         <!-- row 1-->
-        <div class="row mb-2">            
-                             
+        <div class="row mb-2">      
+            <div class="form-group col">
+                {{ form.season.label }}
+                <div class="mt-2">
+                {% for subfield in form.season %}                                        
+                    {{ subfield(id="floatingInput") }}
+                    {{ subfield.label }}                                    
+                {% endfor %} 
+                </div>         
+            </div>   
+            <div class="form-group col">
+                {{ form.year.label }}
+                {{ form.year(class="form-control", id="floatingInput") }}
+                {{ macro.err_out(form.year.errors) }}
+            </div>   
+            <div class="form-group col">
+                {{ form.location.label }}
+                {{ form.location(class="form-control", id="floatingInput", readonly=True) }}
+                {{ macro.err_out(form.location.errors) }}      
+            </div>                           
         </div>
 
     	<!-- row 2 -->
@@ -27,45 +46,33 @@ Add yield
             <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry">                  
                 <div class="col">
                     {{ member.harvest_date.label }}
-                    {{ member.harvest_date(class="form-control") }}     
-                    {% for err in member.harvest_date.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ member.harvest_date(class="form-control") }}   
+                    {{ macro.err_out(member.harvest_date.errors) }}                      
                 </div> 
                 <div class="col">
                 	{{ member.sell_date.label }}
                     {{ member.sell_date(class="form-control") }}
-                    {% for err in member.sell_date.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}
+                    {{ macro.err_out(member.sell_date.errors) }}                    
                 </div>                 
                 <div class="col">
                 	{{ member.bags.label }}
-                    {{ member.bags(class="form-control", placeholder="1") }}     
-                    {% for err in member.bags.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ member.bags(class="form-control", placeholder="1") }}    
+                    {{ macro.err_out(member.bags.errors) }}                     
                 </div>
                 <div class="col">
                 	{{ member.bag_weight.label }}
                     {{ member.bag_weight(class="form-control", placeholder="60.5") }}     
-                    {% for err in member.bag_weight.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ macro.err_out(member.bag_weight.errors) }}                     
                 </div>
                 <div class="col">
                 	{{ member.bag_rate.label }}
                     {{ member.bag_rate(class="form-control", placeholder="1000.0") }}     
-                    {% for err in member.bag_rate.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ macro.err_out(member.bag_rate.errors) }}                                 
                 </div>
                 <div class="col">
                 	{{ member.buyer.label }}
                     {{ member.buyer(class="form-control", placeholder="trader") }}     
-                    {% for err in member.buyer.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ macro.err_out(member.buyer.errors) }}                   
                 </div>
 
                 <div class="col mt-4">

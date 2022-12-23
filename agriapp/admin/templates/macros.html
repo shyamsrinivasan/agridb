@@ -1,0 +1,22 @@
+{% macro err_out(errors) -%}
+	{% for err in errors %}
+	<small class="form-text text-muted">{{ err }}</small>
+	{% endfor %}
+{%- endmacro %}
+
+{% macro loc_name(designation) -%}
+	{% if designation == 'tgudi' %}
+		{{ 'Thozuthalangudi' }}
+	
+	{% elif designation == 'pallachi' %}
+		{{ 'Pallachi' }}
+
+	{% elif designation == 'potteri' %}
+		{{ 'Potteri' }}	
+
+	{% else %}
+		{{ 'None' }}
+
+	{% endif %}
+
+{%- endmacro %}

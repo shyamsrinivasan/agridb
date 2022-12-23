@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macro %}
 
 {% block title %}
 Add Lands
@@ -9,7 +10,7 @@ Add Lands
     
     {% if result %}
     <div class="col text-center bg-dark text-white">      
-      <p class="fs-4">Existing land information at {{ location }}</p>
+      <p class="fs-4">Existing land information at {{ macro.loc_name(location) }}</p>
     </div>
 
     <!-- table of land results -->
@@ -54,16 +55,12 @@ Add Lands
             <div class="form-group col">
                 {{ form.location.label }}
                 {{ form.location(class="form-control", id="floatingInput", readonly=True) }}
-                {% for error in form.location.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
+                {{ macro.err_out(form.location.errors) }}                
             </div>  
             <div class="form-group col">
                 {{ form.field_extent.label }}
                 {{ form.field_extent(class="form-control", id="floatingInput", readonly=True) }}
-                {% for error in form.field_extent.errors %}
-                <small class="form-text text-muted">{{ error }}</small>  
-                {% endfor %}
+                {{ macro.err_out(form.field_extent.errors) }}                
             </div>                  
         </div>
 
@@ -76,38 +73,28 @@ Add Lands
             <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry">                  
                 <div class="col">
                     {{ member.extent.label }}
-                    {{ member.extent(class="form-control", placeholder="0.0") }}     
-                    {% for err in member.extent.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ member.extent(class="form-control", placeholder="0.0") }}    
+                    {{ macro.err_out(member.extent.errors) }}                     
                 </div> 
                 <div class="col">
                 	{{ member.geotag.label }}
                     {{ member.geotag(class="form-control", palceholder="geo tag") }}
-                    {% for err in member.geotag.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}
+                    {{ macro.err_out(member.geotag.errors) }}                    
                 </div>                 
                 <div class="col">
                 	{{ member.owner.label }}
-                    {{ member.owner(class="form-control", placeholder="nobody") }}     
-                    {% for err in member.owner.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ member.owner(class="form-control", placeholder="nobody") }}  
+                    {{ macro.err_out(member.owner.errors) }}                    
                 </div>
                 <div class="col">
                 	{{ member.survey.label }}
-                    {{ member.survey(class="form-control", placeholder="1/1") }}     
-                    {% for err in member.survey.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ member.survey(class="form-control", placeholder="1/1") }}    
+                    {{ macro.err_out(member.survey.errors) }}        
                 </div>
                 <div class="col">
                 	{{ member.deed.label }}
-                    {{ member.deed(class="form-control", placeholder="1/1") }}     
-                    {% for err in member.deed.errors %}
-                    <small class="form-text text-muted">{{ err }}</small>
-                    {% endfor %}                              
+                    {{ member.deed(class="form-control", placeholder="1/1") }}
+                    {{ macro.err_out(member.deed.errors) }}     
                 </div>
 
                 <div class="col mt-4">
