@@ -119,21 +119,6 @@ class SowingEntry(FlaskForm):
     submit = SubmitField('Add Sowing Data')
 
 
-class SowView(FlaskForm):
-    """choose year and season to view sowing data"""
-
-    year = StringField('Year', [Length(message='year should be a four digits', min=4, max=4),
-                                DataRequired(message='enter year of sowing')])
-    season = RadioField('Season', [DataRequired()],
-                        choices=[('summer', 'Kuruvai'),
-                                 ('monsoon', 'Thaaladi'),
-                                 ('other', 'Others'),
-                                 ('full_year', 'Full Year'),
-                                 ('all', 'All')],
-                        default='summer')
-    submit = SubmitField('View Sowing Data for Season')
-
-
 class YieldForm(FlaskForm):
     """form for yield information"""
 
@@ -165,6 +150,24 @@ class YieldEntryForm(FlaskForm):
     yields = FieldList(FormField(YieldForm), default=lambda: Yields())
 
     submit = SubmitField('Enter Yield Data for Season')
+
+
+class YieldSowView(FlaskForm):
+    """enter information to view yield and/or sow"""
+
+    year = StringField('Year', [Length(message='year should be a four digits', min=4, max=4),
+                                DataRequired(message='enter year of sowing')])
+    season = SelectField('Season', [DataRequired()],
+                         choices=[('summer', 'Kuruvai'),
+                                  ('monsoon', 'Thaaladi'),
+                                  ('other', 'Others'),
+                                  ('full_year', 'Full Year'),
+                                  ('all_data', 'All Data')],
+                         default='summer')
+    choice = SelectField('Type', [Optional()], choices=[('yield', 'Yield'),
+                                                        ('sow', 'Sowing'),
+                                                        ('both', 'Both')])
+    submit = SubmitField('View Data')
 
 
 class EquipmentEntry(FlaskForm):

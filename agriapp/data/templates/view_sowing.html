@@ -11,14 +11,18 @@ View Sowing Information
 	{% if result is defined and result %}    
     {% if season == 'full_year' %}
     <div class="col text-center mt-2">      
-      <p class="fs-4">Showing annual sowing data for {{ year }}</p>
+      <p class="fs-4">Showing annual {{ choice }} data for {{ year }}</p>
     </div>
     <table class="table table-hover">
       <thead> 
         <tr>  
           <th scope="col">#</th>  
-          <th scope="col">Location</th>           
+          <th scope="col">Location</th>  
+          {% if choice == 'sow' %}         
           <th scope="col">Area (Acres)</th>
+          {% elif choice == 'yield' %}
+          <th scope="col">Rate/bag (R)</th>
+          {% endif %}
           <th scope="col">Variety</th>
           <th scope="col" class="align-center">Bags</th> 
           <th scope="col">Season</th>
@@ -29,7 +33,11 @@ View Sowing Information
         <tr>      
           <td>{{ loop.index }}</td>     
           <td>{{ lands.location }}</td>
+          {% if choice == 'sow' %}
           <td>{{ lands.field_area }}</td>
+          {% elif choice == 'yield' %}
+          <td>{{ lands.bag_rate }}</td>
+          {% endif %}
           <td>{{ lands.variety }}</td>
           <td>{{ lands.bags }}</td>
           <td>{{ lands.season }}</td>
@@ -37,16 +45,58 @@ View Sowing Information
         {% endfor %}
       </tbody>      
     </table>
-    {% elif season == 'all' %}
+
+    {% elif year == '0000' %}
     <div class="col text-center mt-2">      
-      <p class="fs-4">Showing all sowing data</p>
+      <p class="fs-4">Showing all {{ season }} {{ choice }} data</p>
     </div>    
     <table class="table table-hover">
       <thead> 
         <tr>  
           <th scope="col">#</th>  
           <th scope="col">Location</th>           
+          {% if choice == 'sow' %}         
           <th scope="col">Area (Acres)</th>
+          {% elif choice == 'yield' %}
+          <th scope="col">Rate/bag (R)</th>
+          {% endif %}
+          <th scope="col">Variety</th>
+          <th scope="col" class="align-center">Bags</th>
+          <th scope="col">Year</th>          
+        </tr>       
+      </thead>
+      <tbody>  
+        {% for lands in result %}
+        <tr>      
+          <td>{{ loop.index }}</td>     
+          <td>{{ lands.location }}</td>
+          {% if choice == 'sow' %}
+          <td>{{ lands.field_area }}</td>
+          {% elif choice == 'yield' %}
+          <td>{{ lands.bag_rate }}</td>
+          {% endif %}
+          <td>{{ lands.variety }}</td>
+          <td>{{ lands.bags }}</td>
+          <td>{{ lands.year }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>      
+    </table> 
+
+    {% elif season == 'all_data' %}
+    <div class="col text-center mt-2">      
+      <p class="fs-4">Showing all {{ choice }} data</p>
+    </div>    
+    <table class="table table-hover">
+      <thead> 
+        <tr>  
+          <th scope="col">#</th>  
+          <th scope="col">Location</th>           
+          {% if choice == 'sow' %}         
+          <th scope="col">Area (Acres)</th>
+          {% elif choice == 'yield' %}
+          <th scope="col">Rate/bag (R)</th>
+          {% endif %}
           <th scope="col">Variety</th>
           <th scope="col" class="align-center">Bags</th>
           <th scope="col">Year</th>
@@ -58,7 +108,11 @@ View Sowing Information
         <tr>      
           <td>{{ loop.index }}</td>     
           <td>{{ lands.location }}</td>
+          {% if choice == 'sow' %}
           <td>{{ lands.field_area }}</td>
+          {% elif choice == 'yield' %}
+          <td>{{ lands.bag_rate }}</td>
+          {% endif %}
           <td>{{ lands.variety }}</td>
           <td>{{ lands.bags }}</td>
           <td>{{ lands.year }}</td>
@@ -69,18 +123,26 @@ View Sowing Information
     </table> 
     {% else %}
     <div class="col text-center mt-2">      
-      <p class="fs-4">Showing sowing data for {{ season }}, {{ year }}</p>
+      <p class="fs-4">Showing {{ choice }} data for {{ season }}, {{ year }}</p>
     </div>    
     <table class="table table-hover">
     	<thead> 
     		<tr>  
           <th scope="col">#</th>  
-          <th scope="col">Location</th>						
-    			<th scope="col">Area (Acres)</th>
-    			<th scope="col">Variety</th>
-    			<th scope="col" class="align-center">Bags</th>
-    			<th scope="col">Sowed On</th>
+          <th scope="col">Location</th>	
+          <th scope="col">Variety</th>
+          <th scope="col" class="align-center">Bags</th>
+    			
+          {% if choice == 'sow' %}                   
+          <th scope="col">Area (Acres)</th>
+          <th scope="col">Sowed On</th>
           <th scope="col">Expected Harvest</th>
+          
+          {% elif choice == 'yield' %}          
+          <th scope="col">Rate/bag (R)</th>
+          <th scope="col">Buyer</th>
+          <th scope="col">Weight/bag (Kg)</th>
+          {% endif %}   			
     		</tr>   		
     	</thead>
     	<tbody>  
@@ -88,11 +150,19 @@ View Sowing Information
     		<tr>    	
           <td>{{ loop.index }}</td>			
           <td>{{ lands.location }}</td>
-    			<td>{{ lands.field_area }}</td>
-    			<td>{{ lands.variety }}</td>
-    			<td>{{ lands.bags }}</td>
-    			<td>{{ lands.sowing_date }}</td>
+          <td>{{ lands.variety }}</td>
+          <td>{{ lands.bags }}</td>
+    			
+          {% if choice == 'sow' %}
+          <td>{{ lands.field_area }}</td>
+          <td>{{ lands.sowing_date }}</td>
           <td>{{ lands.expected_harvest }}</td>
+          
+          {% elif choice == 'yield' %}
+          <td>{{ lands.bag_rate }}</td>
+          <td>{{ lands.buyer }}</td>
+          <td>{{ lands.bag_weight }}</td>
+          {% endif %}    			
     		</tr>
     		{% endfor %}
     	</tbody>    	
@@ -101,37 +171,35 @@ View Sowing Information
 
   {% else %}    
   <div class="col text-center">      
-    <p class="fs-4">Enter Year and Season to display data</p>
+    <p class="fs-4">Enter Year and Season to display Yield/Sowing data</p>
   </div>  
 
   <!-- form to input land location and ID for removal-->
-  <form action="{{ url_for('data.view_sowing') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+  <form action="{{ url_for('data.view_yield_sowing') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
     {{ form.csrf_token() }}
 
-      <!-- row 1-->
-      <div class="row mb-2">                        
-          <div class="form-group col-md-2">
-              {{ form.year.label }}
-              {{ form.year(class="form-control", id="floatingInput") }}
-              {% for error in form.year.errors %}
-              <small class="form-text text-muted">{{ error }}</small>  
-              {% endfor %}
-          </div>  
+    <!-- row 1-->
+    <div class="row mb-2">        
+      <div class="form-group col-md-2">
+        {{ form.year.label }}
+        {{ form.year(class="form-control", id="floatingInput") }}
+        {{ macro.err_out(form.year.errors) }}              
+      </div>  
 
-          <div class="form-group col-md-6">
-              {{ form.season.label }}
-              <div class="mt-2">
-                {% for subfield in form.season %}                                           
-                    {{ subfield(id="floatingInput") }}
-                    {{ subfield.label }}                                    
-                {% endfor %} 
-              </div>                 
-          </div> 
+      <div class="form-group col">
+        {{ form.season.label }}
+        {{ form.season(class="form-control", id="floatingInput") }}
+      </div> 
 
-          <div class="col-md-2 align-items-center text-center mt-3">
-              {{ form.submit(class="align-items-center btn btn-primary") }}
-          </div>                 
-      </div>          
+      <div class="form-group col">
+        {{ form.choice.label }}
+        {{ form.choice(class="form-control", id="floatingInput")}}
+      </div>
+
+      <div class="col-md-2 align-items-center text-center mt-3">
+          {{ form.submit(class="align-items-center btn btn-primary") }}
+      </div>                 
+    </div>          
   </form>    
 
 	{% endif %}    

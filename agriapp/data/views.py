@@ -2,8 +2,8 @@ from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
-from .forms import SowingEntry, RemoveFields, RemoveLand, SowView
-from .forms import YieldEntryForm
+from .forms import SowingEntry, RemoveFields, RemoveLand
+from .forms import YieldEntryForm, YieldSowView
 from .models import Fields, Lands, Sowing, Yields
 from agriapp import db
 from datetime import datetime as dt
@@ -289,29 +289,25 @@ def add_sowing():
     return render_template('add_sowing.html', form=form)
 
 
-@data_bp.route('/view/sowing', methods=['GET', 'POST'])
-def view_sowing():
+@data_bp.route('/view/yield-sowing', methods=['GET', 'POST'])
+def view_yield_sowing():
     """view sowing data for given season"""
 
-    form = SowView()
+    form = YieldSowView()
     if form.validate_on_submit():
         year = request.form['year']
         season = request.form['season']
+        choice = request.form['choice']
 
-        if season == 'full_year':
-            # search data for all year
-            sow_data = db.session.query(Sowing).filter(Sowing.year == year).all()
-        elif season == 'all':
-            sow_data = db.session.query(Sowing).all()
-        else:
-            # search data for year and season in db
-            sow_data = db.session.query(Sowing).filter(Sowing.year == year,
-                                                       Sowing.season == season).all()
+        data_func = data_factory(choice)
+        data = data_func(season, year)
 
-        if sow_data and sow_data is not None:
-            return render_template('view_sowing.html', result=sow_data, year=year, season=season)
+        if data and data is not None:
+            return render_template('view_sowing.html', result=data,
+                                   year=year, season=season, choice=choice)
         else:
-            flash(message='No sowing data available for requested period.', category='primary')
+            flash(message='No {} data available for requested period.'.format(choice),
+                  category='primary')
 
     return render_template('view_sowing.html', form=form)
 
@@ -376,4 +372,44 @@ def check_land_present(land_objs):
     return survey_deed_check
 
 
+def data_factory(choice):
+    if choice == 'yield':
+        return get_desired_yield
+    elif choice == 'sow':
+        return get_desired_sowing
 
+
+def get_desired_yield(season, year, location=None):
+    """get desired yield data from db"""
+    if season == 'full_year':
+        # search data for all seasons in given year
+        yield_data = db.session.query(Yields).filter(Yields.year == year).all()
+    elif year == '0000':
+        # search data for all years in given season
+        yield_data = db.session.query(Yields).filter(Yields.season == season).all()
+    elif season == 'all_data':
+        # search all yield data
+        yield_data = db.session.query(Yields).all()
+    else:
+        # search data for year and season in db
+        yield_data = db.session.query(Yields).filter(Yields.year == year,
+                                                     Yields.season == season).all()
+    return yield_data
+
+
+def get_desired_sowing(season, year, location=None):
+    """get desired sowing data from db"""
+    if season == 'full_year':
+        # search data for all seasons in given year
+        sow_data = db.session.query(Sowing).filter(Sowing.year == year).all()
+    elif year == '0000':
+        # search data for all years in given season
+        sow_data = db.session.query(Sowing).filter(Sowing.season == season).all()
+    elif season == 'all_data':
+        # search all sowing data
+        sow_data = db.session.query(Sowing).all()
+    else:
+        # search sowing data for year and season in db
+        sow_data = db.session.query(Sowing).filter(Sowing.year == year,
+                                                   Sowing.season == season).all()
+    return sow_data
