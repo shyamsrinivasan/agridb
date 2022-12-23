@@ -153,8 +153,8 @@ class Yields(db.Model):
     __tablename__ = "yield"
 
     id = db.Column(db.Integer, primary_key=True)
-    # year = db.Column(db.String(4), nullable=False, index=True)
-    # season = db.Column(db.String(10), nullable=False, index=True)
+    year = db.Column(db.String(4), nullable=False, index=True)
+    season = db.Column(db.String(10), nullable=False, index=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
                                  'mannamuti', name='field_location'),
                          db.ForeignKey('fields.location', onupdate='CASCADE',
