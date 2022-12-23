@@ -8,13 +8,15 @@ class Fields(db.Model):
     __tablename__ = "fields"
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                 'mannamuti', name='field_location'),
+                                 'mannamuti', 'trichy-home1', 'trichy-home2',
+                                 name='field_location'),
                          default='tgudi',
                          nullable=False, index=True)
     field_extent = db.Column(db.Float)
 
     field_lands = db.relationship('Lands')
     yields = db.relationship('Yields', foreign_keys="[Yields.location]")
+    sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]")
 
     def __repr__(self):
         return f"Fields(id={self.id!r}, location={self.location!r}, " \
@@ -34,7 +36,8 @@ class Lands(db.Model):
     __tablename__ = "lands"
     id = db.Column(db.Integer, primary_key=True)
     field_location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                       'mannamuti', name='field_location'),
+                                       'mannamuti', 'trichy-home1', 'trichy-home2',
+                                       name='field_location'),
                                db.ForeignKey('fields.location', ondelete='CASCADE',
                                              onupdate='CASCADE'))
     extent = db.Column(db.Float)
@@ -80,7 +83,8 @@ class Sowing(db.Model):
     year = db.Column(db.String(4), nullable=False, index=True)
     season = db.Column(db.String(10), nullable=False, index=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                 'mannamuti', name='field_location'),
+                                 'mannamuti', 'trichy-home1', 'trichy-home2',
+                                 name='field_location'),
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
@@ -88,65 +92,24 @@ class Sowing(db.Model):
     field_area = db.Column(db.Float)
     bags = db.Column(db.Integer)
     sowing_date = db.Column(db.Date)
+    duration = db.Column(db.Integer, nullable=False, default=110)
     expected_harvest = db.Column(db.Date)
 
     # yield_info = db.relationship('Yields', back_populates='sow_info', cascade='all, delete', uselist=False)
 
-    def calculate_harvest(self, days=None):
-        # if days is not None:
-        self.expected_harvest = self.sowing_date + timedelta(days=int(days))
-        # else:
-        #     self.expected_harvest = self.sowing_date + self.duration
+    def calculate_harvest(self):
+        # self.expected_harvest = self.sowing_date + timedelta(days=int(days))
+        self.expected_harvest = self.sowing_date + timedelta(days=self.duration)
 
-    # def __init__(self, year, season, location, variety, field_area, bags, sowing_date):
-    # def __init__(self, **kwargs):
-    #     super(Sowing, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(Sowing, self).__init__(**kwargs)
+        self.calculate_harvest()
 
     def __repr__(self):
         return f"Sowing(id={self.id!r}, year={self.year!r}, season={self.season!r}, " \
                f"location={self.location!r}, variety={self.variety!r}" \
                f"bags={self.bags!r}, sowed_on={self.sowing_date!r}, " \
                f"harvest={self.expected_harvest!r})"
-
-
-class Equipments(db.Model):
-    """all equipments (including water pumps)"""
-
-    __tablename__ = "equipment"
-
-    id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(10), unique=True, nullable=False, index=True)
-    type = db.Column(db.Enum('motorbike', 'pumps', 'sprayer', 'tractor', 'transplanter',
-                             name='equipment_type'), default='transplanter',
-                     nullable=False)
-    geotag = db.Column(db.String(30))
-    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                 'mannamuti', 'none', name='field_location'),
-                         default='none',
-                         nullable=False, index=True)
-    last_service = db.Column(db.Date, onupdate=db.func.now())
-
-    def __repr__(self):
-        return f"Equipments(id={self.id!r}, type={self.type!r}, location={self.location!r}, " \
-               f"nickname={self.nickname!r}," \
-               f"serviced_on={self.last_service!r})"
-
-
-# class YieldEntry(db.Model):
-#     __tablename__ = "yield_entry"
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     yield_entry_id = db.Column(db.Integer, db.ForeignKey('yield.id', onupdate='CASCADE', ondelete='CASCADE'))
-#     harvest_date = db.Column(db.Date)
-#     sell_date = db.Column(db.Date)
-#     bags = db.Column(db.Integer, nullable=False, default=0)
-#     bag_weight = db.Column(db.Float)
-#     bag_rate = db.Column(db.Float)
-#     buyer = db.Column(db.String(15))
-#
-#     def __repr__(self):
-#         return f"YieldEntry(harvested on={self.harvest_date!r}, sold on={self.sell_date!r}, bags={self.bags!r}, " \
-#                f"bag_rate={self.bag_rate!r}, buyer={self.buyer!r})"
 
 
 class Yields(db.Model):
@@ -156,7 +119,8 @@ class Yields(db.Model):
     year = db.Column(db.String(4), nullable=False, index=True)
     season = db.Column(db.String(10), nullable=False, index=True)
     location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                                 'mannamuti', name='field_location'),
+                                 'mannamuti', 'trichy-home1', 'trichy-home2',
+                                 name='field_location'),
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
@@ -189,7 +153,31 @@ class Yields(db.Model):
 
     def __repr__(self):
         return f"Yield(id={self.id!r}, location={self.location!r}, bags={self.bags!r}, " \
-               f"bag_rate={self.bag_rate!r}, buyer={self.buyer!r})"
+               f"bag_rate={self.bag_rate!r}, buyer={self.buyer!r}, year={self.year!r}, " \
+               f"season={self.season!r})"
+
+
+class Equipments(db.Model):
+    """all equipments (including water pumps)"""
+
+    __tablename__ = "equipment"
+
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(10), unique=True, nullable=False, index=True)
+    type = db.Column(db.Enum('motorbike', 'pumps', 'sprayer', 'tractor', 'transplanter',
+                             name='equipment_type'), default='transplanter',
+                     nullable=False)
+    geotag = db.Column(db.String(30))
+    location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                                 'mannamuti', 'none', name='field_location'),
+                         default='none',
+                         nullable=False, index=True)
+    last_service = db.Column(db.Date, onupdate=db.func.now())
+
+    def __repr__(self):
+        return f"Equipments(id={self.id!r}, type={self.type!r}, location={self.location!r}, " \
+               f"nickname={self.nickname!r}," \
+               f"serviced_on={self.last_service!r})"
 
 
 class Account(db.Model):
