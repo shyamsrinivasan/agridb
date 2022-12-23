@@ -36,33 +36,33 @@
 	<div class="container-fluid my-1">
 		<ul class="nav nav-pills bg-light">
 		  <li class="nav-item">
-		    <a class="nav-link" href="{{ url_for('admin.homepage') }}">Home</a>
+		    <a class="nav-link" href="{{ url_for('admin.homepage') }}"><i class="fa-solid fa-house"></i>&nbsp;Home</a>
 		  </li>
 		  <li class="nav-item dropdown">
-		    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">User</a>
+		    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-house-chimney-user"></i>&nbsp;User</a>
 		    <div class="dropdown-menu">
 		    	{% if current_user.is_anonymous %}
 		    	<a class="dropdown-item" href="{{ url_for('user.login') }}"><i class="fa-solid fa-user fa-fw"></i>&nbsp;Login</a>
 		    	{% else %}
-		      	<a class="dropdown-item" href="#">Dashboard</a>
+		      	<a class="dropdown-item disabled" href="#">Dashboard</a>
 		      	<a class="dropdown-item" href="{{ url_for('user.add_user') }}">Add</a>
 		      	<a class="dropdown-item disabled" href="#">Search</a>
 		      	<a class="dropdown-item disabled" href="#">Remove</a>
 		      	<div class="dropdown-divider"></div>
 		      	<a class="dropdown-item disabled" href="{{ url_for('user.logout') }}">Profile</a>
-		      	<a class="dropdown-item" href="{{ url_for('user.change_password', username=current_user.username) }}">Change Password</a>
-		      	<a class="dropdown-item" href="{{ url_for('user.logout') }}">Logout</a>
+		      	<a class="dropdown-item" href="{{ url_for('user.change_password', username=current_user.username) }}"><i class="fa-solid fa-unlock-keyhole"></i>&nbsp;Change Password</a>
+		      	<a class="dropdown-item" href="{{ url_for('user.logout') }}"><i class="fa-solid fa-person-running"></i>&nbsp;Logout</a>
 		      	{% endif %}
 		    </div>
 		  </li>		
 		  <li class="nav-item dropdowm">
 		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">View Data</a>
 		  	<div class="dropdown-menu">
-		  		<a class="dropdown-item" href="{{ url_for('data.view_sowing') }}">Sowing</a>
-		  		<a class="dropdown-item disabled" href="#">Yield</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.view_sowing') }}"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a>
+		  		<a class="dropdown-item disabled" href="#"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a>
 		  		<div class="dropdown-divider"></div>
-		  		<a class="dropdown-item" href="{{ url_for('data.view_field') }}">Field</a>
-		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='view_land') }}">Land</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.view_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Field</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='view_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Land</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.view_all_lands') }}">Land and Field</a>
 		  		<a class="dropdown-item disabled" href="#">Equipment</a>		  		
 		  	</div>		  	
@@ -70,11 +70,11 @@
 		  <li class="nav-item dropdowm">
 		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Add Data</a>
 		  	<div class="dropdown-menu">
-		  		<a class="dropdown-item" href="{{ url_for('data.add_sowing') }}">Sowing</a>
-		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='add_yield') }}">Yield</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.add_sowing') }}"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='add_yield') }}"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a>
 		  		<div class="dropdown-divider"></div>
-		  		<a class="dropdown-item" href="{{ url_for('data.add_field') }}">Field</a>
-		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='add_land') }}">Land</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.add_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Field</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='add_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Land</a>
 		  		<a class="dropdown-item disabled" href="#">Equipment</a>		  		
 		  	</div>		  	
 		  </li>  
@@ -83,30 +83,30 @@
 		  <li class="nav-item dropdowm">
 		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Remove Data</a>
 		  	<div class="dropdown-menu">
-		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='remove_field') }}">Field</a>
-		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='remove_land') }}">Land</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='remove_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Field</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='remove_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Land</a>
 		  		<a class="dropdown-item disabled" href="#">Equipment</a>
-		  		<a class="dropdown-item disabled" href="#">Sowing</a>
+		  		<a class="dropdown-item disabled" href="#"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a>
 		  		<a class="dropdown-item disabled" href="#">Yield</a>
 		  	</div>		  	
 		  </li>  
 		  {% endif %}
 		  <li class="nav-item">
-		    <a class="nav-link disabled" href="{{ url_for('admin.faq') }}">FAQs</a>
+		    <a class="nav-link disabled" href="{{ url_for('admin.faq') }}"><i class="fa-solid fa-question"></i>&nbsp;FAQs</a>
 		  </li>
 		  <li class="nav-item">
-		    <a class="nav-link disabled" href="{{ url_for('admin.about') }}">About</a>
+		    <a class="nav-link disabled" href="{{ url_for('admin.about') }}"><i class="fa-solid fa-circle-info"></i>&nbsp;About</a>
 		  </li>
 		  <li class="nav-item">
-		    <a class="nav-link disabled" href="{{ url_for('admin.contact_us') }}">Contact</a>
+		    <a class="nav-link disabled" href="{{ url_for('admin.contact_us') }}"><i class="fa-regular fa-address-book"></i>&nbsp;Contact</a>
 		  </li>
 		  {% if current_user.is_anonymous %}
 		  <li class="nav-item">
-		    <a class="nav-link" href="{{ url_for('user.login') }}">Login</a>
+		    <a class="nav-link" href="{{ url_for('user.login') }}"><i class="fa-solid fa-right-to-bracket"></i>&nbsp;Login</a>
 		  </li>
 		  {% else %}
 		  <li class="nav-item">
-		    <a class="nav-link" href="{{ url_for('user.logout') }}">Logout</a>
+		    <a class="nav-link" href="{{ url_for('user.logout') }}"><i class="fa-solid fa-person-running"></i>&nbsp;Logout</a>
 		  </li>
 		  {% endif %}
 		</ul>		
