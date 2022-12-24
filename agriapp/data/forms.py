@@ -205,9 +205,22 @@ class EquipmentEntry(FlaskForm):
                                                                   ('house-yard', 'Therazhundhur'),
                                                                   ('none', 'Not Applicable')],
                            default='tgudi')
-    last_service = DateField([Optional()])
+    last_service = DateField('Last Service on', [Optional()])
 
     submit = SubmitField('Add Equipment')
+
+
+class EquipmentView(FlaskForm):
+    """view equipment given specific type"""
+    type = SelectField('Machinery Type', choices=[('motorbike', 'Motor Cycle'),
+                                                  ('pumps', 'Water Pump'),
+                                                  ('sprayer', 'Battery Sprayer'),
+                                                  ('tractor', 'Tractor'),
+                                                  ('transplanter', 'Transplanter'),
+                                                  ('all', 'All Types')],
+                       default='transplanter')
+
+    submit = SubmitField('View Equipment(s)')
 
 
 class ExpenseEntry(FlaskForm):

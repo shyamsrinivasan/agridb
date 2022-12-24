@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash
 from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
-from .forms import SowingEntry, RemoveFields, RemoveLand
+from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
 from .forms import YieldEntryForm, YieldSowView, EquipmentEntry
 from .models import Fields, Lands, Sowing, Yields, Equipment
 from agriapp import db
@@ -354,11 +354,26 @@ def add_equipment():
     """add pump data to agri db"""
     form = EquipmentEntry()
     if form.validate_on_submit():
-        equip_obj = Equipment(nickname=request.form['nickname'],
-                              type=request.form['type'],
-                              geotag=request.form['geotag'],
-                              location=request.form['location'])
+        nickname = request.form['nickname']
+        if request.form['last_service']:
+            equip_obj = Equipment(nickname=nickname,
+                                  type=request.form['type'],
+                                  geotag=request.form['geotag'],
+                                  location=request.form['location'],
+                                  last_service=dt.strptime(request.form['last_service'], '%Y-%m-%d'))
+        else:
+            equip_obj = Equipment(nickname=request.form['nickname'],
+                                  type=request.form['type'],
+                                  geotag=request.form['geotag'],
+                                  location=request.form['location'])
 
+        # check if nickname exists
+        if equip_obj.check_equipment_nickname():
+            flash(message='Equipment Nickname already exists. Change nickname or enter new equipment.',
+                  category='error')
+            return render_template('add_equipment.html', form=form)
+
+        # if nickname is unique
         db.session.add(equip_obj)
         db.session.commit()
 
@@ -366,6 +381,24 @@ def add_equipment():
         return redirect(url_for('admin.homepage'))
 
     return render_template('add_equipment.html', form=form)
+
+
+@data_bp.route('/view/machinery/<equipment_type>', methods=['GET', 'POST'])
+def view_equipment(equipment_type):
+    """view all available equipment"""
+    form = EquipmentView()
+    if form.validate_on_submit():
+        equipment_type = request.form['type']
+        data = get_equipment(equipment_type)
+
+        if data and data is not None:
+            return render_template('view_equipment.html', result=data, equipment_type=equipment_type)
+        else:
+            flash(message='No Equipment of type {} in database'.format(equipment_type),
+                  category='primary')
+            redirect(url_for('data.view_equipment', equipment_type='none'))
+
+    return render_template('view_equipment.html', form=form, equipment_type=equipment_type)
 
 
 @data_bp.route('/add-expense', methods=['GET', 'POST'])
@@ -426,3 +459,13 @@ def get_desired_sowing(season, year, location=None):
         sow_data = db.session.query(Sowing).filter(Sowing.year == year,
                                                    Sowing.season == season).all()
     return sow_data
+
+
+def get_equipment(choice):
+    """get equipment of specific type"""
+    if choice == 'all':
+        equip_obj = db.session.query(Equipment).all()
+    else:
+        equip_obj = db.session.query(Equipment).filter(Equipment.type == choice).all()
+
+    return equip_obj

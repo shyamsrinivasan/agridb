@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+View Equipments
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+    
+    {% if equipment_type == 'none' %}
+	<div class="col text-center">      
+      <p class="fs-4">Enter equipment type</p>
+    </div>
+
+    <form action="{{ url_for('data.view_equipment', equipment_type=equipment_type) }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+    	{{ form.csrf_token() }}
+
+        <!-- row 1-->
+        <div class="row mb-2">                        
+            <div class="form-group col">
+                {{ form.type.label }}
+                {{ form.type(class="form-control", id="floatingInput") }}
+                {{ macro.err_out(form.type.errors) }}
+            </div>  
+
+            <div class="col align-items-center text-center mt-3">
+                {{ form.submit(class="align-items-center btn btn-primary") }}
+            </div>                         
+        </div>        
+    </form>   
+    
+    {% elif equipment_type == 'all' %}
+    <div class="col text-center mt-2">      
+      <p class="fs-4">Showing all Equipments </p>
+    </div>
+    <table class="table table-hover">
+      <thead> 
+        <tr>  
+          <th scope="col">#</th>  
+          <th scope="col">Type</th>             
+          <th scope="col">Nickname</th>             
+          <th scope="col">Location</th>  
+          <th scope="col">Geotag</th>          
+          <th scope="col">Last Service</th>          
+        </tr>       
+      </thead>
+      <tbody>  
+        {% for lands in result %}
+        <tr>      
+          <td>{{ loop.index }}</td>     
+          <td>{{ lands.type }}</td>
+          <td>{{ lands.nickname }}</td>          
+          <td>{{ lands.location }}</td>          
+          <td>{{ lands.geotag }}</td>          
+          <td>{{ lands.last_service }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>      
+    </table>
+
+    {% else %}
+    <div class="col text-center mt-2">      
+      <p class="fs-4">Showing all {{ equipment_type }}s </p>
+    </div>
+    <table class="table table-hover">
+      <thead> 
+        <tr>  
+          <th scope="col">#</th>  
+          <th scope="col">Nickname</th>   
+          {% if equipment_type == 'pumps' %}   
+          <th scope="col">Location</th>  
+          <th scope="col">Geotag</th>
+          {% endif %}            
+          <th scope="col">Last Service</th>          
+        </tr>       
+      </thead>
+      <tbody>  
+        {% for lands in result %}
+        <tr>      
+          <td>{{ loop.index }}</td>     
+          <td>{{ lands.nickname }}</td>
+          {% if equipment_type == 'pumps' %}   
+          <td>{{ lands.location }}</td>          
+          <td>{{ lands.geotag }}</td>
+          {% endif %}          
+          <td>{{ lands.last_service }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>      
+    </table>
+    {% endif %}
+
+</div>
+{% endblock %}

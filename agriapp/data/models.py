@@ -189,6 +189,14 @@ class Equipment(db.Model):
                f"nickname={self.nickname!r}," \
                f"serviced_on={self.last_service!r})"
 
+    def check_equipment_nickname(self):
+        """check if given nickname exists in db"""
+        existing_obj = db.session.query(Equipment).filter(Equipment.nickname == self.nickname).first()
+        if existing_obj and existing_obj is not None:
+            return True
+        else:
+            return False
+
 
 # class Account(db.Model):
 #     __tablename__ = "account"
