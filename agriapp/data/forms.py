@@ -50,6 +50,9 @@ class SelectFieldLocation(FlaskForm):
                                                                   ('potteri', 'Potteri'),
                                                                   ('pokonanthoki', 'Pokananthoki'),
                                                                   ('mannamuti', 'Mannamutti'),
+                                                                  ('trichy-home1', 'Home 1'),
+                                                                  ('trichy-home2', 'Home 2'),
+                                                                  ('house-yard', 'Therazhundhur'),
                                                                   ('none', 'Not Applicable')],
                            default='tgudi')
 
@@ -80,6 +83,9 @@ class RemoveLand(FlaskForm):
                                                                   ('potteri', 'Potteri'),
                                                                   ('pokonanthoki', 'Pokananthoki'),
                                                                   ('mannamuti', 'Mannamutti'),
+                                                                  ('trichy-home1', 'Home 1'),
+                                                                  ('trichy-home2', 'Home 2'),
+                                                                  ('house-yard', 'Therazhundhur'),
                                                                   ('none', 'Not Applicable')],
                            default='none')
     land_id = StringField('Land ID', [DataRequired(message='provide comma separated land ids to remove')])
@@ -109,11 +115,15 @@ class SowingEntry(FlaskForm):
                                  ('monsoon', 'Thaaladi'),
                                  ('other', 'Others')],
                         default='summer')
-    location = SelectField('Location', choices=[('tgudi', 'Thozuthalangudi'),
-                                                ('pallachi', 'Pallachi'),
-                                                ('potteri', 'Potteri'),
-                                                ('pokonanthoki', 'Pokananthoki'),
-                                                ('mannamuti', 'Mannamutti')],
+    location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
+                                                                  ('pallachi', 'Pallachi'),
+                                                                  ('potteri', 'Potteri'),
+                                                                  ('pokonanthoki', 'Pokananthoki'),
+                                                                  ('mannamuti', 'Mannamutti'),
+                                                                  ('trichy-home1', 'Home 1'),
+                                                                  ('trichy-home2', 'Home 2'),
+                                                                  ('house-yard', 'Therazhundhur'),
+                                                                  ('none', 'Not Applicable')],
                            default='tgudi')
     sowing_date = DateField('Date Sown', [DataRequired(message='Date of sowing required')])
 
@@ -176,14 +186,14 @@ class YieldSowView(FlaskForm):
 class EquipmentEntry(FlaskForm):
     """form to enter equipment information"""
 
-    nickname = StringField('Nickname', [DataRequired(message='Nickname for equipment required'),
-                                        Length(max=10, message='Should be < 10 characters')])
     type = SelectField('Machinery Type', choices=[('motorbike', 'Motor Cycle'),
                                                   ('pumps', 'Water Pump'),
                                                   ('sprayer', 'Battery Sprayer'),
                                                   ('tractor', 'Tractor'),
                                                   ('transplanter', 'Transplanter')],
                        default='transplanter')
+    nickname = StringField('Nickname', [DataRequired(message='Nickname for equipment required'),
+                                        Length(max=10, message='Should be < 10 characters')])
     geotag = StringField('GeoTag', [Optional()])
     location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
                                                                   ('pallachi', 'Pallachi'),
