@@ -198,48 +198,48 @@ class Equipment(db.Model):
             return False
 
 
-# class Accounts(db.Model):
-#     __tablename__ = "accounts"
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     entry_id = db.Column(db.Integer, db.ForeignKey('entry.id', onupdate='CASCADE', ondelete='CASCADE'),
-#                          index=True)
-#     field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-#                               'mannamuti', name='field_location'),
-#                       db.ForeignKey('fields.location', onupdate='CASCADE',
-#                                     ondelete='CASCADE'),
-#                       index=True)
-#     expense_type = db.Column(db.Enum('expense', 'income', name='expense_type'),
-#                              db.ForeignKey('entry.type'),
-#                              default='expense', index=True)
-#     category = db.Column(db.Enum('labour', 'food', 'rental',
-#                                  'repair', 'maintenance', 'fuel',
-#                                  'paddy seeds', 'lentil seeds', 'fertilizer',
-#                                  'pesticides', 'herbicides', 'paddy sale',
-#                                  'lentil sale',
-#                                  name='category'),
-#                          default='labour')
-#     operation = db.Column(db.Enum('field preparation', 'sowing', 'transplanting',
-#                                   'spraying', 'field maintenance', 'weeding',
-#                                   'harvesting', 'supplies', 'equipments',
-#                                   name='operation'),
-#                           default='field preparation')
-#     item = db.Column(db.String(15))
-#     rate = db.Column(db.Float)
-#     quantity = db.Column(db.Float)
-#     cost = db.Column(db.Float)
-#
-#     def __init__(self, **kwargs):
-#         super(Accounts, self).__init__(**kwargs)
-#         self.set_cost()
-#
-#     def set_cost(self):
-#         self.cost = self.rate * self.quantity
-#
-#     def __repr__(self):
-#         return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
-#                f"operation={self.operation!r}, field={self.field!r}" \
-#                f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
+class Accounts(db.Model):
+    __tablename__ = "accounts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    entry_id = db.Column(db.Integer, db.ForeignKey('entry.id', onupdate='CASCADE', ondelete='CASCADE'),
+                         index=True)
+    field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+                              'mannamuti', name='field_location'),
+                      db.ForeignKey('fields.location', onupdate='CASCADE',
+                                    ondelete='CASCADE'),
+                      index=True)
+    expense_type = db.Column(db.Enum('expense', 'income', name='expense_type'),
+                             db.ForeignKey('entry.type'),
+                             default='expense', index=True)
+    category = db.Column(db.Enum('labour', 'food', 'rental',
+                                 'repair', 'maintenance', 'fuel',
+                                 'paddy seeds', 'lentil seeds', 'fertilizer',
+                                 'pesticides', 'herbicides', 'paddy sale',
+                                 'lentil sale',
+                                 name='category'),
+                         default='labour')
+    operation = db.Column(db.Enum('field preparation', 'sowing', 'transplanting',
+                                  'spraying', 'field maintenance', 'weeding',
+                                  'harvesting', 'supplies', 'equipments',
+                                  name='operation'),
+                          default='field preparation')
+    item = db.Column(db.String(15))
+    rate = db.Column(db.Float)
+    quantity = db.Column(db.Float)
+    cost = db.Column(db.Float)
+
+    def __init__(self, **kwargs):
+        super(Accounts, self).__init__(**kwargs)
+        self.set_cost()
+
+    def set_cost(self):
+        self.cost = self.rate * self.quantity
+
+    def __repr__(self):
+        return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
+               f"operation={self.operation!r}, field={self.field!r}" \
+               f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
 
 
 class AccountEntry(db.Model):
@@ -250,7 +250,10 @@ class AccountEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     type = db.Column(db.Enum('expense', 'income', name='expense_type'),
-                     default='expense')
+                     default='expense', index=True)
 
-    # account = db.relationship('Accounts', foreign_keys="[Accounts.entry_id, Accounts.entry_type]")
+    account = db.relationship('Accounts', foreign_keys="[Accounts.entry_id, Accounts.entry_type]")
+
+    def __repr__(self):
+        return f"Account(id={self.id!r}, type={self.type!r}, date={self.date!r})"
 
