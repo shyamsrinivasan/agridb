@@ -190,38 +190,38 @@ class Equipment(db.Model):
                f"serviced_on={self.last_service!r})"
 
 
-class Account(db.Model):
-    __tablename__ = "account"
-
-    id = db.Column(db.Integer, primary_key=True)
-    field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                              'mannamuti', name='field_location'),
-                      db.ForeignKey('fields.location', onupdate='CASCADE',
-                                    ondelete='CASCADE'),
-                      index=True)
-    type = db.Column(db.Enum('expense', 'income', name='expense_type'),
-                     default='expense')
-    category = db.Column(db.Enum('labour', 'food', 'rental',
-                                 'repair', 'maintenance', 'fuel',
-                                 'paddy seeds', 'lentil seeds', 'fertilizer',
-                                 'pesticides', 'herbicides', 'paddy sale',
-                                 'lentil sale',
-                                 name='category'),
-                         default='labour')
-    operation = db.Column(db.Enum('field preparation', 'sowing', 'transplanting',
-                                  'spraying', 'field maintenance', 'weeding',
-                                  'harvesting', 'supplies', 'equipments',
-                                  name='operation'),
-                          default='field preparation')
-    item = db.Column(db.String(15))
-    rate = db.Column(db.Float)
-    quantity = db.Column(db.Float)
-    cost = db.Column(db.Float)
-
-    def set_cost(self):
-        self.cost = self.rate * self.quantity
-
-    def __repr__(self):
-        return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
-               f"operation={self.operation!r}, field={self.field!r}" \
-               f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
+# class Account(db.Model):
+#     __tablename__ = "account"
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+#                               'mannamuti', name='field_location'),
+#                       db.ForeignKey('fields.location', onupdate='CASCADE',
+#                                     ondelete='CASCADE'),
+#                       index=True)
+#     type = db.Column(db.Enum('expense', 'income', name='expense_type'),
+#                      default='expense')
+#     category = db.Column(db.Enum('labour', 'food', 'rental',
+#                                  'repair', 'maintenance', 'fuel',
+#                                  'paddy seeds', 'lentil seeds', 'fertilizer',
+#                                  'pesticides', 'herbicides', 'paddy sale',
+#                                  'lentil sale',
+#                                  name='category'),
+#                          default='labour')
+#     operation = db.Column(db.Enum('field preparation', 'sowing', 'transplanting',
+#                                   'spraying', 'field maintenance', 'weeding',
+#                                   'harvesting', 'supplies', 'equipments',
+#                                   name='operation'),
+#                           default='field preparation')
+#     item = db.Column(db.String(15))
+#     rate = db.Column(db.Float)
+#     quantity = db.Column(db.Float)
+#     cost = db.Column(db.Float)
+#
+#     def set_cost(self):
+#         self.cost = self.rate * self.quantity
+#
+#     def __repr__(self):
+#         return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
+#                f"operation={self.operation!r}, field={self.field!r}" \
+#                f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
