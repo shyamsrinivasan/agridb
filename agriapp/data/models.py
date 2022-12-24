@@ -237,9 +237,11 @@ class Accounts(db.Model):
         self.cost = self.rate * self.quantity
 
     def __repr__(self):
-        return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
+        return f"Account(id={self.id!r}, type={self.expense_type!r}, " \
+               f"category={self.category!r}, " \
                f"operation={self.operation!r}, field={self.field!r}" \
-               f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
+               f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r}," \
+               f"cost={self.cost!r})"
 
 
 class AccountEntry(db.Model):
@@ -252,7 +254,7 @@ class AccountEntry(db.Model):
     type = db.Column(db.Enum('expense', 'income', name='expense_type'),
                      default='expense', index=True)
 
-    account = db.relationship('Accounts', foreign_keys="[Accounts.entry_id, Accounts.entry_type]")
+    account = db.relationship('Accounts', foreign_keys="[Accounts.entry_id]")
 
     def __repr__(self):
         return f"Account(id={self.id!r}, type={self.type!r}, date={self.date!r})"

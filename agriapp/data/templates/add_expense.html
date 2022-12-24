@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+Add Expense/Income
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+	<div class="col text-center">      
+      <p class="fs-4">Enter accounting information</p>
+    </div>
+
+    <form action="{{ url_for('data.add_expense') }}", method="POST" class="g-3 rounded-3 bg-light px-2">
+    	{{ form.csrf_token() }}
+
+    	<!-- row 1 -->
+    	<div class="row">
+    		<div class="form-group col-md-3">
+                {{ form.date.label }}
+                {{ form.date(class="form-control", id="floatingInput") }}
+            </div>   
+
+            <div class="form-group col-md-3">
+                {{ form.type.label }}
+                <div class="row my-2">
+                	{% for subfield in form.type %}
+                	<div class="col">
+			            {{ subfield(id="floatingInput") }}
+			            {{ subfield.label }}
+		        	</div>                	
+                	{% endfor %}                	
+                </div>                
+            </div>  
+
+            <div class="form-group col-md-3">
+                {{ form.field.label }}
+                {{ form.field(class="form-control", id="floatingInput") }}
+            </div>  
+    	</div>
+
+    	<!-- row 2 -->
+    	<div data-toggle="fieldset" class="col mt-1" id="phone-fieldset">
+            <span>Add land&nbsp;<button type="button" class="btn btn-warning my-1" data-toggle="fieldset-add-row" data-target="#phone-fieldset">+</button></span>
+
+            {% for member in form.account %}
+            <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry"> 
+                <div class="col">
+                    {{ member.item.label }}
+                    {{ member.item(class="form-control", placeholder="item 1") }}     
+                    {{ macro.err_out(member.item.error) }}                                   
+                </div> 
+                <div class="col">
+                	{{ member.rate.label }}
+                    {{ member.rate(class="form-control", palceholder="0.0") }}
+                    {{ macro.err_out(member.rate.error) }}
+                </div>                 
+                <div class="col">
+                	{{ member.quantity.label }}
+                    {{ member.quantity(class="form-control", placeholder="1") }}     
+                    {{ macro.err_out(member.quantity.error) }}                        
+                </div>
+                <div class="col">
+                	{{ member.cost.label }}
+                    {{ member.cost(class="form-control", placeholder="0.0") }}     
+                    {{ macro.err_out(member.cost.error) }}
+                </div>
+                
+                <div class="col mt-4">
+                    <!-- remove row button -->            
+                    <button class="btn btn-warning" type="button" data-toggle="fieldset-remove-row" id="item-{{loop.index0}}-remove">-</button>
+                </div>                              
+            </div>
+            {% endfor %}            
+        </div>
+    	
+    	<!-- row end -->
+    	<div class="row">           	  		
+    	</div>    	
+    </form>
+    	
+	
+</div>
+
+{% endblock %}
+
+{% block script %}
+<!-- dynamic form js and jquery files-->
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/page.js') }}"></script>
+{% endblock %}

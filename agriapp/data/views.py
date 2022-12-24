@@ -3,8 +3,8 @@ from flask import request
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
-from .forms import YieldEntryForm, YieldSowView, EquipmentEntry
-from .models import Fields, Lands, Sowing, Yields, Equipment
+from .forms import YieldEntryForm, YieldSowView, EquipmentEntry, AccountEntryForm
+from .models import Fields, Lands, Sowing, Yields, Equipment, Accounts, AccountEntry
 from agriapp import db
 from datetime import datetime as dt
 from datetime import date
@@ -404,7 +404,30 @@ def view_equipment(equipment_type):
 @data_bp.route('/add-expense', methods=['GET', 'POST'])
 def add_expense():
     """add expense data to agri db"""
-    return render_template('add_expense.html')
+
+    field_obj = db.session.query(Fields).all()
+    entry_obj = db.session.query(AccountEntry).first()
+
+    # check if land and field locations are not empty
+    if entry_obj is not None and len(entry_obj.account) == 0:
+        # dummy land object when no lands are available for field objs
+        entry_obj.account = [Accounts(expense_type='expense',
+                                      category='labour', operation='field preparation',
+                                      rate=0.0, quantity=5)
+                             ]
+    else:
+        entry_obj = AccountEntry()
+        entry_obj.account = [Accounts(field='tgudi', expense_type='expense',
+                                      category='labour', operation='field preparation',
+                                      rate=0.0, quantity=5)
+                             ]
+
+    form = AccountEntryForm(obj=entry_obj)
+    form.field.choices = [(g.location, g.location) for g in Fields.query.order_by('location')]
+    if form.validate_on_submit():
+        pass
+
+    return render_template('add_expense.html', form=form)
 
 
 def check_land_present(land_objs):

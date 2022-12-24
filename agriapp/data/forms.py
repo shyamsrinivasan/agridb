@@ -3,7 +3,7 @@ from wtforms import StringField, SelectField, DecimalField, DateField
 from wtforms import RadioField, IntegerField, HiddenField, SubmitField
 from wtforms import FormField, FieldList
 from wtforms.validators import DataRequired, Length, Optional, NumberRange
-from .models import Fields, Lands, Yields
+from .models import Fields, Lands, Yields, Accounts
 
 
 class FieldsForm(FlaskForm):
@@ -223,6 +223,44 @@ class EquipmentView(FlaskForm):
     submit = SubmitField('View Equipment(s)')
 
 
-class ExpenseEntry(FlaskForm):
+class AccountingForm(FlaskForm):
+    """capture all details in accounts table"""
+
+    # field = SelectField('Location', coerce=str)
+    # field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+    #                           'mannamuti', name='field_location'),
+    #                   db.ForeignKey('fields.location', onupdate='CASCADE',
+    #                                 ondelete='CASCADE'),
+    #                   index=True)
+    # expense_type = db.Column(db.Enum('expense', 'income', name='expense_type'),
+    #                          db.ForeignKey('entry.type'),
+    #                          default='expense', index=True)
+    # category = db.Column(db.Enum('labour', 'food', 'rental',
+    #                              'repair', 'maintenance', 'fuel',
+    #                              'paddy seeds', 'lentil seeds', 'fertilizer',
+    #                              'pesticides', 'herbicides', 'paddy sale',
+    #                              'lentil sale',
+    #                              name='category'),
+    #                      default='labour')
+    # operation = db.Column(db.Enum('field preparation', 'sowing', 'transplanting',
+    #                               'spraying', 'field maintenance', 'weeding',
+    #                               'harvesting', 'supplies', 'equipments',
+    #                               name='operation'),
+    #                       default='field preparation')
+    item = StringField('Description', [Optional()])
+    rate = DecimalField('Rate', [Optional()], places=2, rounding=None, default=0.00)
+    quantity = DecimalField('Quantity', [Optional()], places=1, rounding=None, default=1.0)
+    cost = DecimalField('Cost', [Optional()], places=1, rounding=None, default=1.0)
+
+
+class AccountEntryForm(FlaskForm):
     """form to enter expense information"""
 
+    date = DateField('Date', [Optional()])
+    type = RadioField('Accounting Type', [Optional()], choices=[('expense', 'Expense'),
+                                                     ('income', 'Income')],
+                      default='expense')
+    field = SelectField('Location', coerce=str)
+    account = FieldList(FormField(AccountingForm, default=lambda: Accounts()))
+
+    submit = SubmitField('Add Income(s)/Expense(s)')

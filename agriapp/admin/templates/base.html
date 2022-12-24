@@ -58,20 +58,25 @@
 		  <li class="nav-item dropdowm">
 		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">View Data</a>
 		  	<div class="dropdown-menu">
-		  		<a class="dropdown-item" href="{{ url_for('data.view_yield_sowing') }}"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing and <i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a>		  		
+		  		<a class="dropdown-item disabled" href="{{ url_for('data.add_sowing') }}"><i class="fa-solid fa-indian-rupee-sign"></i>&nbsp;Accounting</a>
+		  		<a class="dropdown-item" href="{{ url_for('data.view_yield_sowing') }}"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing and <i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a>	  		
 		  		<div class="dropdown-divider"></div>
+
 		  		<a class="dropdown-item" href="{{ url_for('data.view_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='view_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.view_all_lands') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands and <i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a>
-		  		<a class="dropdown-item" href="{{ url_for('data.view_equipment', equipment_type='none') }}"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipment</a>		  		
+		  		<a class="dropdown-item" href="{{ url_for('data.view_equipment', equipment_type='none') }}"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a>		  		
 		  	</div>		  	
 		  </li> 
 		  <li class="nav-item dropdowm">
 		  	<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Add Data</a>
 		  	<div class="dropdown-menu">
+		  		<a class="dropdown-item" href="{{ url_for('data.add_expense') }}"><i class="fa-solid fa-indian-rupee-sign"></i>&nbsp;Accounting</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.add_sowing') }}"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='add_yield') }}"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a>
+
 		  		<div class="dropdown-divider"></div>
+		  		
 		  		<a class="dropdown-item" href="{{ url_for('data.add_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Field</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.select_field', category='add_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Land</a>
 		  		<a class="dropdown-item" href="{{ url_for('data.add_equipment') }}"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipment</a>		  		
