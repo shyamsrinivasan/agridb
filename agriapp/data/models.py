@@ -198,17 +198,20 @@ class Equipment(db.Model):
             return False
 
 
-# class Account(db.Model):
-#     __tablename__ = "account"
+# class Accounts(db.Model):
+#     __tablename__ = "accounts"
 #
 #     id = db.Column(db.Integer, primary_key=True)
+#     entry_id = db.Column(db.Integer, db.ForeignKey('entry.id', onupdate='CASCADE', ondelete='CASCADE'),
+#                          index=True)
 #     field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
 #                               'mannamuti', name='field_location'),
 #                       db.ForeignKey('fields.location', onupdate='CASCADE',
 #                                     ondelete='CASCADE'),
 #                       index=True)
-#     type = db.Column(db.Enum('expense', 'income', name='expense_type'),
-#                      default='expense')
+#     expense_type = db.Column(db.Enum('expense', 'income', name='expense_type'),
+#                              db.ForeignKey('entry.type'),
+#                              default='expense', index=True)
 #     category = db.Column(db.Enum('labour', 'food', 'rental',
 #                                  'repair', 'maintenance', 'fuel',
 #                                  'paddy seeds', 'lentil seeds', 'fertilizer',
@@ -226,6 +229,10 @@ class Equipment(db.Model):
 #     quantity = db.Column(db.Float)
 #     cost = db.Column(db.Float)
 #
+#     def __init__(self, **kwargs):
+#         super(Accounts, self).__init__(**kwargs)
+#         self.set_cost()
+#
 #     def set_cost(self):
 #         self.cost = self.rate * self.quantity
 #
@@ -233,3 +240,17 @@ class Equipment(db.Model):
 #         return f"Account(id={self.id!r}, type={self.type!r}, category={self.category!r}, " \
 #                f"operation={self.operation!r}, field={self.field!r}" \
 #                f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r})"
+
+
+class AccountEntry(db.Model):
+    """model containing all expenses in a given list"""
+
+    __tablename__ = 'entry'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date)
+    type = db.Column(db.Enum('expense', 'income', name='expense_type'),
+                     default='expense')
+
+    # account = db.relationship('Accounts', foreign_keys="[Accounts.entry_id, Accounts.entry_type]")
+
