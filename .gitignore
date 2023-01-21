@@ -85,3 +85,6 @@ __pycache__/*.pyc
 # Environment file
 env/
 venv/
+
+# Instance folder
+instance/
