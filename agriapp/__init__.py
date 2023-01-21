@@ -21,7 +21,7 @@ def create_app():
     # application configuration
     # app.config.from_object('config.DevConfig')
     app.config.from_object(config.DevConfig)
-    # app.config.from_pyfile('config.py')
+    app.config.from_pyfile('config.py')
 
     csrf.init_app(app)
     login_manager.init_app(app)
