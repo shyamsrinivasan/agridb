@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, SelectField, DecimalField, DateField
 from wtforms import RadioField, IntegerField, HiddenField, SubmitField
 from wtforms import FormField, FieldList
-from wtforms.validators import DataRequired, Length, Optional, NumberRange
+from wtforms.validators import DataRequired, Length, Optional, NumberRange, Regexp
 from .models import Fields, Lands, Yields, Accounts
 
 
@@ -223,6 +224,19 @@ class EquipmentView(FlaskForm):
     submit = SubmitField('View Equipment(s)')
 
 
+class SeedForm(FlaskForm):
+    """enter seed varieties"""
+
+    # file = FileField('Details File',
+    #                  [Regexp(r'^[\w,\s-]+\.xlsx$',
+    #                          message='Only Excel files are accepted')])
+    file = FileField('Details File', [Optional(),
+                                      FileAllowed(['xls',
+                                                   'xlsx'],
+                                                  message='Excel file only')])
+    submit = SubmitField('Add Seed Variety from File')
+
+
 class AccountingForm(FlaskForm):
     """capture all details in accounts table"""
 
@@ -251,6 +265,7 @@ class AccountingForm(FlaskForm):
     rate = DecimalField('Rate', [Optional()], places=2, rounding=None, default=0.00)
     quantity = DecimalField('Quantity', [Optional()], places=1, rounding=None, default=1.0)
     cost = DecimalField('Cost', [Optional()], places=1, rounding=None, default=1.0)
+    submit = SubmitField('Add Expense to Database')
 
 
 class AccountEntryForm(FlaskForm):

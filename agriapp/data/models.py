@@ -198,6 +198,50 @@ class Equipment(db.Model):
             return False
 
 
+class SeedVariety(db.Model):
+    """table of seed varieties"""
+    __tablename__ = "variety"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(6), nullable=False, index=True)
+    duration = db.Column(db.Integer, nullable=False, index=True)
+    seasons = db.Column(db.String(15), index=True)
+    average_yield = db.Column(db.String(6))     # Kg/ha
+    grain_weight = db.Column(db.Float)          # g/1000 grain
+    disease_resistance = db.Column(db.String(15))
+    pest_resistance = db.Column(db.String(15))
+    habit = db.Column(db.String(15))
+    grain_type = db.Column(db.String(15))
+    # grain - paddy/millets/grams/others?
+    grain = db.Column(db.String(10), default='paddy')
+    # yes/no fields
+    ruling_variety = db.Column(db.String(3))
+    hybrid = db.Column(db.String(3))
+
+    def __init__(self, data):
+        self.name = data['name']
+        self.duration = data['duration']
+        self.seasons = data['season']
+        self.average_yield = data['average_yield']
+        self.grain_weight = data['grain_weight']
+        self.disease_resistance = data['disease_resistance']
+        self.pest_resistance = data['pest_resistance']
+        self.habit = data['habit']
+        self.grain_type = data['grain_type']
+        self.grain = data['grain']
+        self.ruling_variety = data['ruling_variety']
+        self.hybrid = data['hybrid']
+
+    def __repr__(self):
+        return f"SeedVariety(id={self.id!r}, name={self.name!r}, " \
+               f"duration={self.duration!r}, " \
+               f"seasons={self.seasons!r}, average_yield={self.average_yield!r}" \
+               f"grain_weight={self.grain_weight!r}, habit={self.habit!r}, " \
+               f"grain_type={self.grain_type!r}," \
+               f"grain={self.grain!r}, ruling_variety={self.ruling_variety!r}," \
+               f"hybrid={self.hybrid!r})"
+
+
 class Accounts(db.Model):
     __tablename__ = "accounts"
 

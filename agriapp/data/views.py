@@ -1,13 +1,19 @@
 from flask import render_template, redirect, url_for, flash
 from flask import request
+from werkzeug.utils import secure_filename
+from datetime import datetime as dt
+from datetime import date
+import os
+import pandas as pd
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
 from .forms import YieldEntryForm, YieldSowView, EquipmentEntry, AccountEntryForm
+from .forms import SeedForm
 from .models import Fields, Lands, Sowing, Yields, Equipment, Accounts, AccountEntry
+from .models import SeedVariety
 from agriapp import db
-from datetime import datetime as dt
-from datetime import date
+import agriapp as appvar
 
 
 @data_bp.route('/add/field', methods=['GET', 'POST'])
@@ -349,7 +355,7 @@ def add_yield(location):
     # return render_template('add_yield.html', location=location)
 
 
-@data_bp.route('/add-machinery', methods=['GET', 'POST'])
+@data_bp.route('/add/machinery', methods=['GET', 'POST'])
 def add_equipment():
     """add pump data to agri db"""
     form = EquipmentEntry()
@@ -401,7 +407,36 @@ def view_equipment(equipment_type):
     return render_template('view_equipment.html', form=form, equipment_type=equipment_type)
 
 
-@data_bp.route('/add-expense', methods=['GET', 'POST'])
+@data_bp.route('/add/seeds', methods=['GET', 'POST'])
+def add_seed():
+    """add seed varieties from file to db"""
+    form = SeedForm()
+
+    if form.validate_on_submit():
+        file = request.files['file']
+        if file.filename != '':
+            # filename = secure_filename(file.filename)
+            # upload path
+            # uploads = os.path.join(os.path.dirname(appvar.create_app().instance_path),
+            #                        'assets', appvar.config.ProdConfig.UPLOAD_FOLDER)
+            # save file to path
+            # file.save(os.path.join(uploads, filename))
+
+            # read file to pandas df
+            df = pd.read_excel(file)
+            seed_obj = SeedVariety(df)
+
+            db.session.add(seed_obj)
+            db.session.commit()
+
+            flash(message='New seed varieties added to database')
+
+        return 'Form validated'
+
+    return render_template('add_seed.html', form=form)
+
+
+@data_bp.route('/add/expense', methods=['GET', 'POST'])
 def add_expense():
     """add expense data to agri db"""
 
