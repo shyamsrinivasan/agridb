@@ -1,10 +1,9 @@
 from flask import render_template, redirect, url_for, flash
 from flask import request
-from werkzeug.utils import secure_filename
 from datetime import datetime as dt
 from datetime import date
-import os
 import pandas as pd
+import numpy as np
 from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
@@ -13,7 +12,6 @@ from .forms import SeedForm
 from .models import Fields, Lands, Sowing, Yields, Equipment, Accounts, AccountEntry
 from .models import SeedVariety
 from agriapp import db
-import agriapp as appvar
 
 
 @data_bp.route('/add/field', methods=['GET', 'POST'])
@@ -422,8 +420,9 @@ def add_seed():
             # save file to path
             # file.save(os.path.join(uploads, filename))
 
-            # read file to pandas df
+            # prepare df from file
             df = pd.read_excel(file)
+            data_df = prepare_data(file)
             seed_obj = SeedVariety(df)
 
             db.session.add(seed_obj)
@@ -527,3 +526,87 @@ def get_equipment(choice):
         equip_obj = db.session.query(Equipment).filter(Equipment.type == choice).all()
 
     return equip_obj
+
+
+def prepare_data(file):
+    """prepare df for database upload"""
+
+    df = pd.read_excel(file)
+    n_rows, _ = df.shape
+
+    d_resistance_exists = [True if x_value['disease_resistance'] is not np.nan else False
+                           for _, x_value in df.iterrows()]
+    p_resistance_exists = [True if x_value['pest_resistance'] is not np.nan else False
+                           for _, x_value in df.iterrows()]
+    new_df = pd.concat([df,
+                        pd.Series(d_resistance_exists, name='d_resistance_exist'),
+                        pd.Series(p_resistance_exists, name='p_resistance_exist')],
+                       axis=1)
+
+    changed_names = []
+    added_rows = pd.DataFrame(columns=new_df.columns.values)
+    for indx, row in new_df.iterrows():
+        prepared_df = get_separate_seed_df_rows(row)
+        if prepared_df is not None:
+            changed_names.append(row['name'])
+            added_rows = pd.concat([added_rows, prepared_df], ignore_index=True)
+
+    # drop original row in df
+    for i_name in changed_names:
+        new_df.drop(new_df[new_df['name'] == i_name].index.values, inplace=True)
+
+    # concatenate df
+    new_df = pd.concat([new_df, added_rows], ignore_index=True)
+    # drop_df = pd.concat([drop_df, prepared_df], ignore_index=True)
+    # added_rows[row['name']] = prepared_df
+    # drop_df = new_df.drop(new_df[new_df['name'] == 'ADT47'].index.values)
+
+    return df
+
+
+def get_separate_seed_df_rows(df):
+    """get df w/ separate rows for each disease/pest resistance"""
+
+    disease_resistance = []
+    if df['d_resistance_exist']:
+        disease_resistance = get_resistance_df(df['disease_resistance'])
+
+    pest_resistance = []
+    if df['p_resistance_exist']:
+        pest_resistance = get_resistance_df(df['pest_resistance'])
+
+    # new_disease_resistance, new_pest_resistance = [], []
+    # if disease_resistance and len(disease_resistance) > 1:
+    #     new_df = df[df]
+    #     pass
+
+    if pest_resistance and len(pest_resistance) > 1:
+        n_pest_resist = len(pest_resistance)
+        new_df = df.to_frame().T
+        # new_df = info_df.copy(deep=True)
+        # new_df = pd.DataFrame(columns=info_df.columns.values)
+        new_df = new_df.append([new_df] * (n_pest_resist - 1), ignore_index=True)
+        new_df['pest_resistance'] = pest_resistance
+
+        # for indx, value in enumerate(pest_resistance):
+        #     new_df
+
+    # if new_disease_resistance or new_pest_resistance:
+    #     new_df = pd.Series()
+        # for d_resist in disease_resistance:
+        #     new_df = pd.Series
+        return new_df
+
+    return None
+
+
+def get_resistance_df(resistance_values):
+
+    if resistance_values is not np.nan:
+        resistance_values = resistance_values.split(',')
+        new_resistance_values = [i_value.strip() for i_value in resistance_values]
+        return new_resistance_values
+
+    return []
+
+
