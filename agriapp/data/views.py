@@ -423,14 +423,17 @@ def add_seed():
             # prepare df from file
             df = pd.read_excel(file)
             data_df = prepare_data(file)
-            seed_obj = SeedVariety(df)
+            seed_objs = create_seed_model_obj(data_df)
 
-            db.session.add(seed_obj)
+            for j_seed_obj in seed_objs:
+                db.session.add(j_seed_obj)
             db.session.commit()
 
-            flash(message='New seed varieties added to database')
+            flash(message='New seed varieties added to database', category='success')
+            return redirect(url_for('admin.homepage'))
 
-        return 'Form validated'
+        flash(message='No filename given with seed information', category='error')
+        return redirect(url_for('data.add_seed'))
 
     return render_template('add_seed.html', form=form)
 
@@ -528,6 +531,14 @@ def get_equipment(choice):
     return equip_obj
 
 
+def create_seed_model_obj(data_df):
+    """create individual model object for each row in df"""
+
+    seed_objs = [SeedVariety(j_row) for _, j_row in data_df.iterrows()]
+
+    return seed_objs
+
+
 def prepare_data(file):
     """prepare df for database upload"""
 
@@ -551,17 +562,27 @@ def prepare_data(file):
             changed_names.append(row['name'])
             added_rows = pd.concat([added_rows, prepared_df], ignore_index=True)
 
-    # drop original row in df
+    # change column values to NaN for values with comma separated entries
+    added_rows_copy = added_rows.copy(deep=True)
+    for indx, row in added_rows.iterrows():
+        if row['disease_resistance'] is not np.nan and \
+                len(row['disease_resistance'].split(',')) > 1:
+            added_rows_copy.iloc[indx]['disease_resistance'] = np.nan
+            added_rows_copy.iloc[indx]['d_resistance_exist'] = False
+
+        if row['pest_resistance'] is not np.nan and \
+                len(row['pest_resistance'].split(',')) > 1:
+            added_rows_copy.iloc[indx]['pest_resistance'] = np.nan
+            added_rows_copy.iloc[indx]['p_resistance_exist'] = False
+
+    # drop original row in df (only for modified rows)
     for i_name in changed_names:
         new_df.drop(new_df[new_df['name'] == i_name].index.values, inplace=True)
 
-    # concatenate df
-    new_df = pd.concat([new_df, added_rows], ignore_index=True)
-    # drop_df = pd.concat([drop_df, prepared_df], ignore_index=True)
-    # added_rows[row['name']] = prepared_df
-    # drop_df = new_df.drop(new_df[new_df['name'] == 'ADT47'].index.values)
+    # concatenate prepared df to existing df with dropped columns
+    new_df = pd.concat([new_df, added_rows_copy], ignore_index=True)
 
-    return df
+    return new_df
 
 
 def get_separate_seed_df_rows(df):
@@ -575,38 +596,48 @@ def get_separate_seed_df_rows(df):
     if df['p_resistance_exist']:
         pest_resistance = get_resistance_df(df['pest_resistance'])
 
-    # new_disease_resistance, new_pest_resistance = [], []
-    # if disease_resistance and len(disease_resistance) > 1:
-    #     new_df = df[df]
-    #     pass
+    single_df = df.to_frame().T
+    single_disease_df = get_single_resistance_df(original_df=single_df,
+                                                 resistance=disease_resistance,
+                                                 resistance_type='disease_resistance')
+    single_pest_df = get_single_resistance_df(original_df=single_df,
+                                              resistance=pest_resistance,
+                                              resistance_type='pest_resistance')
 
-    if pest_resistance and len(pest_resistance) > 1:
-        n_pest_resist = len(pest_resistance)
-        new_df = df.to_frame().T
-        # new_df = info_df.copy(deep=True)
-        # new_df = pd.DataFrame(columns=info_df.columns.values)
-        new_df = new_df.append([new_df] * (n_pest_resist - 1), ignore_index=True)
-        new_df['pest_resistance'] = pest_resistance
+    if not single_disease_df.empty and not single_pest_df.empty:
+        new_df = pd.concat([single_disease_df, single_pest_df], ignore_index=True)
+    elif not single_disease_df.empty:
+        new_df = single_disease_df
+    elif not single_pest_df.empty:
+        new_df = single_pest_df
+    else:
+        new_df = None
 
-        # for indx, value in enumerate(pest_resistance):
-        #     new_df
+    return new_df
 
-    # if new_disease_resistance or new_pest_resistance:
-    #     new_df = pd.Series()
-        # for d_resist in disease_resistance:
-        #     new_df = pd.Series
-        return new_df
 
-    return None
+def get_single_resistance_df(original_df: pd.DataFrame, resistance: list, resistance_type: str):
+    """get df with resistance having only single value"""
+
+    n_resist = 0
+    # single_df = df.to_frame().T
+    single_resistance_df = pd.DataFrame(columns=original_df.columns.values)
+    if resistance and len(resistance) > 1:
+        n_resist = len(resistance)
+        single_resistance_df = pd.concat([original_df] * n_resist, ignore_index=True)
+
+    if n_resist > 0:
+        single_resistance_df[resistance_type] = resistance
+
+    return single_resistance_df
 
 
 def get_resistance_df(resistance_values):
-
+    """get resistance values as separate list"""
     if resistance_values is not np.nan:
         resistance_values = resistance_values.split(',')
         new_resistance_values = [i_value.strip() for i_value in resistance_values]
         return new_resistance_values
-
     return []
 
 
