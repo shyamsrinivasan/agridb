@@ -1,4 +1,5 @@
 import datetime
+import numpy as np
 
 from agriapp import db
 from datetime import timedelta
@@ -208,8 +209,8 @@ class SeedVariety(db.Model):
     seasons = db.Column(db.String(15), index=True)
     average_yield = db.Column(db.String(6))     # Kg/ha
     grain_weight = db.Column(db.Float)          # g/1000 grain
-    disease_resistance = db.Column(db.String(15))
-    pest_resistance = db.Column(db.String(15))
+    disease_resistance = db.Column(db.String(40))
+    pest_resistance = db.Column(db.String(40))
     habit = db.Column(db.String(15))
     grain_type = db.Column(db.String(15))
     # grain - paddy/millets/grams/others?
@@ -224,8 +225,15 @@ class SeedVariety(db.Model):
         self.seasons = data['season']
         self.average_yield = data['average_yield']
         self.grain_weight = data['grain_weight']
-        self.disease_resistance = data['disease_resistance']
-        self.pest_resistance = data['pest_resistance']
+
+        self.disease_resistance = ''
+        if data['disease_resistance'] is not np.nan:
+            self.disease_resistance = data['disease_resistance']
+
+        self.pest_resistance = ''
+        if data['pest_resistance'] is not np.nan:
+            self.pest_resistance = data['pest_resistance']
+
         self.habit = data['habit']
         self.grain_type = data['grain_type']
         self.grain = data['grain']
@@ -239,7 +247,8 @@ class SeedVariety(db.Model):
                f"grain_weight={self.grain_weight!r}, habit={self.habit!r}, " \
                f"grain_type={self.grain_type!r}," \
                f"grain={self.grain!r}, ruling_variety={self.ruling_variety!r}," \
-               f"hybrid={self.hybrid!r})"
+               f"hybrid={self.hybrid!r}, disease_resistance={self.disease_resistance!r}," \
+               f"pest_resistance={self.pest_resistance!r})"
 
 
 class Accounts(db.Model):
