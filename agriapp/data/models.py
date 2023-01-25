@@ -204,14 +204,14 @@ class SeedVariety(db.Model):
     __tablename__ = "variety"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(6), nullable=False, index=True)
+    name = db.Column(db.String(15), nullable=False, index=True)
     duration = db.Column(db.Integer, nullable=False, index=True)
     seasons = db.Column(db.String(15), index=True)
     average_yield = db.Column(db.String(6))     # Kg/ha
     grain_weight = db.Column(db.Float)          # g/1000 grain
     disease_resistance = db.Column(db.String(40))
     pest_resistance = db.Column(db.String(40))
-    habit = db.Column(db.String(15))
+    habit = db.Column(db.String(40))
     grain_type = db.Column(db.String(15))
     # grain - paddy/millets/grams/others?
     grain = db.Column(db.String(10), default='paddy')
@@ -221,10 +221,17 @@ class SeedVariety(db.Model):
 
     def __init__(self, data):
         self.name = data['name']
-        self.duration = data['duration']
-        self.seasons = data['season']
-        self.average_yield = data['average_yield']
-        self.grain_weight = data['grain_weight']
+        if data['duration'] is not np.nan:
+            self.duration = data['duration']
+
+        if data['season'] is not np.nan:
+            self.seasons = data['season']
+
+        if data['average_yield'] is not np.nan:
+            self.average_yield = data['average_yield']
+
+        if data['grain_weight'] is not np.nan:
+            self.grain_weight = data['grain_weight']
 
         self.disease_resistance = ''
         if data['disease_resistance'] is not np.nan:
@@ -234,11 +241,20 @@ class SeedVariety(db.Model):
         if data['pest_resistance'] is not np.nan:
             self.pest_resistance = data['pest_resistance']
 
-        self.habit = data['habit']
-        self.grain_type = data['grain_type']
-        self.grain = data['grain']
-        self.ruling_variety = data['ruling_variety']
-        self.hybrid = data['hybrid']
+        if data['habit'] is not np.nan:
+            self.habit = data['habit']
+
+        if data['grain_type'] is not np.nan:
+            self.grain_type = data['grain_type']
+
+        if data['grain'] is not np.nan:
+            self.grain = data['grain']
+
+        if data['ruling_variety'] is not np.nan:
+            self.ruling_variety = data['ruling_variety']
+
+        if data['hybrid'] is not np.nan:
+            self.hybrid = data['hybrid']
 
     def __repr__(self):
         return f"SeedVariety(id={self.id!r}, name={self.name!r}, " \
