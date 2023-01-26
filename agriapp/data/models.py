@@ -222,7 +222,7 @@ class SeedVariety(db.Model):
     def __init__(self, data):
         self.name = data['name']
         if data['duration'] is not np.nan:
-            self.duration = data['duration']
+            self.duration = int(data['duration'])
 
         if data['season'] is not np.nan:
             self.seasons = data['season']

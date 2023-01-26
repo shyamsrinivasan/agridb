@@ -421,7 +421,7 @@ def add_seed():
             # file.save(os.path.join(uploads, filename))
 
             # prepare df from file
-            df = pd.read_excel(file)
+            # df = pd.read_excel(file)
             data_df = prepare_data(file)
             seed_objs = create_seed_model_obj(data_df)
 
@@ -543,6 +543,9 @@ def prepare_data(file):
     """prepare df for database upload"""
 
     df = pd.read_excel(file)
+
+    # remove incomplete rows (too many NaNs)
+    df = remove_nan_rows(df)
     n_rows, _ = df.shape
 
     d_resistance_exists = [True if x_value['disease_resistance'] is not np.nan else False
@@ -583,6 +586,27 @@ def prepare_data(file):
     new_df = pd.concat([new_df, added_rows_copy], ignore_index=True)
 
     return new_df
+
+
+def remove_nan_rows(df):
+    """remove rows with too many NaNs - considered as incomplete rows"""
+
+    duration_nan = [ix for ix, val in enumerate(df['duration'].isnull().values) if val]
+    season_nan = [ix for ix, val in enumerate(df['average_yield'].isnull().values) if val]
+    habit_nan = [ix for ix, val in enumerate(df['habit'].isnull().values) if val]
+
+    full_null_rows = []
+    for val in duration_nan:
+        if val in season_nan and val in habit_nan:
+            full_null_rows.append(val)
+
+    df.drop(full_null_rows, inplace=True)
+
+    # replace empty cells with 0 or none
+    df.loc[df['duration'].isnull(), 'duration'] = 0
+    df.loc[df['grain_weight'].isnull(), 'grain_weight'] = 0
+
+    return df
 
 
 def get_separate_seed_df_rows(df):
