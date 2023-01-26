@@ -237,6 +237,17 @@ class SeedForm(FlaskForm):
     submit = SubmitField('Add Seed Variety from File')
 
 
+class SeedSelectForm(FlaskForm):
+    """select type of seeds to view"""
+    seed_type = SelectField('Seeds for', [DataRequired()], choices=[('paddy', 'Rice'),
+                                                                    ('veggies', 'Vegetables'),
+                                                                    ('flowers', 'Flowers'),
+                                                                    ('pulses', 'Pulses'),
+                                                                    ('all', 'All Available')],
+                            default='paddy')
+    submit = SubmitField('Show Selected Seeds')
+
+
 class AccountingForm(FlaskForm):
     """capture all details in accounts table"""
 

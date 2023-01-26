@@ -256,6 +256,25 @@ class SeedVariety(db.Model):
         if data['hybrid'] is not np.nan:
             self.hybrid = data['hybrid']
 
+    def check_variety_name(self):
+        seed_obj = db.session.query(SeedVariety).filter(SeedVariety.name == self.name).first()
+        if seed_obj and seed_obj is not None:
+            return True
+        else:
+            return False
+
+    def is_present(self):
+        seed_obj = db.session.query(SeedVariety).filter(SeedVariety.name == self.name,
+                                                        SeedVariety.grain == self.grain,
+                                                        SeedVariety.pest_resistance ==
+                                                        self.pest_resistance,
+                                                        SeedVariety.disease_resistance ==
+                                                        self.disease_resistance).first()
+        if seed_obj and seed_obj is not None:
+            return True
+        else:
+            return False
+
     def __repr__(self):
         return f"SeedVariety(id={self.id!r}, name={self.name!r}, " \
                f"duration={self.duration!r}, " \

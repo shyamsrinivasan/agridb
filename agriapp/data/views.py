@@ -8,7 +8,7 @@ from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
 from .forms import YieldEntryForm, YieldSowView, EquipmentEntry, AccountEntryForm
-from .forms import SeedForm
+from .forms import SeedForm, SeedSelectForm
 from .models import Fields, Lands, Sowing, Yields, Equipment, Accounts, AccountEntry
 from .models import SeedVariety
 from agriapp import db
@@ -425,17 +425,60 @@ def add_seed():
             data_df = prepare_data(file)
             seed_objs = create_seed_model_obj(data_df)
 
+            varieties_present = True
             for j_seed_obj in seed_objs:
-                db.session.add(j_seed_obj)
+                # check if variety exists in db (only add new varieties)
+                # seed_name_present = j_seed_obj.check_variety_name()
+                seed_present = j_seed_obj.is_present()
+                # add obj to session if not present in db
+                if not seed_present:
+                    varieties_present = False
+                    db.session.add(j_seed_obj)
             db.session.commit()
 
-            flash(message='New seed varieties added to database', category='success')
+            if not varieties_present:
+                flash(message='New seed varieties added to database', category='success')
+            else:
+                flash(message='Some/All varieties already present in database not added',
+                      category='primary')
             return redirect(url_for('admin.homepage'))
 
         flash(message='No filename given with seed information', category='error')
         return redirect(url_for('data.add_seed'))
 
     return render_template('add_seed.html', form=form)
+
+
+@data_bp.route('/view/seeds/<grain_type>')
+def view_seeds(grain_type):
+    """view different category of seed varities in db"""
+    if grain_type != 'none':
+        if grain_type != 'all':
+            grain_obj = db.session.query(SeedVariety.name).\
+                filter(SeedVariety.grain == grain_type).all()
+        else:
+            grain_obj = db.session.query(SeedVariety).all()
+
+        # collect seeds based on name for display
+        func = arrange_by_seed_name_factory(grain_type)
+        arranged_grain_obj = func(grain_obj)
+
+        return render_template('view_seed.html', seeds=grain_obj,
+                               seed_type=grain_type)
+
+    return redirect(url_for('data.select_seed_type'))
+
+
+@data_bp.route('/view/seeds/select/type', methods=['GET', 'POST'])
+def select_seed_type():
+    """select type of seed to view"""
+
+    form = SeedSelectForm()
+    if form.validate_on_submit():
+        grain_type = request.form['seed_type']
+        return redirect(url_for('data.view_seeds', grain_type=grain_type))
+
+    return render_template('select_seed_type.html', form=form)
 
 
 @data_bp.route('/add/expense', methods=['GET', 'POST'])
@@ -559,7 +602,7 @@ def prepare_data(file):
 
     changed_names = []
     added_rows = pd.DataFrame(columns=new_df.columns.values)
-    for indx, row in new_df.iterrows():
+    for _, row in new_df.iterrows():
         prepared_df = get_separate_seed_df_rows(row)
         if prepared_df is not None:
             changed_names.append(row['name'])
@@ -663,5 +706,33 @@ def get_resistance_df(resistance_values):
         new_resistance_values = [i_value.strip() for i_value in resistance_values]
         return new_resistance_values
     return []
+
+
+def arrange_by_seed_name_factory(grain_type):
+    """arrange data as dataframe based on seed names"""
+
+    if grain_type == 'all':
+        return arrange_by_seed_name_all
+    else:
+        return arrange_by_seed_name
+
+
+def arrange_by_seed_name_all(seed_objs):
+    seed_names = set([j_objs.name for j_objs in seed_objs])
+
+
+def arrange_by_seed_name(seed_names):
+    seed_names_set = set(seed_names)
+    seed_names = [i_name[0] for i_name in seed_names_set]
+    for i_name in seed_names:
+        seed_obj = db.session.query(SeedVariety).filter(SeedVariety.name == i_name).all()
+
+        # if len(seed_obj) > 1:
+
+
+        # df = pd.read_sql('SELECT * FROM variety WHERE name={}'.format(i_name), db.session)
+
+    return None
+
 
 

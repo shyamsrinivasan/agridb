@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+Select Seeds
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+  <div class="col text-center">      
+      <p class="fs-4">Choose seed type to view</p>
+    </div>
+
+    <form action="{{ url_for('data.select_seed_type') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+      {{ form.csrf_token() }}
+
+        <!-- row 1-->
+        <div class="row mb-4 align-items-center">
+            <div class="form-group col my-2">             
+                {{ form.seed_type(class="form-control", id="floatingInput") }}
+                {{ macro.err_out(form.seed_type.error) }}
+            </div>    
+
+            <div class="form-group col text-center my-2">
+              {{ form.submit(class="w-50 align-items-center btn btn-primary") }}
+          </div>                
+        </div>             
+      
+    </form>
+      
+</div>
+{% endblock %}

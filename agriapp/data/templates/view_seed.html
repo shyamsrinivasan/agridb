@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+View Seeds
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">	
+
+	{% if seeds is defined and seeds %}
+	<div class="col text-center mt-2">      
+		<p class="fs-4">Showing {{ seed_type }} seeds </p>
+	</div>        
+  	
+  	<table class="table table-hover">  		
+	  	<thead> 
+	  		<tr>
+	  			<th scope="col">Name</th>  
+	  			{% if seed_type == 'all' %}
+	  			<th scope="col">Type</th>
+				{% endif %}
+	    		<th scope="col">Season</th>
+	        	<th scope="col">Duration</th>
+	  			<th scope="col">Average Yield/ha</th>
+	  			<th scope="col">Weight/1000 grains</th>
+	  			<th scope="col">Grain Type</th>
+	  			<th scope="col">Disease Resistance</th>
+	  			<th scope="col">Pest Resistance</th>
+  			</tr>   		
+  	 	</thead>
+	  	<tbody>  
+	  		{% for item in seeds %}
+	  		<tr>    				
+	        	<td>{{ item.name }}</td>
+	        	{% if seed_type == 'all' %}
+	  			<td>{{ item.grain }}</td>
+				{% endif %}
+	        	<td>{{ item.season }}</td>
+	  			<td>{{ item.duration }}</td>
+	  			<td>{{ item.average_yield }}</td>
+	  			<td>{{ item.grain_weight }}</td>
+	  			<td>{{ item.grain_type }}</td>
+	  			<td>{{ item.disease_resistance }}</td>
+	  			<td>{{ item.pest_resistance }}</td>
+	  		</tr>
+	  		{% endfor %}
+	  	</tbody>    	
+	</table>   	
+
+	{% else %}    
+	<div class="col text-center">      
+		<p class="fs-4">No {{ seed_type }} seeds available</p>
+	</div>   
+	
+	{% endif %}    
+    	
+</div>
+{% endblock %}
