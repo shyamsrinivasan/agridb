@@ -18,8 +18,12 @@ class Fields(db.Model):
     field_extent = db.Column(db.Float)
 
     field_lands = db.relationship('Lands', uselist=True)
-    yields = db.relationship('Yields', foreign_keys="[Yields.location]")
-    sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]")
+
+    # association table many-to-many relations
+    yields = db.relationship('Yields', secondary="fieldlink")
+    sow_info = db.relationship('Sowing', secondary="fieldlink")
+    # yields = db.relationship('Yields', foreign_keys="[Yields.location]")
+    # sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]")
     equipment_info = db.relationship('Equipment', foreign_keys="[Equipment.location]")
 
     def __repr__(self):
@@ -99,9 +103,11 @@ class Sowing(db.Model):
     duration = db.Column(db.Integer, nullable=False, default=110)
     expected_harvest = db.Column(db.Date)
 
-    yield_info = db.relationship('Yields', foreign_keys="[Yields.sowing_id]",
-                                 back_populates='sow_info',
-                                 cascade='all, delete', uselist=False)
+    # yield_info = db.relationship('Yields', foreign_keys="[Yields.sowing_id]",
+    #                              back_populates='sow_info',
+    #                              cascade='all, delete', uselist=False)
+    yield_info = db.relationship('Yields', secondary="fieldlink")
+    # sow_info = db.relationship('Sowing', secondary="fieldlink")
 
     def calculate_harvest(self):
         # self.expected_harvest = self.sowing_date + timedelta(days=int(days))
@@ -149,9 +155,10 @@ class Yields(db.Model):
     weight = db.Column(db.Float)
 
     # yield_info = db.relationship('YieldEntry')
-    sow_info = db.relationship('Sowing', foreign_keys="[Yields.sowing_id]",
-                               back_populates='yield_info',
-                               cascade='all, delete', uselist=False)
+    # sow_info = db.relationship('Sowing', foreign_keys="[Yields.sowing_id]",
+    #                            back_populates='yield_info',
+    #                            cascade='all, delete', uselist=False)
+    sow_info = db.relationship('Sowing', secondary="fieldlink")
 
     def __init__(self, **kwargs):
         super(Yields, self).__init__(**kwargs)
@@ -169,6 +176,16 @@ class Yields(db.Model):
         return f"Yield(id={self.id!r}, location={self.location!r}, bags={self.bags!r}, " \
                f"bag_rate={self.bag_rate!r}, buyer={self.buyer!r}, year={self.year!r}, " \
                f"season={self.season!r})"
+
+
+class FieldSowYieldLink(db.Model):
+    """association table linking field, yield and sowing"""
+
+    __tablename__ = 'fieldlink'
+
+    field_id = db.Column(db.Integer, db.ForeignKey('fields.id'), primary_key=True)
+    sow_id = db.Column(db.Integer, db.ForeignKey('sowing.id'), primary_key=True)
+    yield_id = db.Column(db.Integer, db.ForeignKey('yield.id'), primary_key=True)
 
 
 class Equipment(db.Model):
