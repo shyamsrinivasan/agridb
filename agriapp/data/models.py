@@ -17,7 +17,7 @@ class Fields(db.Model):
                          nullable=False, index=True)
     field_extent = db.Column(db.Float)
 
-    field_lands = db.relationship('Lands')
+    field_lands = db.relationship('Lands', uselist=True)
     yields = db.relationship('Yields', foreign_keys="[Yields.location]")
     sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]")
     equipment_info = db.relationship('Equipment', foreign_keys="[Equipment.location]")
@@ -99,7 +99,9 @@ class Sowing(db.Model):
     duration = db.Column(db.Integer, nullable=False, default=110)
     expected_harvest = db.Column(db.Date)
 
-    # yield_info = db.relationship('Yields', back_populates='sow_info', cascade='all, delete', uselist=False)
+    yield_info = db.relationship('Yields', foreign_keys="[Yields.sowing_id]",
+                                 back_populates='sow_info',
+                                 cascade='all, delete', uselist=False)
 
     def calculate_harvest(self):
         # self.expected_harvest = self.sowing_date + timedelta(days=int(days))
@@ -134,8 +136,8 @@ class Yields(db.Model):
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
-    # sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
-    #                                                 ondelete='CASCADE'), index=True)
+    sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
+                                                    ondelete='CASCADE'), index=True)
     harvest_date = db.Column(db.Date)
     sell_date = db.Column(db.Date)
 
@@ -147,7 +149,9 @@ class Yields(db.Model):
     weight = db.Column(db.Float)
 
     # yield_info = db.relationship('YieldEntry')
-    # sow_info = db.relationship('Sowing', back_populates='yield_info', cascade='all, delete')
+    sow_info = db.relationship('Sowing', foreign_keys="[Yields.sowing_id]",
+                               back_populates='yield_info',
+                               cascade='all, delete', uselist=False)
 
     def __init__(self, **kwargs):
         super(Yields, self).__init__(**kwargs)
