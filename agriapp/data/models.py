@@ -20,10 +20,10 @@ class Fields(db.Model):
     field_lands = db.relationship('Lands', uselist=True)
 
     # association table many-to-many relations
-    yields = db.relationship('Yields', secondary="fieldlink")
-    sow_info = db.relationship('Sowing', secondary="fieldlink")
-    # yields = db.relationship('Yields', foreign_keys="[Yields.location]")
-    # sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]")
+    # yield_info = db.relationship('Yields', secondary="fieldlink")
+    # sow_info = db.relationship('Sowing', secondary="fieldlink")
+    yields = db.relationship('Yields', foreign_keys="[Yields.location]", uselist=True)
+    sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]", uselist=True)
     equipment_info = db.relationship('Equipment', foreign_keys="[Equipment.location]")
 
     def __repr__(self):
@@ -106,7 +106,7 @@ class Sowing(db.Model):
     # yield_info = db.relationship('Yields', foreign_keys="[Yields.sowing_id]",
     #                              back_populates='sow_info',
     #                              cascade='all, delete', uselist=False)
-    yield_info = db.relationship('Yields', secondary="fieldlink")
+    # yields = db.relationship('Yields', secondary="fieldlink")
     # sow_info = db.relationship('Sowing', secondary="fieldlink")
 
     def calculate_harvest(self):
@@ -183,7 +183,7 @@ class FieldSowYieldLink(db.Model):
 
     __tablename__ = 'fieldlink'
 
-    field_id = db.Column(db.Integer, db.ForeignKey('fields.id'), primary_key=True)
+    # field_id = db.Column(db.Integer, db.ForeignKey('fields.id'), primary_key=True)
     sow_id = db.Column(db.Integer, db.ForeignKey('sowing.id'), primary_key=True)
     yield_id = db.Column(db.Integer, db.ForeignKey('yield.id'), primary_key=True)
 
