@@ -9,8 +9,8 @@ from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
 from .forms import YieldEntryForm, YieldSowView, EquipmentEntry, AccountEntryForm
 from .forms import SeedForm, SeedSelectForm
-from .models import Fields, Lands, Sowing, Yields, Equipment, Accounts, AccountEntry
-from .models import SeedVariety
+from .models import Fields, Lands, Sowing, Yields, FieldSowYieldLink
+from .models import Equipment, Accounts, AccountEntry, SeedVariety
 from agriapp import db
 
 
@@ -283,7 +283,6 @@ def add_sowing():
                          variety=request.form['sow_info-variety'],
                          bags=request.form['sow_info-bags'],
                          duration=int(request.form['sow_info-duration']))
-        # sow_obj.calculate_harvest(request.form['sow_info-duration'])
         db.session.add(sow_obj)
         db.session.commit()
 
@@ -341,6 +340,9 @@ def add_yield(location):
                                   bag_rate=i_input['bag_rate'],
                                   buyer=i_input['buyer'])
 
+            # gather corresponding sow data
+            sow_obj = get_desired_sowing(season=season, year=year, location=location)
+            input_yields.sow_info.append(sow_obj)
             # check if given yield data already exists
             db.session.add(input_yields)
             db.session.commit()
@@ -548,19 +550,38 @@ def get_desired_yield(season, year, location=None):
 
 def get_desired_sowing(season, year, location=None):
     """get desired sowing data from db"""
-    if season == 'full_year':
-        # search data for all seasons in given year
-        sow_data = db.session.query(Sowing).filter(Sowing.year == year).all()
-    elif year == '0000':
-        # search data for all years in given season
-        sow_data = db.session.query(Sowing).filter(Sowing.season == season).all()
-    elif season == 'all_data':
-        # search all sowing data
-        sow_data = db.session.query(Sowing).all()
+
+    if location is None:
+        if season == 'full_year':
+            # search data for all seasons in given year
+            sow_data = db.session.query(Sowing).filter(Sowing.year == year).all()
+        elif year == '0000':
+            # search data for all years in given season
+            sow_data = db.session.query(Sowing).filter(Sowing.season == season).all()
+        elif season == 'all_data':
+            # search all sowing data
+            sow_data = db.session.query(Sowing).all()
+        else:
+            # search sowing data for year and season in db
+            sow_data = db.session.query(Sowing).filter(Sowing.year == year,
+                                                       Sowing.season == season).all()
     else:
-        # search sowing data for year and season in db
-        sow_data = db.session.query(Sowing).filter(Sowing.year == year,
-                                                   Sowing.season == season).all()
+        if season == 'full_year':
+            # search data for all seasons in given year
+            sow_data = db.session.query(Sowing).filter(Sowing.year == year,
+                                                       Sowing.location == location).all()
+        elif year == '0000':
+            # search data for all years in given season
+            sow_data = db.session.query(Sowing).filter(Sowing.season == season,
+                                                       Sowing.location == location).all()
+        elif season == 'all_data':
+            # search all sowing data
+            sow_data = db.session.query(Sowing).all()
+        else:
+            # search sowing data for year and season in db
+            sow_data = db.session.query(Sowing).filter(Sowing.year == year,
+                                                       Sowing.season == season,
+                                                       Sowing.location == location).first()
     return sow_data
 
 
