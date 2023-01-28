@@ -22,6 +22,7 @@ View Sowing Information
           <th scope="col">Area (Acres)</th>
           {% elif choice == 'yield' %}
           <th scope="col">Rate/bag (R)</th>
+          <th scope="col">Quantity (Ton)</th>
           {% endif %}
           <th scope="col">Variety</th>
           <th scope="col" class="align-center">Bags</th> 
@@ -37,8 +38,13 @@ View Sowing Information
           <td>{{ lands.field_area }}</td>
           {% elif choice == 'yield' %}
           <td>{{ lands.bag_rate }}</td>
+          <td>{{ lands.weight }}</td>
           {% endif %}
+          {% if lands.sow_info|length %}
+          <td>{{ lands.sow_info[0].variety }}</td>
+          {% else %}
           <td>{{ lands.variety }}</td>
+          {% endif %}
           <td>{{ lands.bags }}</td>
           <td>{{ lands.season }}</td>
         </tr>
@@ -75,7 +81,11 @@ View Sowing Information
           {% elif choice == 'yield' %}
           <td>{{ lands.bag_rate }}</td>
           {% endif %}
+          {% if lands.sow_info|length %}
+          <td>{{ lands.sow_info[0].variety }}</td>
+          {% else %}
           <td>{{ lands.variety }}</td>
+          {% endif %}
           <td>{{ lands.bags }}</td>
           <td>{{ lands.year }}</td>
         </tr>
@@ -95,7 +105,7 @@ View Sowing Information
           {% if choice == 'sow' %}         
           <th scope="col">Area (Acres)</th>
           {% elif choice == 'yield' %}
-          <th scope="col">Rate/bag (R)</th>
+          <th scope="col">Quantity (Ton)</th>
           {% endif %}
           <th scope="col">Variety</th>
           <th scope="col" class="align-center">Bags</th>
@@ -111,9 +121,13 @@ View Sowing Information
           {% if choice == 'sow' %}
           <td>{{ lands.field_area }}</td>
           {% elif choice == 'yield' %}
-          <td>{{ lands.bag_rate }}</td>
+          <td>{{ lands.weight }}</td>
           {% endif %}
+          {% if lands.sow_info|length %}
+          <td>{{ lands.sow_info[0].variety }}</td>
+          {% else %}
           <td>{{ lands.variety }}</td>
+          {% endif %}
           <td>{{ lands.bags }}</td>
           <td>{{ lands.year }}</td>
           <td>{{ lands.season }}</td>
@@ -142,6 +156,7 @@ View Sowing Information
           <th scope="col">Rate/bag (R)</th>
           <th scope="col">Buyer</th>
           <th scope="col">Weight/bag (Kg)</th>
+          <th scope="col">Quantity (Ton)</th>
           {% endif %}   			
     		</tr>   		
     	</thead>
@@ -150,7 +165,11 @@ View Sowing Information
     		<tr>    	
           <td>{{ loop.index }}</td>			
           <td>{{ lands.location }}</td>
+          {% if lands.sow_info|length %}
+          <td>{{ lands.sow_info[0].variety }}</td>
+          {% else %}
           <td>{{ lands.variety }}</td>
+          {% endif %}
           <td>{{ lands.bags }}</td>
     			
           {% if choice == 'sow' %}
@@ -162,6 +181,7 @@ View Sowing Information
           <td>{{ lands.bag_rate }}</td>
           <td>{{ lands.buyer }}</td>
           <td>{{ lands.bag_weight }}</td>
+          <td>{{ lands.weight }}</td>
           {% endif %}    			
     		</tr>
     		{% endfor %}
