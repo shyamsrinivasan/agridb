@@ -111,11 +111,13 @@ class SowDetails(FlaskForm):
 class SowingEntry(FlaskForm):
     """form to enter owing information"""
 
-    season = RadioField('Season', [DataRequired()],
-                        choices=[('summer', 'Kuruvai'),
-                                 ('monsoon', 'Thaaladi'),
-                                 ('other', 'Others')],
-                        default='summer')
+    season = SelectField('Season', [DataRequired()],
+                         choices=[('summer', 'Kuruvai'),
+                                  ('monsoon', 'Thaaladi'),
+                                  ('summer', 'Summer'),
+                                  ('winter', 'Winter'),
+                                  ('other', 'Others')],
+                         default='summer')
     location = SelectField('Location', [DataRequired()], choices=[('tgudi', 'Thozuthalangudi'),
                                                                   ('pallachi', 'Pallachi'),
                                                                   ('potteri', 'Potteri'),

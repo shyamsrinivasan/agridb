@@ -18,12 +18,9 @@ Add Sowing Data
         <div class="row mb-2">            
             <div class="form-group col">
                 {{ form.season.label }}
-                <div class="mt-2">
-                {% for subfield in form.season %}                                           
-                    {{ subfield(id="floatingInput") }}
-                    {{ subfield.label }}                                    
-                {% endfor %} 
-                </div>         
+                {{ form.season(class="form-control", id="floatingInput") }}
+                {{ macro.err_out(form.season.errors) }}
+                   
             </div>   
             <div class="form-group col">
                 {{ form.location.label }}
