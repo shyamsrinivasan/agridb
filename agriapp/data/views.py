@@ -423,14 +423,12 @@ def add_seed():
             # file.save(os.path.join(uploads, filename))
 
             # prepare df from file
-            # df = pd.read_excel(file)
             data_df = prepare_data(file)
             seed_objs = create_seed_model_obj(data_df)
 
             varieties_present = True
             for j_seed_obj in seed_objs:
                 # check if variety exists in db (only add new varieties)
-                # seed_name_present = j_seed_obj.check_variety_name()
                 seed_present = j_seed_obj.is_present()
                 # add obj to session if not present in db
                 if not seed_present:
@@ -461,7 +459,7 @@ def view_seeds(grain_type, season='', disease_resist='', pest_resist=''):
             seed_obj = db.session.query(SeedVariety.name).\
                 filter(SeedVariety.grain == grain_type)
         else:
-            seed_obj = db.session.query(SeedVariety)
+            seed_obj = db.session.query(SeedVariety.name)
 
         if season != 'all':
             seed_obj = seed_obj.filter(SeedVariety.seasons == season)
@@ -770,13 +768,9 @@ def arrange_by_seed_name_factory(grain_type):
     """arrange data as dataframe based on seed names"""
 
     if grain_type == 'all':
-        return None     # arrange_by_seed_name_all
+        return arrange_by_seed_name   # arrange_by_seed_name_all
     else:
         return arrange_by_seed_name
-
-
-def arrange_by_seed_name_all(seed_objs):
-    seed_names = set([j_objs.name for j_objs in seed_objs])
 
 
 def arrange_by_seed_name(seed_names):
