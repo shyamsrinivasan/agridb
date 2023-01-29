@@ -16,13 +16,32 @@ Select Seeds
 
         <!-- row 1-->
         <div class="row mb-4 align-items-center">
-            <div class="form-group col my-2">             
-                {{ form.seed_type(class="form-control", id="floatingInput") }}
-                {{ macro.err_out(form.seed_type.error) }}
+            <div class="form-group col my-1">       
+              {{ form.seed_type.label }}      
+              {{ form.seed_type(class="form-control", id="floatingInput") }}
+              {{ macro.err_out(form.seed_type.error) }}
             </div>    
 
-            <div class="form-group col text-center my-2">
-              {{ form.submit(class="w-50 align-items-center btn btn-primary") }}
+            <div class="form-group col my-1">
+              {{ form.season.label }}
+              {{ form.season(class="form-control", id="floatingInput") }}
+              {{ macro.err_out(form.season.error) }}
+            </div>
+
+            <div class="form-group col my-1">
+              {{ form.disease_resistance.label }}
+              {{ form.disease_resistance(class="form-control", id="floatingInput", default="None") }}
+              {{ macro.err_out(form.disease_resistance.error) }}
+            </div>
+
+            <div class="form-group col my-1">
+              {{ form.pest_resistance.label }}
+              {{ form.pest_resistance(class="form-control", id="floatingInput", default="None") }}
+              {{ macro.err_out(form.pest_resistance.error) }}
+            </div>
+
+            <div class="form-group col text-center mt-4">
+              {{ form.submit(class="align-items-center btn btn-primary") }}
           </div>                
         </div>             
       

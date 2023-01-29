@@ -451,17 +451,31 @@ def add_seed():
     return render_template('add_seed.html', form=form)
 
 
-@data_bp.route('/view/seeds/<grain_type>')
-def view_seeds(grain_type):
+@data_bp.route('/view/seed/<grain_type>', defaults={'season': 'all', 'disease_resist': '',
+                                                    'pest_resist': ''})
+@data_bp.route('/view/seeds/<grain_type>/<season>/<disease_resist>/<pest_resist>')
+def view_seeds(grain_type, season='', disease_resist='', pest_resist=''):
     """view different category of seed varities in db"""
     if grain_type != 'none':
         if grain_type != 'all':
-            grain_obj = db.session.query(SeedVariety.name).\
-                filter(SeedVariety.grain == grain_type).all()
+            seed_obj = db.session.query(SeedVariety.name).\
+                filter(SeedVariety.grain == grain_type)
         else:
-            grain_obj = db.session.query(SeedVariety).all()
+            seed_obj = db.session.query(SeedVariety)
+
+        if season != 'all':
+            seed_obj = seed_obj.filter(SeedVariety.seasons == season)
+
+        if disease_resist and disease_resist != 'none':
+            seed_obj = seed_obj.filter(SeedVariety.disease_resistance ==
+                                       disease_resist)
+
+        if pest_resist and pest_resist != 'none':
+            seed_obj = seed_obj.filter(SeedVariety.pest_resistance ==
+                                       pest_resist)
 
         # collect seeds based on name for display
+        grain_obj = seed_obj.all()
         func = arrange_by_seed_name_factory(grain_type)
         arranged_grain_obj = func(grain_obj)
         return render_template('view_seed.html', seeds=arranged_grain_obj,
@@ -475,9 +489,33 @@ def select_seed_type():
     """select type of seed to view"""
 
     form = SeedSelectForm()
+    # get resistance choices from db (set dynamically)
+    available_disease_resistance = db.session.query(SeedVariety.disease_resistance).distinct()
+    form.disease_resistance.choices = [(i_val[0], i_val[0])
+                                       for i_val in available_disease_resistance
+                                       if i_val[0]]
+    form.disease_resistance.choices.append(('', 'None'))
+
+    available_pest_resistance = db.session.query(SeedVariety.pest_resistance).distinct()
+    form.pest_resistance.choices = [(i_val[0], i_val[0])
+                                    for i_val in available_pest_resistance
+                                    if i_val[0]]
+    form.pest_resistance.choices.append(('', 'None'))
+
     if form.validate_on_submit():
         grain_type = request.form['seed_type']
-        return redirect(url_for('data.view_seeds', grain_type=grain_type))
+        season = request.form['season']
+        pest_resist = 'none'
+        if request.form['pest_resistance']:
+            pest_resist = request.form['pest_resistance']
+
+        disease_resist = 'none'
+        if request.form['disease_resistance']:
+            disease_resist = request.form['disease_resistance']
+
+        return redirect(url_for('data.view_seeds', grain_type=grain_type,
+                                season=season, pest_resist=pest_resist,
+                                disease_resist=disease_resist))
 
     return render_template('select_seed_type.html', form=form)
 
@@ -759,3 +797,6 @@ def arrange_by_seed_name(seed_names):
     return seed_obj
 
 
+def seed_data_factory(season):
+    """"""
+    return None

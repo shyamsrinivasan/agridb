@@ -245,7 +245,14 @@ class SeedSelectForm(FlaskForm):
                                                                     ('pulses', 'Pulses'),
                                                                     ('all', 'All Available')],
                             default='paddy')
-    submit = SubmitField('Show Selected Seeds')
+    season = SelectField('Duration', [Optional()], choices=[('short', 'Short'),
+                                                            ('medium', 'Medium'),
+                                                            ('long', 'Long'),
+                                                            ('all', 'All Seasons')],
+                         default='all')
+    disease_resistance = SelectField('Disease Resistance', choices=[], coerce=str)
+    pest_resistance = SelectField('Pest Resistance', choices=[], coerce=str)
+    submit = SubmitField('Show Seeds')
 
 
 class AccountingForm(FlaskForm):
