@@ -158,6 +158,8 @@ class YieldEntryForm(FlaskForm):
     season = RadioField('Season', [DataRequired()],
                         choices=[('summer', 'Kuruvai'),
                                  ('monsoon', 'Thaaladi'),
+                                 ('summer', 'Summer'),
+                                 ('winter', 'Winter'),
                                  ('other', 'Others')],
                         default='summer')
     year = StringField('Year', [Length(message='year should be four digits', min=4, max=4),
@@ -176,6 +178,8 @@ class YieldSowView(FlaskForm):
     season = SelectField('Season', [DataRequired()],
                          choices=[('summer', 'Kuruvai'),
                                   ('monsoon', 'Thaaladi'),
+                                  ('summer', 'Summer'),
+                                  ('winter', 'Winter'),
                                   ('other', 'Others'),
                                   ('full_year', 'Full Year'),
                                   ('all_data', 'All Data')],
