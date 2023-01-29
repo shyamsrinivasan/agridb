@@ -474,10 +474,14 @@ def view_seeds(grain_type, season='', disease_resist='', pest_resist=''):
 
         # collect seeds based on name for display
         grain_obj = seed_obj.all()
-        func = arrange_by_seed_name_factory(grain_type)
-        arranged_grain_obj = func(grain_obj)
-        return render_template('view_seed.html', seeds=arranged_grain_obj,
-                               seed_type=grain_type)
+        if grain_obj and grain_obj is not None:
+            func = arrange_by_seed_name_factory(grain_type)
+            arranged_grain_obj = func(grain_obj)
+            return render_template('view_seed.html', seeds=arranged_grain_obj,
+                                   seed_type=grain_type)
+
+        flash(message='Selected Type/Season/Resistance not available',
+              category='error')
 
     return redirect(url_for('data.select_seed_type'))
 
@@ -499,6 +503,13 @@ def select_seed_type():
                                     for i_val in available_pest_resistance
                                     if i_val[0]]
     form.pest_resistance.choices.append(('', 'None'))
+
+    # get season choices dynamically
+    available_seasons = db.session.query(SeedVariety.seasons).distinct()
+    form.season.choices = [(i_val[0], i_val[0])
+                           for i_val in available_seasons
+                           if i_val[0]]
+    form.season.choices.append(('all', 'All Seasons'))
 
     if form.validate_on_submit():
         grain_type = request.form['seed_type']
