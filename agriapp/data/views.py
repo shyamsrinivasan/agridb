@@ -464,8 +464,7 @@ def view_seeds(grain_type):
         # collect seeds based on name for display
         func = arrange_by_seed_name_factory(grain_type)
         arranged_grain_obj = func(grain_obj)
-
-        return render_template('view_seed.html', seeds=grain_obj,
+        return render_template('view_seed.html', seeds=arranged_grain_obj,
                                seed_type=grain_type)
 
     return redirect(url_for('data.select_seed_type'))
@@ -733,7 +732,7 @@ def arrange_by_seed_name_factory(grain_type):
     """arrange data as dataframe based on seed names"""
 
     if grain_type == 'all':
-        return arrange_by_seed_name_all
+        return None     # arrange_by_seed_name_all
     else:
         return arrange_by_seed_name
 
@@ -745,15 +744,18 @@ def arrange_by_seed_name_all(seed_objs):
 def arrange_by_seed_name(seed_names):
     seed_names_set = set(seed_names)
     seed_names = [i_name[0] for i_name in seed_names_set]
-    for i_name in seed_names:
-        seed_obj = db.session.query(SeedVariety).filter(SeedVariety.name == i_name).all()
+    varieties = []
 
-        # if len(seed_obj) > 1:
-
-
-        # df = pd.read_sql('SELECT * FROM variety WHERE name={}'.format(i_name), db.session)
-
-    return None
-
+    df_list = [{i_name: pd.read_sql("SELECT * FROM variety WHERE name='{}'".format(i_name),
+                                    db.session.connection())} for i_name in seed_names]
+    # get of dictionaries
+    res = [{key: value.unique() if len(value.unique()) > 1 else value.unique()[0]
+            for _, v in i_list.items() for key, value in v.items()}
+           for i_list in df_list]
+    # convert to df
+    result = pd.DataFrame(res)
+    result.drop('id', axis=1, inplace=True)
+    seed_obj = create_seed_model_obj(result)
+    return seed_obj
 
 

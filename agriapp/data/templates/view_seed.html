@@ -22,8 +22,8 @@ View Seeds
 				{% endif %}
 	    		<th scope="col">Season</th>
 	        	<th scope="col">Duration</th>
-	  			<th scope="col">Average Yield/ha</th>
-	  			<th scope="col">Weight/1000 grains</th>
+	  			<th scope="col">Average Yield (Kg/ha)</th>
+	  			<th scope="col">Weight (g/1000 grains)</th>
 	  			<th scope="col">Grain Type</th>
 	  			<th scope="col">Disease Resistance</th>
 	  			<th scope="col">Pest Resistance</th>
@@ -36,7 +36,7 @@ View Seeds
 	        	{% if seed_type == 'all' %}
 	  			<td>{{ item.grain }}</td>
 				{% endif %}
-	        	<td>{{ item.season }}</td>
+	        	<td>{{ item.seasons }}</td>
 	  			<td>{{ item.duration }}</td>
 	  			<td>{{ item.average_yield }}</td>
 	  			<td>{{ item.grain_weight }}</td>

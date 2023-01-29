@@ -1,5 +1,6 @@
 import datetime
 import numpy as np
+import pandas as pd
 
 from agriapp import db
 from datetime import timedelta
@@ -240,13 +241,17 @@ class SeedVariety(db.Model):
     ruling_variety = db.Column(db.String(3))
     hybrid = db.Column(db.String(3))
 
-    def __init__(self, data):
+    def __init__(self, data: pd.Series):
         self.name = data['name']
         if data['duration'] is not np.nan:
             self.duration = int(data['duration'])
 
-        if data['season'] is not np.nan:
-            self.seasons = data['season']
+        if 'season' in data.index:
+            if data['season'] is not np.nan:
+                self.seasons = data['season']
+        elif 'seasons' in data.index:
+            if data['seasons'] is not np.nan:
+                self.seasons = data['seasons']
 
         if data['average_yield'] is not np.nan:
             self.average_yield = data['average_yield']
@@ -257,10 +262,14 @@ class SeedVariety(db.Model):
         self.disease_resistance = ''
         if data['disease_resistance'] is not np.nan:
             self.disease_resistance = data['disease_resistance']
+            if type(data['disease_resistance']) is np.ndarray or type(data['disease_resistance']) is list:
+                self.disease_resistance = [val for val in data['disease_resistance'] if val]
 
         self.pest_resistance = ''
         if data['pest_resistance'] is not np.nan:
             self.pest_resistance = data['pest_resistance']
+            if type(data['pest_resistance']) is np.ndarray or type(data['pest_resistance']) is list:
+                self.pest_resistance = [val for val in data['pest_resistance'] if val]
 
         if data['habit'] is not np.nan:
             self.habit = data['habit']
