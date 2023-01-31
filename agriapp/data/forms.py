@@ -301,3 +301,18 @@ class AccountEntryForm(FlaskForm):
     account = FieldList(FormField(AccountingForm, default=lambda: Accounts()))
 
     submit = SubmitField('Add Income(s)/Expense(s)')
+
+
+class AccountSearchCategoryForm(FlaskForm):
+    """enter category to search account with"""
+
+    search_by = RadioField('Search Using', choices=[('location', 'Location'),
+                                                    ('expense', 'Expense'),
+                                                    ('income', 'Income'),
+                                                    ('date', 'Date'),
+                                                    ('month', 'Month'),
+                                                    ('category', 'Category'),
+                                                    ('operation', 'Operation')],
+                           default='location')
+    submit = SubmitField('Search Records')
+

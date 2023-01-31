@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+View Expense/Income
+{% endblock %}
+
+{% block content %}
+{% if category == 'none' %}
+<div class="col align-self-start mx-1">
+    <div class="col text-center">      
+      <p class="fs-4">Enter category to classify information</p>
+    </div>    
+    <form action="{{ url_for('data.view_expense') }}", method="POST" class="g-3 rounded-3 bg-light px-2">
+        {{ form.csrf_token() }}
+        
+        <div class="form-group col-md-3">
+            {{ form.type.label }}
+            <div class="row my-2">
+                {% for subfield in form.type %}
+                <div class="col">
+                    {{ subfield(id="floatingInput") }}
+                    {{ subfield.label }}
+                </div>                  
+                {% endfor %}                    
+            </div>                
+        </div>        
+
+        <!-- row 2 -->
+        <div class="col mt-2 align-items-center text-center">
+            {{ form.submit(class="w-50 align-items-center btn btn-primary") }}                  
+        </div>          
+    </form>
+</div>
+
+{% elif category == 'location'}
+<div class="col align-self-start mx-1">
+    
+</div>
+
+{% else %}
+<div class="col align-self-start mx-1">
+    <div class="col text-center">      
+      <p class="fs-4">Enter accounting information</p>
+    </div>   
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block script %}
+<!-- dynamic form js and jquery files-->
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/page.js') }}"></script>
+{% endblock %}
