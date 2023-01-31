@@ -23,9 +23,11 @@ class Fields(db.Model):
     # association table many-to-many relations
     # yield_info = db.relationship('Yields', secondary="fieldlink")
     # sow_info = db.relationship('Sowing', secondary="fieldlink")
+    # accounts = db.relationship('Accounts', secondary="accountlink")
     yields = db.relationship('Yields', foreign_keys="[Yields.location]", uselist=True)
     sow_info = db.relationship('Sowing', foreign_keys="[Sowing.location]", uselist=True)
     equipment_info = db.relationship('Equipment', foreign_keys="[Equipment.location]")
+    accounts = db.relationship('Accounts', foreign_keys="[Accounts.location_id]")
 
     def __repr__(self):
         return f"Fields(id={self.id!r}, location={self.location!r}, " \
@@ -143,8 +145,8 @@ class Yields(db.Model):
                          db.ForeignKey('fields.location', onupdate='CASCADE',
                                        ondelete='CASCADE'),
                          index=True)
-    sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
-                                                    ondelete='CASCADE'), index=True)
+    # sowing_id = db.Column(db.Integer, db.ForeignKey('sowing.id', onupdate='CASCADE',
+    #                                                 ondelete='CASCADE'), index=True)
     harvest_date = db.Column(db.Date)
     sell_date = db.Column(db.Date)
 
@@ -322,11 +324,9 @@ class Accounts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     entry_id = db.Column(db.Integer, db.ForeignKey('entry.id', onupdate='CASCADE', ondelete='CASCADE'),
                          index=True)
-    field = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
-                              'mannamuti', name='field_location'),
-                      db.ForeignKey('fields.location', onupdate='CASCADE',
-                                    ondelete='CASCADE'),
-                      index=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('fields.id', onupdate='CASCADE',
+                                                      ondelete='CASCADE'),
+                            index=True)
     expense_type = db.Column(db.Enum('expense', 'income', name='expense_type'),
                              db.ForeignKey('entry.type'),
                              default='expense', index=True)
@@ -347,6 +347,8 @@ class Accounts(db.Model):
     quantity = db.Column(db.Float)
     cost = db.Column(db.Float)
 
+    entry = db.relationship('AccountEntry', secondary='accountlink')
+
     def __init__(self, **kwargs):
         super(Accounts, self).__init__(**kwargs)
         self.set_cost()
@@ -357,7 +359,7 @@ class Accounts(db.Model):
     def __repr__(self):
         return f"Account(id={self.id!r}, type={self.expense_type!r}, " \
                f"category={self.category!r}, " \
-               f"operation={self.operation!r}, field={self.field!r}" \
+               f"operation={self.operation!r}, field={self.location_id!r}," \
                f"item={self.item!r}, rate={self.rate!r}, quantity={self.quantity!r}," \
                f"cost={self.cost!r})"
 
@@ -368,12 +370,25 @@ class AccountEntry(db.Model):
     __tablename__ = 'entry'
 
     id = db.Column(db.Integer, primary_key=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('fields.id', onupdate='CASCADE',
+                                                      ondelete='CASCADE'),
+                            index=True)
     date = db.Column(db.Date)
     type = db.Column(db.Enum('expense', 'income', name='expense_type'),
                      default='expense', index=True)
 
-    account = db.relationship('Accounts', foreign_keys="[Accounts.entry_id]")
+    account = db.relationship('Accounts', secondary='accountlink')
 
     def __repr__(self):
-        return f"Account(id={self.id!r}, type={self.type!r}, date={self.date!r})"
+        return f"Account(id={self.id!r}, type={self.type!r}, date={self.date!r}," \
+               f"field={self.location_id!r})"
 
+
+class AccountsLink(db.Model):
+    """Association table between fields and accounts"""
+
+    __tablename__ = 'accountlink'
+
+    # field_id = db.Column(db.Integer, db.ForeignKey('fields.id'), primary_key=True)
+    entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'), primary_key=True)
+    accounts_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), primary_key=True)

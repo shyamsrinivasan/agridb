@@ -8,7 +8,7 @@ from . import data_bp
 from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
 from .forms import YieldEntryForm, YieldSowView, EquipmentEntry, AccountEntryForm
-from .forms import SeedForm, SeedSelectForm
+from .forms import SeedForm, SeedSelectForm, AccountSearchCategoryForm
 from .models import Fields, Lands, Sowing, Yields, FieldSowYieldLink
 from .models import Equipment, Accounts, AccountEntry, SeedVariety
 from agriapp import db
@@ -533,19 +533,12 @@ def select_seed_type():
 def add_expense():
     """add expense data to agri db"""
 
-    field_obj = db.session.query(Fields).all()
-    entry_obj = db.session.query(AccountEntry).first()
+    entry_obj = AccountEntry()
 
-    # check if land and field locations are not empty
-    if entry_obj is not None and len(entry_obj.account) == 0:
+    # check if account object is not empty
+    if len(entry_obj.account) == 0:
         # dummy land object when no lands are available for field objs
         entry_obj.account = [Accounts(expense_type='expense',
-                                      category='labour', operation='field preparation',
-                                      rate=0.0, quantity=5)
-                             ]
-    else:
-        entry_obj = AccountEntry()
-        entry_obj.account = [Accounts(field='tgudi', expense_type='expense',
                                       category='labour', operation='field preparation',
                                       rate=0.0, quantity=5)
                              ]
@@ -553,9 +546,55 @@ def add_expense():
     form = AccountEntryForm(obj=entry_obj)
     form.field.choices = [(g.location, g.location) for g in Fields.query.order_by('location')]
     if form.validate_on_submit():
-        pass
+        # form.populate_obj(entry_obj)
+        # get field id
+        field_location = form.data['field']
+        field_obj = db.session.query(Fields).filter(Fields.location == field_location).first()
+        new_entry_obj = AccountEntry(date=form.data['date'], type=form.data['type'],
+                                     location_id=field_obj.id)
+        account_obj = [Accounts(location_id=field_obj.id,
+                                expense_type=new_entry_obj.type,
+                                category=i_data['category'],
+                                operation=i_data['operation'],
+                                item=i_data['item'],
+                                rate=i_data['rate'],
+                                quantity=i_data['quantity'])
+                       for i_data in form.data['account']]
+
+        # add new accounts objs to entry
+        new_entry_obj.account = account_obj
+
+        db.session.add(new_entry_obj)
+        db.session.commit()
+
+        # x = request.form
+        flash(message='Expense successfully added to database', category='success')
+        return redirect(url_for('admin.homepage'))
 
     return render_template('add_expense.html', form=form)
+
+
+@data_bp.route('/view/expense/<category>', methods=['GET', 'POST'])
+def view_expense(category):
+    """view expense"""
+
+    if category != 'none':
+
+        return render_template('view_expense.html', category=category)
+
+    return redirect(url_for('data_bp.view_expense_category'))
+
+
+@data_bp.route('/view/expense/searchby', methods=['GET', 'POST'])
+def view_expense_category():
+    """choose category to classify expense/income data shown"""
+    form = AccountSearchCategoryForm()
+
+    if form.validate_on_submit():
+        category = request.form['category']
+        return redirect(url_for('data_bp.view_expense', category=category))
+
+    return render_template('view_expense.html', form=form)
 
 
 def check_land_present(land_objs):
