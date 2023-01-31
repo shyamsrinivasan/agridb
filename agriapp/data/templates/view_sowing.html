@@ -23,6 +23,10 @@ View Sowing Information
           {% elif choice == 'yield' %}
           <th scope="col">Rate/bag (R)</th>
           <th scope="col">Quantity (Ton)</th>
+          {% elif choice == 'both' %}
+          <th scope="col">Area (Acres)</th>
+          <th scope="col">Rate/bag (R)</th>
+          <th scope="col">Quantity (Ton)</th>
           {% endif %}
           <th scope="col">Variety</th>
           <th scope="col" class="align-center">Bags</th> 
@@ -35,8 +39,19 @@ View Sowing Information
           <td>{{ loop.index }}</td>     
           <td>{{ lands.location }}</td>
           {% if choice == 'sow' %}
-          <td>{{ lands.field_area }}</td>
+          <td>{{ lands.field_area }}</td>          
           {% elif choice == 'yield' %}
+          <td>{{ lands.bag_rate }}</td>
+          <td>{{ lands.weight }}</td>
+          {% elif choice == 'both' %}
+            {% if lands.sow_info|length %}
+              {% for sow in sow_info %}
+                <td>{{ sow.field_area }}</td>
+              {% endfor %}
+            {% else %}
+              <td>NA</td>
+            {% endif %}
+          <td>{{ lands.field_area }}</td>
           <td>{{ lands.bag_rate }}</td>
           <td>{{ lands.weight }}</td>
           {% endif %}

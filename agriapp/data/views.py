@@ -676,23 +676,23 @@ def get_desired_sowing(season, year, location=None):
 def get_yield_and_sow(season, year, location=None):
     """get both yield and sow data"""
 
-    sow_yield_data = db.session.query(Sowing)
+    sow_yield_data = db.session.query(Yields)
     if location is not None:
-        sow_yield_data = sow_yield_data.filter(Sowing.location == location)
+        sow_yield_data = sow_yield_data.filter(Yields.location == location)
 
     if season == 'full_year':
         # search data for all seasons in given year
-        sow_yield_data = sow_yield_data.filter(Sowing.year == year)
+        sow_yield_data = sow_yield_data.filter(Yields.year == year)
     elif year == '0000':
         # search data for all years in given season
-        sow_yield_data = sow_yield_data.filter(Sowing.season == season)
+        sow_yield_data = sow_yield_data.filter(Yields.season == season)
     # elif season == 'all_data':
     #     # search all sowing data
     #     sow_yield_data = sow_yield_data.all()
     else:
         # search sowing data for year and season in db
-        sow_yield_data = sow_yield_data.filter(Sowing.year == year,
-                                               Sowing.season == season).all()
+        sow_yield_data = sow_yield_data.filter(Yields.year == year,
+                                               Yields.season == season)
 
     sow_yield_data = sow_yield_data.all()
     return sow_yield_data
