@@ -37,6 +37,7 @@ Add Expense/Income
                 {{ form.field.label }}
                 {{ form.field(class="form-control", id="floatingInput") }}
             </div>  
+
     	</div>
 
     	<!-- row 2 -->
@@ -45,6 +46,14 @@ Add Expense/Income
 
             {% for member in form.account %}
             <div class="row align-items-center justify-content-center mb-2" data-toggle="fieldset-entry"> 
+                <div class="col">
+                    {{ member.category.label }}
+                    {{ member.category(class="form-control") }}
+                </div>
+                <div class="col">
+                    {{ member.operation.label }}
+                    {{ member.operation(class="form-control") }}
+                </div>
                 <div class="col">
                     {{ member.item.label }}
                     {{ member.item(class="form-control", placeholder="item 1") }}     
@@ -59,15 +68,10 @@ Add Expense/Income
                 	{{ member.quantity.label }}
                     {{ member.quantity(class="form-control", placeholder="1") }}     
                     {{ macro.err_out(member.quantity.error) }}                        
-                </div>
-                <div class="col">
-                	{{ member.cost.label }}
-                    {{ member.cost(class="form-control", placeholder="0.0") }}     
-                    {{ macro.err_out(member.cost.error) }}
-                </div>
-                
+                </div>                             
+
                 <div class="col mt-4">
-                    <!-- remove row button -->            
+                    <!-- remove row button -->           
                     <button class="btn btn-warning" type="button" data-toggle="fieldset-remove-row" id="item-{{loop.index0}}-remove">-</button>
                 </div>                              
             </div>
