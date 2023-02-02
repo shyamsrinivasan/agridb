@@ -8,10 +8,94 @@ Homepage
 <!-- Main canvas info banner -->
 <div class="col align-self-start mx-1">
 	<div class="jumbotron p-2 bg-light text-dark rounded">
-		<h1 class="text-center">Demeter Farms Client Management System</h1> 
+		<h1 class="text-center">Demeter Farms Agriculture Infomation Dashboard (AID)</h1> 
 		<hr class="my-4">  
-		<p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+		<p class="lead justify">This is a simple system to store, visualize and analyze data for small and large agricultural operations. </p>
+	</div>
+
+	<!-- row 1 -->
+	<div class="row mt-1">
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-dark text-light">
+					Add Field Data
+				</div>
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.view_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item" href="{{ url_for('data.select_field', category='view_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a></li>
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.view_equipment', equipment_type='none') }}"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a></li>
+					</ul>
+				</div>				
+			</div>	
+		</div>	
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-secondary text-light">
+					Change/Remove Field Data
+				</div>
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a></li>
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a></li>				
+					</ul>
+				</div>				
+			</div>	
+		</div>				
+	</div>
+
+	<!-- row 2 -->
+	<div class="row mt-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-dark text-light">
+					Add Regular Data
+				</div>
+				<div class="card-body bg-light">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.add_expense') }}"><i class="fa-solid fa-indian-rupee-sign"></i>&nbsp;Accounting</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item" href="{{ url_for('data.add_sowing') }}"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a></li>
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.select_field', category='add_yield') }}"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a></li>						
+					</ul>
+				</div>				
+			</div>	
+		</div>	
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-secondary text-light">
+					Change/Remove Regular Data
+				</div>
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#" disabled><i class="fa-solid fa-indian-rupee-sign"></i>&nbsp;Accounting</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a></li>
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a></li>						
+					</ul>
+				</div>				
+			</div>	
+		</div>
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-dark text-light">
+					Visualize Regular Data
+				</div>
+				<div class="card-body bg-light">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#" disabled><i class="fa-solid fa-indian-rupee-sign"></i>&nbsp;Accounting</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-seedling"></i>&nbsp;Sowing</a></li>
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('visual.visualize_yield') }}"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Yield</a></li>		
+					</ul>
+				</div>				
+			</div>	
+		</div>		
 	</div>
 </div>
 
+{% endblock %}
+
+
+{% block script %}
+<!-- Bootstrap core JavaScript-->
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>	
 {% endblock %}
