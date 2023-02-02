@@ -3,7 +3,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SelectField, DecimalField, DateField
 from wtforms import RadioField, IntegerField, HiddenField, SubmitField
 from wtforms import FormField, FieldList
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, Optional, NumberRange
 from .models import Fields, Lands, Yields, Accounts
 
 
