@@ -868,7 +868,3 @@ def arrange_by_seed_name(seed_names):
     seed_obj = create_seed_model_obj(result)
     return seed_obj
 
-
-def seed_data_factory(season):
-    """"""
-    return None
