@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+Yield Graph
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="col-md-6">		
+		{{ div|safe }}
+		{{ script|safe }}
+	</div>	
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- Bokeh core script-->
+<script src="{{ url_for('static', filename='js/bokeh.min.js') }}"></script>	
+{% endblock %}
