@@ -14,38 +14,6 @@ Homepage
 	</div>
 
 	<!-- row 1 -->
-	<div class="row mt-1">
-		<div class="col">
-			<div class="card">
-				<div class="card-header bg-dark text-light">
-					Add Field Data
-				</div>
-				<div class="card-body">
-					<ul class="list-group list-group-flush">
-						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.view_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a></li>
-						<li class="dropdown-item link"><a class="dropdown-item" href="{{ url_for('data.select_field', category='view_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a></li>
-						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.view_equipment', equipment_type='none') }}"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a></li>
-					</ul>
-				</div>				
-			</div>	
-		</div>	
-		<div class="col">
-			<div class="card">
-				<div class="card-header bg-secondary text-light">
-					Change/Remove Field Data
-				</div>
-				<div class="card-body">
-					<ul class="list-group list-group-flush">
-						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a></li>
-						<li class="dropdown-item link"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a></li>
-						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a></li>				
-					</ul>
-				</div>				
-			</div>	
-		</div>				
-	</div>
-
-	<!-- row 2 -->
 	<div class="row mt-2">
 		<div class="col">
 			<div class="card">
@@ -90,6 +58,39 @@ Homepage
 			</div>	
 		</div>		
 	</div>
+	
+
+	<!-- row 2 -->
+	<div class="row mt-1">
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-dark text-light">
+					Add Field Data
+				</div>
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.view_field') }}"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item" href="{{ url_for('data.select_field', category='view_land') }}"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a></li>
+						<li class="dropdown-item"><a class="dropdown-item" href="{{ url_for('data.view_equipment', equipment_type='none') }}"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a></li>
+					</ul>
+				</div>				
+			</div>	
+		</div>	
+		<div class="col">
+			<div class="card">
+				<div class="card-header bg-secondary text-light">
+					Change/Remove Field Data
+				</div>
+				<div class="card-body">
+					<ul class="list-group list-group-flush">
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-mountain-sun"></i>&nbsp;Fields</a></li>
+						<li class="dropdown-item link"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-clipboard"></i>&nbsp;Lands</a></li>
+						<li class="dropdown-item"><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-shuttle-space"></i>&nbsp;Equipments</a></li>				
+					</ul>
+				</div>				
+			</div>	
+		</div>				
+	</div>	
 </div>
 
 {% endblock %}
