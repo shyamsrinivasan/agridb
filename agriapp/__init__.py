@@ -38,11 +38,13 @@ def create_app():
     from .admin import admin_bp
     from .user import user_bp
     from .data import data_bp
+    from .visual import visual_bp
 
     # register blueprints
     app.register_blueprint(admin_bp)
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(data_bp, url_prefix='/data')
+    app.register_blueprint(visual_bp, url_prefix='/visualize')
 
     with app.app_context():
         db.init_app(app)
