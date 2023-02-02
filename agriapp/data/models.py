@@ -347,7 +347,7 @@ class Accounts(db.Model):
     quantity = db.Column(db.Float)
     cost = db.Column(db.Float)
 
-    entry = db.relationship('AccountEntry', secondary='accountlink')
+    # entry = db.relationship('AccountEntry', secondary='accountlink')
 
     def __init__(self, **kwargs):
         super(Accounts, self).__init__(**kwargs)
