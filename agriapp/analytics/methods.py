@@ -1,7 +1,6 @@
-from agriapp.data.models import Yields
+from agriapp.data.models import Yields, Fields
 from agriapp import db
 from datetime import datetime as dt
-from datetime import date
 
 
 def get_yield(yield_obj=None, by_season=False, by_year=False, by_location=False, **kwargs):
@@ -49,6 +48,57 @@ def yield_by_location(location, yield_obj=None):
 
     yield_obj = db.session.query(Yields).filter(Yields.location == location)
     return yield_obj
+
+
+def get_grouped_yields(by_season=False, by_buyer=False, yield_obj=None):
+    """get location based yields grouped by different criteria"""
+    if by_season:
+        return get_total_yields_by_season(yield_obj)
+    elif by_buyer:
+        return get_total_yields_by_buyer(yield_obj)
+    else:
+        return None
+
+
+def get_total_yields_by_season(yield_obj=None):
+    """get total yields grouped by location and season"""
+    if yield_obj is None:
+        yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season)
+
+    yield_obj = yield_obj.session.query(Yields.location,
+                                        Yields.season,
+                                        db.func.sum(Yields.weight)).group_by(Yields.location)
+    return yield_obj
+
+
+def get_total_yields_by_buyer(yield_obj=None):
+    """get total yields grouped by season and buyer"""
+    if yield_obj is None:
+        yield_obj = db.session.query(Yields).group_by(Yields.season,
+                                                      Yields.buyer)
+
+    yield_obj = yield_obj.session.query(db.func.sum(Yields.weight),
+                                        Yields.season, Yields.buyer).group_by(Yields.season,
+                                                                              Yields.buyer)
+    return yield_obj
+
+
+def yield_per_acre_by_location(yield_obj=None):
+    """get average yield per location"""
+
+    if yield_obj is None:
+        yield_obj = get_grouped_yields(by_season=True)
+
+    # field_names = yield_obj.session.query(Yields.location).distinct().all()
+    # location_names = [i_val[0] for i_val in field_names]
+    values = yield_obj.all()
+    field_extent = [(i_value[0], i_value[1], i_value[2],
+                     db.session.query(Fields.field_extent).
+                     filter(Fields.location == i_value[0]).first()) for i_value in values]
+    yield_per_acre = [(i_value[0], i_value[1], i_value[2],
+                       i_value[3][0], i_value[2]/i_value[3][0]) for i_value in field_extent]
+
+    return yield_per_acre
 
 
 def get_seasons(given_date=None):
