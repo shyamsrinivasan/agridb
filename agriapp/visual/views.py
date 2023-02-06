@@ -26,39 +26,51 @@ def visualize_yield():
         total_yield = [i_value[2] for i_value in values]
         per_acre_yield = [i_value[4] for i_value in values]
 
-
-        #
-        p1 = figure(title="Recent Yields", height=380, width=700,
+        # figure 1
+        p1 = figure(title="Recent Yields", height=380,
                     toolbar_location=None, tools="")
         # sizing_mode = "stretch_width"
         y = [val for val in range(1, len(locations) + 1)]
         ticker_label = {val: locations[val-1].capitalize() for val in range(1, len(locations) + 1)}
 
         p1.hbar(y=y, right=total_yield, height=0.5)
-
         # plot propreties
         p1.ygrid.grid_line_color = None
         p1.x_range.start = 0
+        # xaxis
         p1.xaxis.axis_label = 'Grain Yield (Metric Tons)'
-        p1.xaxis.axis_label_text_font_size = '14pt'
-        p1.xaxis.major_label_text_font_size = '14pt'
+        p1.xaxis.axis_label_text_font_size = '12pt'
+        p1.xaxis.major_label_text_font_size = '12pt'
+        # yaxis
+        p1.yaxis.major_label_overrides = ticker_label
+        p1.yaxis.minor_tick_line_color = None
+        p1.yaxis.major_label_text_font_size = '12pt'
+
+        # figure 2
+        p2 = figure(title="Recent Yield/Acre", height=380,
+                    toolbar_location=None, tools="")
+        p2.hbar(y=y, right=per_acre_yield, height=0.5)
+        # plot propreties
+        p2.ygrid.grid_line_color = None
+        p2.x_range.start = 0
+        # xaxis
+        p2.xaxis.axis_label = 'Grain Yield (Metric Tons/Acre)'
+        p2.xaxis.axis_label_text_font_size = '12pt'
+        p2.xaxis.major_label_text_font_size = '12pt'
+        # yaxis
+        p2.yaxis.major_label_overrides = ticker_label
+        p2.yaxis.minor_tick_line_color = None
+        p2.yaxis.major_label_text_font_size = '12pt'
+
+        # vbar
+        # p2 = figure(x_range=locations, height=350, width=300,
+        #             title="Recent Yield/Acre",
+        #             toolbar_location=None, tools="")
+        # p2.vbar(x=locations, top=per_acre_yield, width=0.9)
         # p2.xaxis.axis_line_width
         # p2.xaxis.axis_line_color
         # p2.xaxis.axis_label_text_font_style
         # p2.xaxis.axis_label_text_font
-
-        p1.yaxis.major_label_overrides = ticker_label
-        p1.yaxis.minor_tick_line_color = None
-        p1.yaxis.major_label_text_font_size = '16pt'
-
-        p2 = figure(x_range=locations, height=350,
-                    title="Recent Yield/Acre", sizing_mode='stretch_width',
-                    toolbar_location=None, tools="")
-        p2.vbar(x=locations, top=per_acre_yield, width=0.9)
-        # plot properties
-        p2.xgrid.grid_line_color = None
-        p2.y_range.start = 0
-        p2.yaxis.axis_label = 'Grain Yield (Metric Tons/Acre)'
 
         # graph components for jinja template use
         script, div = components(p1)

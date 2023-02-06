@@ -6,18 +6,47 @@ Yield Graph
 {% endblock %}
 
 {% block content %}
-<div class="container">
-	<div class="row">		
-		<div class="col">		
-			{{ div[0]|safe }}
-			{{ script[0]|safe }}
-		</div>	
-		<div class="col">		
-			{{ div[1]|safe }}
-			{{ script[1]|safe }}
-		</div>		
-	</div>	
+<div class="row container">
+	{{ div[0]|safe }}
+	{{ script[0]|safe }}
+	<div class="col">
+		<table class="table table-hover">
+			<thead>	
+			<tr>
+				<th scope="col">Location</th>
+				<th scope="col">Value (Tons)</th>
+			</tr>			
+			</thead>
+			<tbody>	
+			<tr>
+				<td>Location</td>
+				<td>Value</td>
+			</tr>			
+			</tbody>			
+		</table>
+	</div>
 </div>
+<div class="row container">
+	{{ div[1]|safe }}
+	{{ script[1]|safe }}
+	<div class="col">
+		<table class="table table-hover">
+			<thead>	
+			<tr>
+				<th scope="col">Location</th>
+				<th scope="col">Value (Tons/Acre)</th>
+			</tr>			
+			</thead>
+			<tbody>	
+			<tr>
+				<td>Location</td>
+				<td>Value</td>
+			</tr>			
+			</tbody>			
+		</table>
+	</div>
+</div>
+
 {% endblock %}
 
 {% block script %}
