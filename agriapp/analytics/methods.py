@@ -101,6 +101,11 @@ def yield_per_acre_by_location(yield_obj=None):
     return yield_per_acre
 
 
+# yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season)
+    # yield_obj = yield_obj.session.query(Yields.location,
+    #                                     Yields.season,
+    #                                     db.func.sum(Yields.weight)).group_by(Yields.location)
+
 def get_seasons(given_date=None):
     """get season name based on given date/month"""
 
