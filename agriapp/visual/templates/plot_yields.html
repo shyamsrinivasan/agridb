@@ -6,7 +6,24 @@ Yield Graph
 {% endblock %}
 
 {% block content %}
-<div class="row container">
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" href="#">Recent Yield Data</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#yieldperacre">Yield/Acre</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#section1">Section 1</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link disabled" href="#">Disabled</a>
+  </li>
+</ul>
+
+
+<div class="row container mt-2" id="recentyields">
+	<h4 class="text-center">Recent Yields</h4>
 	{{ div[0]|safe }}
 	{{ script[0]|safe }}
 	<div class="col">
@@ -26,7 +43,8 @@ Yield Graph
 		</table>
 	</div>
 </div>
-<div class="row container">
+<div class="row container mt-4" id="yieldperacre">
+	<h4 class="text-center">Recent Yields/Acre</h4>
 	{{ div[1]|safe }}
 	{{ script[1]|safe }}
 	<div class="col">
