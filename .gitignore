@@ -89,3 +89,6 @@ venv/
 # Instance folder
 instance/
 assets/
+
+# js files
+static/
