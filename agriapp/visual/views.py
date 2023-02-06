@@ -11,10 +11,6 @@ from agriapp import db
 @visual_bp.route('/yield', methods=['GET'])
 def visualize_yield():
     # get all yield data
-    # yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season)
-    # yield_obj = yield_obj.session.query(Yields.location,
-    #                                     Yields.season,
-    #                                     db.func.sum(Yields.weight)).group_by(Yields.location)
     yield_obj = methods.get_grouped_yields(by_season=True)
     values = methods.yield_per_acre_by_location(yield_obj)
     # values = yield_obj.all()
