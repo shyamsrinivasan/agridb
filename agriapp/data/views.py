@@ -292,8 +292,9 @@ def add_sowing():
     return render_template('add_sowing.html', form=form)
 
 
-@data_bp.route('/view/yield-sowing', methods=['GET', 'POST'])
-def view_yield_sowing():
+@data_bp.route('/view/yield-sowing', defaults={'call_from': 'none'}, methods=['GET', 'POST'])
+@data_bp.route('/view/yield-sowing/<call_from>', methods=['GET', 'POST'])
+def view_yield_sowing(call_from):
     """view sowing data for given season"""
 
     form = YieldSowView()
@@ -301,6 +302,10 @@ def view_yield_sowing():
         year = request.form['year']
         season = request.form['season']
         choice = request.form['choice']
+
+        # if call_from is from change function -> use different display template
+        if call_from != 'none':
+            return None
 
         data_func = data_factory(choice)
         data = data_func(season, year)
@@ -353,6 +358,15 @@ def add_yield(location):
 
     return render_template('add_yield.html', form=form, location=location)
     # return render_template('add_yield.html', location=location)
+
+
+@data_bp.route('/change/yield-sowing', methods=['GET', 'POST'])
+def change_yield_sowing():
+    """change yield/sowing information in db"""
+    form = YieldSowView()
+    if form.validate_on_submit():
+        return None
+    return redirect(url_for('data.view_yield_sowing', call_from='change'))
 
 
 @data_bp.route('/add/machinery', methods=['GET', 'POST'])
