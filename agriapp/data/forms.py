@@ -190,6 +190,17 @@ class YieldSowView(FlaskForm):
     submit = SubmitField('View Data')
 
 
+class YieldSowIDEntry(FlaskForm):
+    """form to enter id of yield/sow data to change or delete"""
+
+    option = SelectField('Edit Choice', choices=[('yield', 'Yield ID'),
+                                                 ('sow', 'Sow ID')],
+                         default='sow')
+    desired_id = IntegerField('Sow/Yield ID',
+                              [DataRequired(message='Yield/Sow ID required')])
+    submit = SubmitField('Show Data to Change/Remove')
+
+
 class EquipmentEntry(FlaskForm):
     """form to enter equipment information"""
 
