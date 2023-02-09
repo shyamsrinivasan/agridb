@@ -2,7 +2,7 @@
 {% import 'macros.html' as macro %}
 
 {% block title %}
-View Yield/Sowing Information
+Change Yield/Sowing Information
 {% endblock %}
 
 {% block content %}
@@ -204,13 +204,39 @@ View Yield/Sowing Information
     </table>    
     {% endif %}  
 
+    <div class="col">
+      <p class="fs-4">Enter data ID to change data</p>
+
+      <!-- form to input land location and ID for removal-->
+      <form action="{{ url_for('data.change_yield_sowing', call='change') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">     
+        {{ form.csrf_token() }} 
+
+        <div class="row mb-2">
+          <div class="form-group col">
+            {{ form.option.label }}
+            {{ form.option(class="form-control", id="floatingInput") }}            
+            {{ macro.err_out(form.option.errors) }}    
+          </div>
+          <div class="form-group col">
+            {{ form.desired_id.label }}
+            {{ form.desired_id(class="form-control", id="floatingInput") }}
+            {{ macro.err_out(form.desired_id.errors) }}    
+          </div>
+          <div class="form-group col mt-4">
+            {{ form.submit(class="align-items-center btn btn-primary") }}
+          </div>
+        </div>
+        
+      </form>      
+    </div>
+
   {% else %}    
   <div class="col text-center">      
-    <p class="fs-4">Enter Year and Season to display Yield/Sowing data</p>
+    <p class="fs-4">Enter Year and Season to display Yield/Sowing data to change</p>
   </div>  
 
-  <!-- form to input land location and ID for removal-->
-  <form action="{{ url_for('data.view_yield_sowing') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
+  <!-- input year, season and choice for display-->
+  <form action="{{ url_for('data.change_yield_sowing') }}", method="POST" novalidate class="g-3 rounded-3 bg-light px-2">
     {{ form.csrf_token() }}
 
     <!-- row 1-->
@@ -231,7 +257,7 @@ View Yield/Sowing Information
         {{ form.choice(class="form-control", id="floatingInput")}}
       </div>
 
-      <div class="col-md-2 align-items-center text-center mt-3">
+      <div class="col-md-2 align-items-center text-center mt-4">
           {{ form.submit(class="align-items-center btn btn-primary") }}
       </div>                 
     </div>          
