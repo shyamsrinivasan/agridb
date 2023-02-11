@@ -4,6 +4,7 @@ import pandas as pd
 
 from agriapp import db
 from datetime import timedelta
+from datetime import datetime as dt
 
 
 class Fields(db.Model):
@@ -126,6 +127,40 @@ class Sowing(db.Model):
         super(Sowing, self).__init__(**kwargs)
         self.calculate_harvest()
 
+    def compare_change_values(self, values_dict):
+        """compare to check values and change different values"""
+        if values_dict['season'] != self.season:
+            self.season = values_dict['season']
+
+        flag, change_values = False, False
+        if values_dict['sowing_date'] != self.sowing_date.strftime('%Y-%m-%d'):
+            self.sowing_date = dt.strptime(values_dict['sowing_date'], '%Y-%m-%d')
+            self.year = dt.strptime(values_dict['sowing_date'], '%Y-%m-%d').year
+            flag = True
+            change_values = True
+
+        if float(values_dict['sow_info-field_area']) != self.field_area:
+            self.field_area = values_dict['sow_info-field_area']
+            change_values = True
+
+        if values_dict['sow_info-variety'] != self.variety:
+            self.variety = values_dict['sow_info-variety']
+            change_values = True
+
+        if int(values_dict['sow_info-bags']) != self.bags:
+            self.bags = values_dict['sow_info-bags']
+            change_values = True
+
+        if int(values_dict['sow_info-duration']) != self.duration:
+            self.duration = int(values_dict['sow_info-duration'])
+            flag = True
+
+        # recalculate harvest date
+        if flag:
+            self.calculate_harvest()
+
+        return change_values
+
     def __repr__(self):
         return f"Sowing(id={self.id!r}, year={self.year!r}, season={self.season!r}, " \
                f"location={self.location!r}, variety={self.variety!r}" \
@@ -174,6 +209,50 @@ class Yields(db.Model):
     def set_weight(self):
         """yield in tonnes"""
         self.weight = self.bags * self.bag_weight / 1000
+
+    def compare_change_values(self, values_dict):
+        """compare to check values and change different values"""
+        if values_dict['season'] != self.season:
+            self.season = values_dict['season']
+
+        flag, flag2, change_values = False, False, False
+        if values_dict['yields-harvest_date'] != self.harvest_date.strftime('%Y-%m-%d'):
+            self.harvest_date = dt.strptime(values_dict['yields-harvest_date'], '%Y-%m-%d')
+            self.year = dt.strptime(values_dict['yields-harvest_date'], '%Y-%m-%d').year
+            flag = True
+            change_values = True
+
+        if values_dict['yields-sell_date'] != self.sell_date.strftime('%Y-%m-%d'):
+            self.sell_date = dt.strptime(values_dict['yields-sell_date'], '%Y-%m-%d')
+
+        if int(values_dict['yields-bags']) != self.bags:
+            self.bags = int(values_dict['yields-bags'])
+            change_values = True
+            flag = True
+            flag2 = True
+
+        if float(values_dict['yields-bag_weight']) != self.bag_weight:
+            self.bag_weight = float(values_dict['yields-bag_weight'])
+            change_values = True
+            flag = True
+
+        if float(values_dict['yields-bag_rate']) != self.bag_rate:
+            self.bag_rate = float(values_dict['yields-bag_rate'])
+            change_values = True
+            flag2 = True
+
+        if values_dict['yields-buyer'] != self.buyer:
+            self.buyer = values_dict['yields-buyer']
+
+        # recalculate harvest weight
+        if flag:
+            self.set_weight()
+
+        # recalculate harvest income
+        if flag2:
+            self.set_income()
+
+        return change_values
 
     def __repr__(self):
         return f"Yield(id={self.id!r}, location={self.location!r}, bags={self.bags!r}, " \

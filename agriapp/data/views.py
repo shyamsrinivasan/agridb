@@ -9,6 +9,7 @@ from .forms import FieldEntry, SelectFieldLocation, LandEntry
 from .forms import SowingEntry, RemoveFields, RemoveLand, EquipmentView
 from .forms import YieldEntryForm, YieldSowView, EquipmentEntry, AccountEntryForm
 from .forms import SeedForm, SeedSelectForm, AccountSearchCategoryForm
+from .forms import YieldSowIDEntry, SowChangeForm, YieldChangeForm
 from .models import Fields, Lands, Sowing, Yields, FieldSowYieldLink
 from .models import Equipment, Accounts, AccountEntry, SeedVariety
 from agriapp import db
@@ -292,9 +293,8 @@ def add_sowing():
     return render_template('add_sowing.html', form=form)
 
 
-@data_bp.route('/view/yield-sowing', defaults={'call_from': 'none'}, methods=['GET', 'POST'])
-@data_bp.route('/view/yield-sowing/<call_from>', methods=['GET', 'POST'])
-def view_yield_sowing(call_from):
+@data_bp.route('/view/yield-sowing', methods=['GET', 'POST'])
+def view_yield_sowing():
     """view sowing data for given season"""
 
     form = YieldSowView()
@@ -302,10 +302,6 @@ def view_yield_sowing(call_from):
         year = request.form['year']
         season = request.form['season']
         choice = request.form['choice']
-
-        # if call_from is from change function -> use different display template
-        if call_from != 'none':
-            return None
 
         data_func = data_factory(choice)
         data = data_func(season, year)
@@ -360,13 +356,119 @@ def add_yield(location):
     # return render_template('add_yield.html', location=location)
 
 
-@data_bp.route('/change/yield-sowing', methods=['GET', 'POST'])
-def change_yield_sowing():
+@data_bp.route('/change-remove/yield-sowing', defaults={'call': 'initial'}, methods=['GET', 'POST'])
+@data_bp.route('/change-remove/yield-sowing/<call>', methods=['GET', 'POST'])
+def change_yield_sowing(call):
     """change yield/sowing information in db"""
+
     form = YieldSowView()
+    form2 = YieldSowIDEntry()
+    if call == 'change':
+        if form2.validate_on_submit():
+            option = request.form['option']
+            desired_id = request.form['desired_id']
+
+            return redirect(url_for('data.review_yield_sow',
+                                    option=option, desired_id=desired_id))
+
     if form.validate_on_submit():
-        return None
-    return redirect(url_for('data.view_yield_sowing', call_from='change'))
+        year = request.form['year']
+        season = request.form['season']
+        choice = request.form['choice']
+
+        data_func = data_factory(choice)
+        data = data_func(season, year)
+
+        if data and data is not None:
+            return render_template('change_sowing.html', result=data,
+                                   year=year, season=season, choice=choice,
+                                   form=form2)
+        else:
+            flash(message='No {} data available for requested period.'.format(choice),
+                  category='primary')
+
+    return render_template('change_sowing.html', form=form)
+
+
+@data_bp.route('/review/yield-sowing/<option>/<desired_id>', methods=['GET'])
+def review_yield_sow(option, desired_id):
+    """review yield/sowing information for change removal"""
+
+    result_obj = query_option_fun(option, desired_id)
+
+    if result_obj and result_obj is not None:
+        if option == 'sow' and result_obj.__class__.__name__ == 'Sowing':
+            form = SowChangeForm(obj=result_obj)
+            # sow_info details
+            form.sow_info.field_area.data = result_obj.field_area
+            form.sow_info.variety.data = result_obj.variety
+            form.sow_info.bags.data = result_obj.bags
+            form.sow_info.duration.data = result_obj.duration
+
+        elif option == 'yield' and result_obj.__class__.__name__ == 'Yields':
+            form = YieldChangeForm(obj=result_obj)
+            # yield details
+            form.yields.harvest_date.data = result_obj.harvest_date
+            form.yields.sell_date.data = result_obj.sell_date
+            form.yields.bags.data = result_obj.bags
+            form.yields.bag_weight.data = result_obj.bag_weight
+            form.yields.bag_rate.data = result_obj.bag_rate
+            form.yields.buyer.data = result_obj.buyer
+
+        else:
+            form = []
+
+        return render_template('review_sowing.html', option=option,
+                               desired_id=desired_id, form=form)
+
+    flash(message='No results for given ID. Check and provide correct ID.',
+          category='error')
+    return redirect(url_for('data.change_yield_sowing'))
+
+
+@data_bp.route('/change-remove/yield-sowing/<option>/<desired_id>', methods=['GET', 'POST'])
+def change_remove_yield_sow(option, desired_id):
+    """change or remove given yield/sow information"""
+
+    if option == 'sow':
+        form = SowChangeForm()
+    else:   # option == 'yield':
+        form = YieldChangeForm()
+
+    if form.validate_on_submit():
+        result_obj = query_option_fun(option, desired_id)
+
+        if request.form['option'] == 'change':
+            # change only false values
+            value_changes = result_obj.compare_change_values(request.form)
+
+            if value_changes:
+                db.session.add(result_obj)
+                db.session.commit()
+
+                flash(message='Values changed in db for {} id {}'.format(option, desired_id),
+                      category='success')
+                return redirect(url_for('data.change_yield_sowing'))
+
+            flash(message='No changes provided for {} id {}'.format(option, desired_id),
+                  category='primary')
+            return redirect(url_for('data.change_yield_sowing'))
+
+        if request.form['option'] == 'remove':
+            # remove selected mapped orm object
+            # value_changes = result_obj.compare_change_values(request.form)
+            # db.session.query(Address).filter(Address.customer_id == customer_id).delete()
+
+            flash(message='Removed {} id {} from db'.format(option, desired_id),
+                  category='success')
+            return redirect(url_for('data.change_yield_sowing'))
+
+        flash(message='No proper option (Change/Remove) provided',
+              category='error')
+        return redirect(url_for('data.change_yield_sowing'))
+
+    flash(message='No changes made', category='primary')
+    return redirect(url_for('data.review_yield_sow', option=option, desired_id=desired_id))
 
 
 @data_bp.route('/add/machinery', methods=['GET', 'POST'])
@@ -881,4 +983,19 @@ def arrange_by_seed_name(seed_names):
     result.drop('id', axis=1, inplace=True)
     seed_obj = create_seed_model_obj(result)
     return seed_obj
+
+
+def query_option_fun(option, desired_id):
+    """get db query based on option"""
+    result_obj = []
+    if option == 'yield':
+        # search in yield
+        result_obj = db.session.query(Yields).get(desired_id)
+    elif option == 'sow':
+        # search in row
+        result_obj = db.session.query(Sowing).get(desired_id)
+    else:
+        return None
+
+    return result_obj
 

@@ -36,7 +36,7 @@ Change Yield/Sowing Information
       <tbody>  
         {% for lands in result %}
         <tr>      
-          <td>{{ loop.index }}</td>     
+          <td>{{ lands.id }}</td>     
           <td>{{ lands.location }}</td>
           {% if choice == 'sow' %}
           <td>{{ lands.field_area }}</td>          
@@ -89,7 +89,7 @@ Change Yield/Sowing Information
       <tbody>  
         {% for lands in result %}
         <tr>      
-          <td>{{ loop.index }}</td>     
+          <td>{{ lands.id }}</td>     
           <td>{{ lands.location }}</td>
           {% if choice == 'sow' %}
           <td>{{ lands.field_area }}</td>
@@ -178,7 +178,7 @@ Change Yield/Sowing Information
     	<tbody>  
     		{% for lands in result %}
     		<tr>    	
-          <td>{{ loop.index }}</td>			
+          <td>{{ lands.id }}</td>			
           <td>{{ lands.location }}</td>
           {% if lands.sow_info|length %}
           <td>{{ lands.sow_info[0].variety }}</td>

@@ -135,6 +135,37 @@ class SowingEntry(FlaskForm):
     submit = SubmitField('Add Sowing Data')
 
 
+class SowChangeForm(FlaskForm):
+    """sow change/remove/review form"""
+
+    season = SelectField('Season', [DataRequired()],
+                         choices=[('summer', 'Kuruvai'),
+                                  ('monsoon', 'Thaaladi'),
+                                  ('summer', 'Summer'),
+                                  ('winter', 'Winter'),
+                                  ('other', 'Others')],
+                         default='summer')
+    location = SelectField('Location', [DataRequired(message='Location is required')],
+                           choices=[('tgudi', 'Thozuthalangudi'),
+                                    ('pallachi', 'Pallachi'),
+                                    ('potteri', 'Potteri'),
+                                    ('pokonanthoki', 'Pokananthoki'),
+                                    ('mannamuti', 'Mannamutti'),
+                                    ('trichy-home1', 'Home 1'),
+                                    ('trichy-home2', 'Home 2'),
+                                    ('house-yard', 'Therazhundhur'),
+                                    ('none', 'Not Applicable')],
+                           default='tgudi')
+    sowing_date = DateField('Date Sown', [DataRequired(message='Date of sowing required')])
+
+    sow_info = FormField(SowDetails)
+    option = RadioField('Choose option', [DataRequired()], choices=[('change', 'Change Data'),
+                                                                    ('remove', 'Remove Data')],
+                        default='change')
+
+    submit = SubmitField('Change/Remove Sowing Data')
+
+
 class YieldForm(FlaskForm):
     """form for yield information"""
 
@@ -144,7 +175,7 @@ class YieldForm(FlaskForm):
     harvest_date = DateField('Harvested on', [DataRequired(message='Harvest date required')])
     sell_date = DateField('Sold on', [Optional()])
     bags = IntegerField('# Bags', [DataRequired(message='# bags sold'),
-                                           NumberRange(max=9999, message='# bags cannot be over 9999')],
+                                   NumberRange(max=9999, message='# bags cannot be over 9999')],
                         default=1)
     bag_weight = DecimalField('Kg/bag', [DataRequired(message='Weight of one bag')])
     bag_rate = DecimalField('Rupees/bag', [DataRequired(message='Amount per bag')])
@@ -168,6 +199,36 @@ class YieldEntryForm(FlaskForm):
     yields = FieldList(FormField(YieldForm), default=lambda: Yields())
 
     submit = SubmitField('Enter Yield Data for Season')
+
+
+class YieldChangeForm(FlaskForm):
+    """form to review and change yield information"""
+
+    season = SelectField('Season', [DataRequired()],
+                         choices=[('summer', 'Kuruvai'),
+                                  ('monsoon', 'Thaaladi'),
+                                  ('summer', 'Summer'),
+                                  ('winter', 'Winter'),
+                                  ('other', 'Others')],
+                         default='summer')
+    location = SelectField('Location', [DataRequired(message='location of field required')],
+                           choices=[('tgudi', 'Thozuthalangudi'),
+                                    ('pallachi', 'Pallachi'),
+                                    ('potteri', 'Potteri'),
+                                    ('pokonanthoki', 'Pokananthoki'),
+                                    ('mannamuti', 'Mannamutti'),
+                                    ('trichy-home1', 'Home 1'),
+                                    ('trichy-home2', 'Home 2'),
+                                    ('house-yard', 'Therazhundhur'),
+                                    ('none', 'Not Applicable')],
+                           default='tgudi')
+    yields = FormField(YieldForm)
+
+    option = RadioField('Choose option', [DataRequired()], choices=[('change', 'Change Data'),
+                                                                    ('remove', 'Remove Data')],
+                        default='change')
+
+    submit = SubmitField('Change/Remove Yield Data')
 
 
 class YieldSowView(FlaskForm):
