@@ -455,17 +455,17 @@ def change_remove_yield_sow(option, desired_id):
             return redirect(url_for('data.change_yield_sowing'))
 
         if request.form['option'] == 'remove':
+            # remove link between yield and sow tables
+            query_obj = remove_option_fun(option, result_obj.id)
+            query_obj.delete()
             # remove selected mapped orm object
-            # value_changes = result_obj.compare_change_values(request.form)
-            # db.session.query(Address).filter(Address.customer_id == customer_id).delete()
+            db.session.query(result_obj.__class__).\
+                filter(result_obj.__class__.id == result_obj.id).delete()
+            db.session.commit()
 
             flash(message='Removed {} id {} from db'.format(option, desired_id),
                   category='success')
             return redirect(url_for('data.change_yield_sowing'))
-
-        flash(message='No proper option (Change/Remove) provided',
-              category='error')
-        return redirect(url_for('data.change_yield_sowing'))
 
     flash(message='No changes made', category='primary')
     return redirect(url_for('data.review_yield_sow', option=option, desired_id=desired_id))
@@ -999,3 +999,17 @@ def query_option_fun(option, desired_id):
 
     return result_obj
 
+
+def remove_option_fun(option, id):
+    """choose option to remove data from correct table in db"""
+
+    if option == 'sow':
+        return db.session.query(FieldSowYieldLink).\
+            filter(FieldSowYieldLink.sow_id == id)
+
+    elif option == 'yield':
+        return db.session.query(FieldSowYieldLink).\
+            filter(FieldSowYieldLink.yield_id == id)
+
+    else:
+        return None
