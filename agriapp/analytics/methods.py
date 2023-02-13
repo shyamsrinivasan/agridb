@@ -83,6 +83,21 @@ def total_yields_by_season(year, yield_obj=None):
     return yield_obj
 
 
+def total_yearly_yields_by_season(yield_obj=None):
+    """get total yields for every year (separately)
+    grouped by location and season"""
+    if yield_obj is None:
+        yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season, Yields.year)
+
+    yield_obj = yield_obj.session.query(Yields.location,
+                                        Yields.season,
+                                        Yields.year,
+                                        db.func.sum(Yields.weight)).group_by(Yields.location,
+                                                                             Yields.season,
+                                                                             Yields.year)
+    return yield_obj
+
+
 def total_yields_by_buyer(yield_obj=None):
     """get total yields grouped by season and buyer"""
     if yield_obj is None:
@@ -95,25 +110,22 @@ def total_yields_by_buyer(yield_obj=None):
     return yield_obj
 
 
-def total_yearly_yields_by_season(yield_obj=None):
-    """get total yields for every year (separately)
-    grouped by location and season"""
-    if yield_obj is None:
-        yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season, Yields.year)
-
-    yield_obj = yield_obj.session.query(Yields.location,
-                                        Yields.season, Yields.year,
-                                        db.func.sum(Yields.weight)).group_by(Yields.location,
-                                                                             Yields.season,
-                                                                             Yields.year)
-    return yield_obj
+def yield_per_acre_by_location(by_year=False, by_season=False, yield_obj=None):
+    """get yield per acre based on location (factory)"""
+    if by_year:
+        return seasonal_yield_per_acre(yield_obj)
+    elif by_season:
+        return yearly_yield_per_acre(yield_obj)
+    else:
+        return None
 
 
-def yield_per_acre_by_location(yield_obj=None):
-    """get average yield per location"""
+def seasonal_yield_per_acre(yield_obj=None):
+    """get yield per acre by location for a single year data
+    segregated by seasons"""
 
     if yield_obj is None:
-        yield_obj = get_grouped_yields(by_season=True)
+        yield_obj = get_grouped_yields(by_season=True, year='2021')
 
     # field_names = yield_obj.session.query(Yields.location).distinct().all()
     # location_names = [i_val[0] for i_val in field_names]
@@ -123,6 +135,25 @@ def yield_per_acre_by_location(yield_obj=None):
                      filter(Fields.location == i_value[0]).first()) for i_value in values]
     yield_per_acre = [(i_value[0], i_value[1], i_value[2],
                        i_value[3][0], i_value[2]/i_value[3][0]) for i_value in field_extent]
+
+    return yield_per_acre
+
+
+def yearly_yield_per_acre(yield_obj=None):
+    """get yield per acre by location across multiple years
+    and seasons"""
+
+    if yield_obj is None:
+        yield_obj = get_grouped_yields(by_season=True)
+
+    # field_names = yield_obj.session.query(Yields.location).distinct().all()
+    # location_names = [i_val[0] for i_val in field_names]
+    values = yield_obj.all()
+    field_extent = [(i_value[0], i_value[1], i_value[2], i_value[3],
+                     db.session.query(Fields.field_extent).
+                     filter(Fields.location == i_value[0]).first()) for i_value in values]
+    yield_per_acre = [(i_value[0], i_value[1], i_value[2], i_value[3],
+                       i_value[4][0], i_value[3]/i_value[4][0]) for i_value in field_extent]
 
     return yield_per_acre
 
