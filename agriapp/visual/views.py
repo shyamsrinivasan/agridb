@@ -16,10 +16,9 @@ from agriapp import db
 def visualize_yield():
 
     current_year, past_year = methods.get_current_past_year()
-    # get current year yield
-    yield_obj = db.session.query(Yields).filter(Yields.year == '2021')
     # get current year yield data grouped by seasons and location
-    yield_obj = methods.get_grouped_yields(by_season=True, yield_obj=yield_obj)
+    yield_obj = methods.get_grouped_yields(by_season=True, year='2021')
+    # yield_obj = methods.get_grouped_yields(by_season=True)
     values = methods.yield_per_acre_by_location(yield_obj)
 
     # get past year yield
@@ -49,6 +48,13 @@ def visualize_yield():
         # figure 2 - yield/acre
         script2, div2 = make_grouped_vbar(data=yield_per_acre_data, factors=seasons,
                                           y_axis_label='Grain Yield (Metric Tons/Acre)')
+
+        # stacked yield plot (for multiple years)
+        # showing total yield stacked by location
+        # data = {x = factors[(Y1, S1), (Y1, S2),...]
+        #         l1 = []
+        #         l2 = []}
+
 
         return render_template('plot_yields.html',
                                script=[script, script2],

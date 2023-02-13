@@ -51,29 +51,39 @@ def yield_by_location(location, yield_obj=None):
     return yield_obj
 
 
-def get_grouped_yields(by_season=False, by_buyer=False, yield_obj=None):
+def get_grouped_yields(by_season=False, by_buyer=False,
+                       yield_obj=None, year=None):
     """get location based yields grouped by different criteria"""
     if by_season:
-        return get_total_yields_by_season(yield_obj)
+        if year is not None:
+            return total_yields_by_season(year, yield_obj)
+        else:
+            return total_yearly_yields_by_season(yield_obj)
     elif by_buyer:
-        return get_total_yields_by_buyer(yield_obj)
+        return total_yields_by_buyer(yield_obj)
     else:
         return None
 
 
-def get_total_yields_by_season(yield_obj=None):
+def total_yields_by_season(year, yield_obj=None):
     """get total yields grouped by location and season"""
     if yield_obj is None:
         yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season)
 
     yield_obj = yield_obj.session.query(Yields.location,
                                         Yields.season,
-                                        db.func.sum(Yields.weight)).group_by(Yields.location,
-                                                                             Yields.season)
+                                        db.func.sum(Yields.weight)).filter(Yields.year == year).\
+        group_by(Yields.location, Yields.season)
+    # add data from all years (cumulative for all years)
+    # yield_obj = yield_obj.session.query(Yields.location,
+    #                                     Yields.season,
+    #                                     db.func.sum(Yields.weight)). \
+    #     group_by(Yields.location, Yields.season)
+
     return yield_obj
 
 
-def get_total_yields_by_buyer(yield_obj=None):
+def total_yields_by_buyer(yield_obj=None):
     """get total yields grouped by season and buyer"""
     if yield_obj is None:
         yield_obj = db.session.query(Yields).group_by(Yields.season,
@@ -82,6 +92,20 @@ def get_total_yields_by_buyer(yield_obj=None):
     yield_obj = yield_obj.session.query(db.func.sum(Yields.weight),
                                         Yields.season, Yields.buyer).group_by(Yields.season,
                                                                               Yields.buyer)
+    return yield_obj
+
+
+def total_yearly_yields_by_season(yield_obj=None):
+    """get total yields for every year (separately)
+    grouped by location and season"""
+    if yield_obj is None:
+        yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season, Yields.year)
+
+    yield_obj = yield_obj.session.query(Yields.location,
+                                        Yields.season, Yields.year,
+                                        db.func.sum(Yields.weight)).group_by(Yields.location,
+                                                                             Yields.season,
+                                                                             Yields.year)
     return yield_obj
 
 
