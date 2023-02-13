@@ -16,12 +16,9 @@ from agriapp import db
 def visualize_yield():
 
     current_year, past_year = methods.get_current_past_year()
-    # get current year yield data grouped by seasons and location
+    # get current/past year yield data grouped by seasons and location
     yield_obj = methods.get_grouped_yields(by_season=True, year='2021')
-    # yield_obj = methods.get_grouped_yields(by_season=True)
-    values = methods.yield_per_acre_by_location(yield_obj)
-
-    # get past year yield
+    values = methods.yield_per_acre_by_location(by_year=True, yield_obj=yield_obj)
 
     if values and values is not None:
         # get unique seasons
@@ -55,6 +52,18 @@ def visualize_yield():
         #         l1 = []
         #         l2 = []}
 
+        # get yield data grouped by year, season and location
+        yearly_yield_obj = methods.get_grouped_yields(by_season=True)
+        yearly_values = methods.yield_per_acre_by_location(by_season=True,
+                                                           yield_obj=yearly_yield_obj)
+
+        yearly_yield_data = defaultdict(list)
+        for i_value in yearly_values:
+            yearly_yield_data['x'].append((i_value[2], i_value[1]))
+            yearly_yield_data['counts'].append({i_value[0]: i_value[3]})
+            yearly_yield_data[i_value[0]].append(i_value[3])
+        #     yield_per_acre_data['x'].append((i_value[0], i_value[1]))
+        #     yield_per_acre_data['counts'].append(i_value[4])
 
         return render_template('plot_yields.html',
                                script=[script, script2],
