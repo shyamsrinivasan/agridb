@@ -24,45 +24,16 @@ Yield Graph
 
 <div class="row container mt-2" id="recentyields">
 	<h4 class="text-center">Recent Yields</h4>
+	<!-- div and script go here -->
 	{{ div[0]|safe }}
-	{{ script[0]|safe }}
-	<div class="col">
-		<table class="table table-hover">
-			<thead>	
-			<tr>
-				<th scope="col">Location</th>
-				<th scope="col">Value (Tons)</th>
-			</tr>			
-			</thead>
-			<tbody>	
-			<tr>
-				<td>Location</td>
-				<td>Value</td>
-			</tr>			
-			</tbody>			
-		</table>
-	</div>
+	{{ script[0]|safe }}		
 </div>
+
 <div class="row container mt-4" id="yieldperacre">
 	<h4 class="text-center">Recent Yields/Acre</h4>
+	<!-- div and script go here -->
 	{{ div[1]|safe }}
-	{{ script[1]|safe }}
-	<div class="col">
-		<table class="table table-hover">
-			<thead>	
-			<tr>
-				<th scope="col">Location</th>
-				<th scope="col">Value (Tons/Acre)</th>
-			</tr>			
-			</thead>
-			<tbody>	
-			<tr>
-				<td>Location</td>
-				<td>Value</td>
-			</tr>			
-			</tbody>			
-		</table>
-	</div>
+    {{ script[1]|safe }}
 </div>
 
 {% endblock %}

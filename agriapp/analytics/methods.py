@@ -1,6 +1,7 @@
 from agriapp.data.models import Yields, Fields
 from agriapp import db
 from datetime import datetime as dt
+from datetime import timedelta
 
 
 def get_yield(yield_obj=None, by_season=False, by_year=False, by_location=False, **kwargs):
@@ -67,7 +68,8 @@ def get_total_yields_by_season(yield_obj=None):
 
     yield_obj = yield_obj.session.query(Yields.location,
                                         Yields.season,
-                                        db.func.sum(Yields.weight)).group_by(Yields.location)
+                                        db.func.sum(Yields.weight)).group_by(Yields.location,
+                                                                             Yields.season)
     return yield_obj
 
 
@@ -101,6 +103,16 @@ def yield_per_acre_by_location(yield_obj=None):
     return yield_per_acre
 
 
+def get_current_past_year():
+    """get current year and previous year using datetime"""
+    current_year = dt.now().year
+    past_year = dt.now() - timedelta(days=365)
+    past_year = past_year.year
+
+    return current_year, past_year
+
+
+
 # yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season)
     # yield_obj = yield_obj.session.query(Yields.location,
     #                                     Yields.season,
@@ -121,3 +133,6 @@ def get_seasons(given_date=None):
 
     if 3 <= month <= 4:
         return 'other'
+
+
+
