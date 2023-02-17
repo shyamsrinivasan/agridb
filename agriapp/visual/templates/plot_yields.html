@@ -6,34 +6,25 @@ Yield Graph
 {% endblock %}
 
 {% block content %}
-<ul class="nav nav-tabs">
-  <li class="nav-item">
-    <a class="nav-link active" href="#">Recent Yield Data</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#yieldperacre">Yield/Acre</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#section1">Section 1</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link disabled" href="#">Disabled</a>
-  </li>
-</ul>
-
-
-<div class="row container mt-2" id="recentyields">
+<div class="row mt-2">
 	<h4 class="text-center">Recent Yields</h4>
-	<!-- div and script go here -->
-	{{ div[0]|safe }}
-	{{ script[0]|safe }}		
+	<div class="col-md-6">
+		<!-- div and script go here -->
+		{{ div[0]|safe }}
+		{{ script[0]|safe }}	
+	</div>
+	<div class="col-md-6">
+		{{ div[1]|safe }}
+    	{{ script[1]|safe }}
+	</div>	
 </div>
 
-<div class="row container mt-4" id="yieldperacre">
-	<h4 class="text-center">Recent Yields/Acre</h4>
+
+<div class="row container mt-4" id="annualyields">
+	<h4 class="text-center">Annual Yield Comparison</h4>
 	<!-- div and script go here -->
-	{{ div[1]|safe }}
-    {{ script[1]|safe }}
+	{{ div[2]|safe }}
+    {{ script[2]|safe }}
 </div>
 
 {% endblock %}
