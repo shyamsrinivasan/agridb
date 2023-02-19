@@ -7,7 +7,7 @@ Yield Graph
 
 {% block content %}
 <div class="row mt-2">
-	<h4 class="text-center">Recent Yields</h4>
+	<h4 class="text-center">Yields for last year</h4>
 	<div class="col-md-6">
 		<!-- div and script go here -->
 		{{ div[0]|safe }}
@@ -21,10 +21,17 @@ Yield Graph
 
 
 <div class="row container mt-4" id="annualyields">
-	<h4 class="text-center">Annual Yield Comparison</h4>
+	<h4 class="text-center">Year-on-year yield comparison</h4>
 	<!-- div and script go here -->
 	{{ div[2]|safe }}
     {{ script[2]|safe }}
+</div>
+
+<div class="row container mt-4" id="annualyields">
+	<h4 class="text-center">Year-on-year yield comparison</h4>
+	<!-- div and script go here -->
+	{{ div[3]|safe }}
+    {{ script[3]|safe }}
 </div>
 
 {% endblock %}

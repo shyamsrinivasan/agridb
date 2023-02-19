@@ -1,13 +1,13 @@
 import pandas as pd
 from flask import render_template, redirect, url_for, flash
-from bokeh.models import ColumnDataSource, FactorRange
+from bokeh.models import ColumnDataSource, FactorRange, Whisker
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.transform import factor_cmap
-from bokeh.palettes import Colorblind, Bright, Set2
+from bokeh.palettes import Colorblind, Set2, TolRainbow5
+from bokeh.sampledata.autompg2 import autompg2
 from collections import defaultdict
 from . import visual_bp
-from agriapp.data.models import Yields
 from agriapp.analytics import methods
 
 from agriapp import db
@@ -29,11 +29,6 @@ def visualize_yield():
     if values and values is not None:
         # get unique seasons
         seasons = list(set([i_value[1] for i_value in values]))
-
-        # final required data format
-        # x = [(i_location, i_season) for i_location in yield_data['locations']
-        #      for i_season in seasons]
-        # counts = sum(zip(yield_data['monsoon'], yield_data['summer']), ())
 
         # group yield data by seasons and location for plot
         yield_data = defaultdict(list)
@@ -92,9 +87,45 @@ def visualize_yield():
                                                  stack_legend=cap_locations,
                                                  y_axis_label='Total Grain Yield (Metric Tons)')
 
+        # box plot of yields/acre at different locations for various years and seasons
+        # (shows mean and median values)
+        df1 = autompg2[["class", "hwy"]].rename(columns={"class": "kind"})
+        # compute IQR
+        qs = df1.groupby("kind").hwy.quantile([.25, .5, .75])
+        qs = qs.unstack().reset_index()
+        qs.columns = ["kind", "q1", "q2", "q3"]
+        df1 = pd.merge(df1, qs, on="kind", how="left")
+
+        yield_df = df[["location", "season", "year", "yield", "yield/acre"]].\
+            rename(columns={"yield": "production", "yield/acre": "production_per_acre"})
+        yield_qs = quantile_calculation(yield_df[["location", "season", "year",
+                                                  "production"]])
+        source = ColumnDataSource(yield_qs)
+        p = figure(x_range=yield_qs.location.unique())
+        # outlier range
+        whisker = Whisker(base="location", upper="upper", lower="lower", source=source)
+        whisker.upper_head.size = whisker.lower_head.size = 20
+        p.add_layout(whisker)
+        # quantile boxes
+        cmap = factor_cmap("location", "TolRainbow7", yield_qs.location.unique())
+        p.vbar("location", 0.7, "q2", "q3", source=source, color=cmap, line_color="black")
+        p.vbar("location", 0.7, "q1", "q2", source=source, color=cmap, line_color="black")
+        # outliers
+        outliers = yield_qs[~yield_qs.production.between(yield_qs.lower, yield_qs.upper)]
+        p.scatter("location", "production", source=outliers, size=6, color="black", alpha=0.3)
+        p.xgrid.grid_line_color = None
+        p.axis.major_label_text_font_size = "14px"
+        p.axis.axis_label_text_font_size = "12px"
+
+        script4, div4 = components(p)
+
+        yield_per_acre_qs = quantile_calculation(yield_df[["location", "season",
+                                                           "year", "production_per_acre"]])
+
+
         return render_template('plot_yields.html',
-                               script=[script, script2, script3],
-                               div=[div, div2, div3])
+                               script=[script, script2, script3, script4],
+                               div=[div, div2, div3, div4])
 
     flash(message='No yield data available to visualize', category='primary')
     return redirect(url_for('admin.homepage'))
@@ -115,7 +146,12 @@ def make_grouped_vbar(data, factors=None, properties=None):
     list of factors (location, season) in data['x'].
     Values are provided in data['counts'] for each factor in data['x'].
     Factors (Major axis labels) are provided in a separate list for use with
-    color palettes"""
+    color palettes.
+
+    Final required data format:
+    x = [(i_location, i_season) for i_location in yield_data['locations']
+        for i_season in seasons]
+    counts = sum(zip(yield_data['monsoon'], yield_data['summer']), ())"""
 
     source = ColumnDataSource(data=dict(x=data['x'],
                                         counts=tuple(data['counts'])))
@@ -211,3 +247,25 @@ def make_stacked_grouped_bar(data, factors=None, stack=None, stack_legend=None,
     script, div = components(p3)
 
     return script, div
+
+
+def quantile_calculation(data_df):
+    """calculate 25%, 50% and 75% quantiles on grouped data"""
+
+    df = data_df.groupby(["location", "season"])
+    try:
+        qs = df.production.quantile([.25, .5, .75])
+    except AttributeError:
+        qs = df.production_per_acre.quantile([.25, .5, .75])
+
+    qs = qs.unstack().reset_index()
+    qs.columns = ["location", "season", "q1", "q2", "q3"]
+    # merged data with 1st, 2nd and 3rd quartiles
+    full_df_with_qs = pd.merge(data_df, qs, on=["location", "season"], how="left")
+    # IQR
+    iqr = full_df_with_qs.q3 - full_df_with_qs.q1
+    # IQR outlier bounds 1.5xIQR
+    full_df_with_qs["upper"] = full_df_with_qs.q3 + 1.5 * iqr
+    full_df_with_qs["lower"] = full_df_with_qs.q1 - 1.5 * iqr
+
+    return full_df_with_qs
