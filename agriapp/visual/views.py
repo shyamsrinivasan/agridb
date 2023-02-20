@@ -4,8 +4,7 @@ from bokeh.models import ColumnDataSource, FactorRange, Whisker
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.transform import factor_cmap
-from bokeh.palettes import Colorblind, Set2, TolRainbow5
-from bokeh.sampledata.autompg2 import autompg2
+from bokeh.palettes import Colorblind, Set2
 from collections import defaultdict
 from . import visual_bp
 from agriapp.analytics import methods
@@ -89,46 +88,39 @@ def visualize_yield():
 
         # box plot of yields/acre at different locations for various years and seasons
         # (shows mean and median values)
-        df1 = autompg2[["class", "hwy"]].rename(columns={"class": "kind"})
-        # compute IQR
-        qs = df1.groupby("kind").hwy.quantile([.25, .5, .75])
-        qs = qs.unstack().reset_index()
-        qs.columns = ["kind", "q1", "q2", "q3"]
-        df1 = pd.merge(df1, qs, on="kind", how="left")
-
         yield_df = df[["location", "season", "year", "yield", "yield/acre"]].\
             rename(columns={"yield": "production", "yield/acre": "production_per_acre"})
+        # seasonal classification of yield data
         yield_qs = methods.quantile_calculation(yield_df[["location", "season", "year",
                                                           "production"]],
                                                 classification="season")
+        # plot summer yield spread
         summer_yields = yield_qs[yield_qs["season"] == "summer"]
-        source = ColumnDataSource(summer_yields)
-        p = figure(x_range=summer_yields.location.unique())
-        # outlier range
-        whisker = Whisker(base="location", upper="upper", lower="lower", source=source)
-        whisker.upper_head.size = whisker.lower_head.size = 20
-        p.add_layout(whisker)
-        # quantile boxes
-        cmap = factor_cmap("location", "TolRainbow7", summer_yields.location.unique())
-        p.vbar("location", 0.7, "q2", "q3", source=source, color=cmap, line_color="black")
-        p.vbar("location", 0.7, "q1", "q2", source=source, color=cmap, line_color="black")
-        # outliers
-        outliers = summer_yields[~summer_yields.production.between(summer_yields.lower,
-                                                                   summer_yields.upper)]
-        p.scatter("location", "production", source=outliers, size=6, color="black", alpha=0.3)
-        p.xgrid.grid_line_color = None
-        p.axis.major_label_text_font_size = "14px"
-        p.axis.axis_label_text_font_size = "12px"
+        properties = {'x_range': summer_yields.location.unique(), 'base': "location",
+                      'upper': "upper", 'lower': "lower", 'season': 'summer'}
+        properties['title'] = 'Seasonal variations in {} ' \
+                              'season over years'.format(properties['season'])
+        script4, div4 = make_box_plot(data=summer_yields, properties=properties)
 
-        script4, div4 = components(p)
+        # plot monsoon yield spread
+        winter_yields = yield_qs[yield_qs["season"] == "monsoon"]
+        properties['season'] = 'monsoon'
+        properties['title'] = 'Seasonal variations in {} ' \
+                              'season over years'.format(properties['season'])
+        script5, div5 = make_box_plot(data=winter_yields, properties=properties)
+
+        # yearly classification based on year for multiple seasons
+        yield_qs = methods.quantile_calculation(yield_df[["location", "season", "year",
+                                                          "production"]],
+                                                classification="year")
 
         yield_per_acre_qs = methods.quantile_calculation(yield_df[["location", "season",
                                                                    "year", "production_per_acre"]],
                                                          classification="season")
 
         return render_template('plot_yields.html',
-                               script=[script, script2, script3, script4],
-                               div=[div, div2, div3, div4])
+                               script=[script, script2, script3, script4, script5],
+                               div=[div, div2, div3, div4, div5])
 
     flash(message='No yield data available to visualize', category='primary')
     return redirect(url_for('admin.homepage'))
@@ -252,9 +244,34 @@ def make_stacked_grouped_bar(data, factors=None, stack=None, stack_legend=None,
     return script, div
 
 
-def make_box_plot():
+def make_box_plot(data, properties):
     """box plot to show yield spread between different seasons/years"""
+    source = ColumnDataSource(data)
+    p = figure(x_range=properties['x_range'])
 
+    # outlier range
+    whisker = Whisker(base=properties['base'], upper=properties['upper'],
+                      lower=properties['lower'], source=source)
+    whisker.upper_head.size = whisker.lower_head.size = 20
+    p.add_layout(whisker)
 
+    # quantile boxes
+    cmap = factor_cmap(properties["base"], "TolRainbow7", properties['x_range'])
+    p.vbar(properties["base"], 0.7, "q2", "q3", source=source,
+           color=cmap, line_color="black")
+    p.vbar(properties["base"], 0.7, "q1", "q2", source=source,
+           color=cmap, line_color="black")
+    p.title = properties['title']
+
+    # outliers
+    outliers = data[~data.production.between(data.lower, data.upper)]
+    p.scatter("location", "production", source=outliers, size=6, color="black", alpha=0.3)
+    p.xgrid.grid_line_color = None
+    p.axis.major_label_text_font_size = "14px"
+    p.axis.axis_label_text_font_size = "12px"
+
+    script, div = components(p)
+
+    return script, div
 
 

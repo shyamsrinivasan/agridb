@@ -173,7 +173,7 @@ def quantile_calculation(data_df, classification="season"):
 
     if classification == "season":
         return seasonal_quantile_calculation(data_df)
-    elif classification == "annual":
+    elif classification == "year":
         return yearly_quantile_calculation(data_df)
     else:
         return None
