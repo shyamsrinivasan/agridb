@@ -2,6 +2,7 @@ from agriapp.data.models import Yields, Fields
 from agriapp import db
 from datetime import datetime as dt
 from datetime import timedelta
+import pandas as pd
 
 
 def get_yield(yield_obj=None, by_season=False, by_year=False, by_location=False, **kwargs):
@@ -167,11 +168,56 @@ def get_current_past_year():
     return current_year, past_year
 
 
+def quantile_calculation(data_df, classification="season"):
+    """calculate 25%, 50% and 75% quantiles on grouped data"""
 
-# yield_obj = db.session.query(Yields).group_by(Yields.location, Yields.season)
-    # yield_obj = yield_obj.session.query(Yields.location,
-    #                                     Yields.season,
-    #                                     db.func.sum(Yields.weight)).group_by(Yields.location)
+    if classification == "season":
+        return seasonal_quantile_calculation(data_df)
+    elif classification == "annual":
+        return yearly_quantile_calculation(data_df)
+    else:
+        return None
+
+
+def seasonal_quantile_calculation(data_df):
+    """calculate quantile for each location for each season for multiple years"""
+    df = data_df.groupby(["location", "season"])
+    try:
+        qs = df.production.quantile([.25, .5, .75])
+    except AttributeError:
+        qs = df.production_per_acre.quantile([.25, .5, .75])
+
+    qs = qs.unstack().reset_index()
+    qs.columns = ["location", "season", "q1", "q2", "q3"]
+    # merged data with 1st, 2nd and 3rd quartiles
+    full_df_with_qs = pd.merge(data_df, qs, on=["location", "season"], how="left")
+    # IQR
+    iqr = full_df_with_qs.q3 - full_df_with_qs.q1
+    # IQR outlier bounds 1.5xIQR
+    full_df_with_qs["upper"] = full_df_with_qs.q3 + 1.5 * iqr
+    full_df_with_qs["lower"] = full_df_with_qs.q1 - 1.5 * iqr
+    return full_df_with_qs
+
+
+def yearly_quantile_calculation(data_df):
+    """calculate quantile for each location for each year for multiple seasons"""
+    df = data_df.groupby(["location", "year"])
+    try:
+        qs = df.production.quantile([.25, .5, .75])
+    except AttributeError:
+        qs = df.production_per_acre.quantile([.25, .5, .75])
+
+    qs = qs.unstack().reset_index()
+    qs.columns = ["location", "year", "q1", "q2", "q3"]
+    # merged data with 1st, 2nd and 3rd quartiles
+    full_df_with_qs = pd.merge(data_df, qs, on=["location", "year"], how="left")
+    # IQR
+    iqr = full_df_with_qs.q3 - full_df_with_qs.q1
+    # IQR outlier bounds 1.5xIQR
+    full_df_with_qs["upper"] = full_df_with_qs.q3 + 1.5 * iqr
+    full_df_with_qs["lower"] = full_df_with_qs.q1 - 1.5 * iqr
+    return full_df_with_qs
+
 
 def get_seasons(given_date=None):
     """get season name based on given date/month"""

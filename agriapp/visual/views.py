@@ -98,20 +98,23 @@ def visualize_yield():
 
         yield_df = df[["location", "season", "year", "yield", "yield/acre"]].\
             rename(columns={"yield": "production", "yield/acre": "production_per_acre"})
-        yield_qs = quantile_calculation(yield_df[["location", "season", "year",
-                                                  "production"]])
-        source = ColumnDataSource(yield_qs)
-        p = figure(x_range=yield_qs.location.unique())
+        yield_qs = methods.quantile_calculation(yield_df[["location", "season", "year",
+                                                          "production"]],
+                                                classification="season")
+        summer_yields = yield_qs[yield_qs["season"] == "summer"]
+        source = ColumnDataSource(summer_yields)
+        p = figure(x_range=summer_yields.location.unique())
         # outlier range
         whisker = Whisker(base="location", upper="upper", lower="lower", source=source)
         whisker.upper_head.size = whisker.lower_head.size = 20
         p.add_layout(whisker)
         # quantile boxes
-        cmap = factor_cmap("location", "TolRainbow7", yield_qs.location.unique())
+        cmap = factor_cmap("location", "TolRainbow7", summer_yields.location.unique())
         p.vbar("location", 0.7, "q2", "q3", source=source, color=cmap, line_color="black")
         p.vbar("location", 0.7, "q1", "q2", source=source, color=cmap, line_color="black")
         # outliers
-        outliers = yield_qs[~yield_qs.production.between(yield_qs.lower, yield_qs.upper)]
+        outliers = summer_yields[~summer_yields.production.between(summer_yields.lower,
+                                                                   summer_yields.upper)]
         p.scatter("location", "production", source=outliers, size=6, color="black", alpha=0.3)
         p.xgrid.grid_line_color = None
         p.axis.major_label_text_font_size = "14px"
@@ -119,9 +122,9 @@ def visualize_yield():
 
         script4, div4 = components(p)
 
-        yield_per_acre_qs = quantile_calculation(yield_df[["location", "season",
-                                                           "year", "production_per_acre"]])
-
+        yield_per_acre_qs = methods.quantile_calculation(yield_df[["location", "season",
+                                                                   "year", "production_per_acre"]],
+                                                         classification="season")
 
         return render_template('plot_yields.html',
                                script=[script, script2, script3, script4],
@@ -249,23 +252,9 @@ def make_stacked_grouped_bar(data, factors=None, stack=None, stack_legend=None,
     return script, div
 
 
-def quantile_calculation(data_df):
-    """calculate 25%, 50% and 75% quantiles on grouped data"""
+def make_box_plot():
+    """box plot to show yield spread between different seasons/years"""
 
-    df = data_df.groupby(["location", "season"])
-    try:
-        qs = df.production.quantile([.25, .5, .75])
-    except AttributeError:
-        qs = df.production_per_acre.quantile([.25, .5, .75])
 
-    qs = qs.unstack().reset_index()
-    qs.columns = ["location", "season", "q1", "q2", "q3"]
-    # merged data with 1st, 2nd and 3rd quartiles
-    full_df_with_qs = pd.merge(data_df, qs, on=["location", "season"], how="left")
-    # IQR
-    iqr = full_df_with_qs.q3 - full_df_with_qs.q1
-    # IQR outlier bounds 1.5xIQR
-    full_df_with_qs["upper"] = full_df_with_qs.q3 + 1.5 * iqr
-    full_df_with_qs["lower"] = full_df_with_qs.q1 - 1.5 * iqr
 
-    return full_df_with_qs
+
