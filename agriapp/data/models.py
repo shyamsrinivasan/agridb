@@ -471,3 +471,134 @@ class AccountsLink(db.Model):
     # field_id = db.Column(db.Integer, db.ForeignKey('fields.id'), primary_key=True)
     entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'), primary_key=True)
     accounts_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), primary_key=True)
+
+
+class Measurements:
+    def __init__(self, value, imperial=False):
+        self.value = value
+        self.imperial = imperial
+        self.unit = ''
+
+    def __call__(self):
+        return self.value
+
+
+class Temperature(Measurements):
+    def __init__(self, temperature, imperial=False):
+        super().__init__(temperature, imperial)
+        if imperial:
+            self.unit = 'F'
+        else:
+            self.unit = 'C'
+
+    # def __call__(self):
+    #     super().__call__()
+
+    def convert_to_imperial(self):
+        """convert SI to Imperial units"""
+        if not self.imperial:
+            self.value = self.value * 1.8 + 32
+            self.unit = 'F'
+            self.imperial = True
+
+    def convert_to_si(self):
+        """convert imperial to SI"""
+        if self.imperial:
+            self.value = (self.value - 32) / 1.8
+            self.unit = 'C'
+            self.imperial = False
+
+
+class Pressure(Measurements):
+    def __init__(self, pressure, imperial=False):
+        super().__init__(pressure, imperial)
+        if imperial:
+            self.unit = 'psi'
+        else:
+            self.unit = 'kPa'
+
+    def convert_to_imperial(self):
+        """convert SI to Imperial units"""
+        if not self.imperial:
+            self.value *= 0.145
+            self.unit = 'psi'
+            self.imperial = True
+
+    def convert_to_si(self):
+        """convert imperial to SI"""
+        if self.imperial:
+            self.value /= 0.145
+            self.unit = 'kPa'
+            self.imperial = False
+
+
+class Humidity(Measurements):
+    def __init__(self, humidity):
+        super().__init__(humidity)
+        self.unit = '%'
+
+
+class AirEnvironment:
+    """All environment variables stored in a single class"""
+    def __init__(self, values):
+        self.date = values['date']
+        self.time = values['time']
+        self.temperature = Temperature(values['air_temperature'])   # temperature object
+        self.pressure = Pressure(values['pressure'])
+        self.humidity = Humidity(values['humidity'])
+
+
+class SoilMoisture(Measurements):
+    def __init__(self, moisture, classification=None):
+        super().__init__(moisture)
+        self.unit = '%'
+        self.classification = classification
+
+
+class SoilpH(Measurements):
+    def __init__(self, pHvalue, classification=None):
+        super().__init__(pHvalue)
+        self.unit = ''
+        self.classification = classification
+
+
+class SoilEnvironment:
+    def __init__(self, values):
+        self.date = values['date']
+        self.time = values['time']
+        self.temperature = Temperature(values['soil_temperature'])
+        self.moisture = SoilMoisture(values['moisture'])
+        self.pH = SoilpH(values['pH'])
+
+
+class EnviromentalData(db.Model):
+    __tablename__ = "envdata"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, default=db.func.now())
+    time = db.Column(db.Time, nullable=False, default=db.func.now())
+    temperature = db.Column(db.Float)
+    pressure = db.Column(db.Float)
+    humidity = db.Column(db.Float)
+    rainfall = db.Column(db.Float)
+    soil_temperature = db.Column(db.Float)
+    soil_moisture = db.Column(db.Float)
+    soil_ph = db.Column(db.Float)
+    # location = db.Column(db.String(15))
+    # location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
+    #                              'mannamuti', 'trichy-home1', 'trichy-home2',
+    #                              'house-yard', name='field_location'),
+    #                      default='tgudi',
+    #                      nullable=False, index=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('fields.id', onupdate='CASCADE',
+                                                      ondelete='CASCADE'),
+                            index=True)
+
+    def __init__(self, name, **kwargs):
+        super(EnviromentalData, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return f"Fields(id={self.id!r}, temperature={self.temperature!r}, " \
+               f"pressure={self.pressure!r}, humidity={self.humidity!r}," \
+               f"rainfall={self.rainfall!r}, soil_temp={self.soil.temperature!r}," \
+               f"soil_moisture={self.soil_moisture!r}, soil_ph={self.soilph!r})"

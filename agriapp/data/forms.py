@@ -388,3 +388,12 @@ class AccountSearchCategoryForm(FlaskForm):
                            default='location')
     submit = SubmitField('Search Records')
 
+
+class EnvironmentalDataForm(FlaskForm):
+    """provide file containing environmental data"""
+
+    date = DateField('Entry date', [DataRequired(message='provide date of entry/submission')])
+    single_file = FileField('Details File', [DataRequired(message='provide file with data'),
+                                             FileAllowed(['xls', 'xlsx', 'csv', 'txt'],
+                                                         message='Excel file only')])
+    submit = SubmitField('Add Environment Measurements')

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macro %}
+
+{% block title %}
+Environmental Data Entry
+{% endblock %}
+
+{% block content %}
+<div class="col align-self-start mx-1">
+	<div class="col text-center">      
+      <p class="fs-4">Upload file containing environmental information</p>
+    </div>
+
+    <form action="{{ url_for('data.add_environment_data') }}", method="POST" class="g-3 rounded-3 bg-light px-2" enctype="multipart/form-data">
+    	{{ form.csrf_token() }}
+
+    	<!-- row 1 -->
+    	<div class="row">
+    		<div class="form-group col">
+                {{ form.date.label }}
+                {{ form.date(class="form-control", id="floatingInput") }}
+            </div>    
+            <div class="form-group col">
+                {{ form.single_file.label }}
+                {{ form.single_file(class="form-control", id="floatingInput") }}
+            </div>      
+    	</div>
+
+    	<!-- row 2 -->
+    	<div class="col mt-2 align-items-center text-center">
+            {{ form.submit(class="w-50 align-items-center btn btn-primary") }}                  
+        </div>
+    	
+    	<!-- row end -->
+    	<div class="row">           	  		
+    	</div>    	
+    </form>    	
+	
+</div>
+{% endblock %}

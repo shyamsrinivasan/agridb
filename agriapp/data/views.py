@@ -12,6 +12,8 @@ from .forms import SeedForm, SeedSelectForm, AccountSearchCategoryForm
 from .forms import YieldSowIDEntry, SowChangeForm, YieldChangeForm
 from .models import Fields, Lands, Sowing, Yields, FieldSowYieldLink
 from .models import Equipment, Accounts, AccountEntry, SeedVariety
+from .models import EnviromentalData
+from .forms import EnvironmentalDataForm
 from agriapp import db
 
 
@@ -713,6 +715,42 @@ def view_expense_category():
     return render_template('view_expense.html', form=form)
 
 
+@data_bp.route('/add/environmental-data', methods=['GET', 'POST'])
+def add_environment_data():
+    """add measured data pertaining to temperature, humidity, rainfall, soil pH"""
+
+    form = EnvironmentalDataForm()
+    if form.validate_on_submit():
+        file = request.files['single_file']
+        if file.filename != '':
+            # prepare df from file
+            # data_df = prepare_data(file)
+            # seed_objs = create_seed_model_obj(data_df)
+
+            # add and commit data to db
+            # varieties_present = True
+            # for j_seed_obj in seed_objs:
+            #     # check if variety exists in db (only add new varieties)
+            #     seed_present = j_seed_obj.is_present()
+            #     # add obj to session if not present in db
+            #     if not seed_present:
+            #         varieties_present = False
+            #         db.session.add(j_seed_obj)
+            # db.session.commit()
+
+            # if not varieties_present:
+            #     flash(message='New seed varieties added to database', category='success')
+            # else:
+            #     flash(message='Some/All varieties already present in database not added',
+            #           category='primary')
+            return redirect(url_for('admin.homepage'))
+
+        flash(message='No filename given', category='error')
+        return redirect(url_for('data.add_environment_data'))
+
+    return render_template('add_env_data.html', form=form)
+
+
 def check_land_present(land_objs):
     """check if all given land objects are present in db"""
 
@@ -1013,3 +1051,14 @@ def remove_option_fun(option, id):
 
     else:
         return None
+
+
+def prepare_env_data(file_name, sep='\t'):
+    """read data from csv file and prepare for db upload"""
+
+    data = pd.read_csv(file_name, sep=sep, header=0)
+    # parse df (remove NaN and drop repeated rows
+    column_names = data.columns.values.tolist()
+    fltr_data = data[data[column_names[0]] != column_names[0]]  # remove rows with data similar to column headers
+    fltr_data = fltr_data.dropna()  # get only valid data (NaN and other strings removed)
+    return fltr_data
