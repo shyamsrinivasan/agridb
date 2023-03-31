@@ -771,10 +771,10 @@ def add_environment_data(file_name):
     # read file from assets folder to dataframe
     file = os.path.join(appvar.create_app().config['UPLOAD_FOLDER'], file_name)
     # prepare df from file
-    data_df = methods.prepare_env_data(file).compute()
+    data_df = methods.prepare_env_data(file)
     # time_data = methods.get_time_stamp(data_df)
     # get temperature humidity data with time stamps
-    # full_data = methods.get_temp_humid(data_df, time_data)
+    full_data = methods.get_temp_humid(data_df)
 
     return None
 
