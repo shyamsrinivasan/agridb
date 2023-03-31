@@ -14,6 +14,7 @@ from .models import Fields, Lands, Sowing, Yields, FieldSowYieldLink
 from .models import Equipment, Accounts, AccountEntry, SeedVariety
 from .models import EnviromentalData
 from .forms import EnvironmentalDataForm
+from agriapp.data import methods
 from agriapp import db
 
 
@@ -723,9 +724,18 @@ def add_environment_data():
     if form.validate_on_submit():
         file = request.files['single_file']
         if file.filename != '':
+            # filename = secure_filename(file.filename)
+            # upload path
+            # uploads = os.path.join(os.path.dirname(appvar.create_app().instance_path),
+            #                        'assets', appvar.config.ProdConfig.UPLOAD_FOLDER)
+            # save file to path
+            # file.save(os.path.join(uploads, filename))
+
             # prepare df from file
-            # data_df = prepare_data(file)
-            # seed_objs = create_seed_model_obj(data_df)
+            data_df = methods.prepare_env_data(file)
+            time_data = methods.get_time_stamp(data_df)
+            # get temperature humidity data with time stamps
+            full_data = methods.get_temp_humid(data_df, time_data)
 
             # add and commit data to db
             # varieties_present = True
@@ -1053,12 +1063,3 @@ def remove_option_fun(option, id):
         return None
 
 
-def prepare_env_data(file_name, sep='\t'):
-    """read data from csv file and prepare for db upload"""
-
-    data = pd.read_csv(file_name, sep=sep, header=0)
-    # parse df (remove NaN and drop repeated rows
-    column_names = data.columns.values.tolist()
-    fltr_data = data[data[column_names[0]] != column_names[0]]  # remove rows with data similar to column headers
-    fltr_data = fltr_data.dropna()  # get only valid data (NaN and other strings removed)
-    return fltr_data

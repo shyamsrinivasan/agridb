@@ -598,7 +598,7 @@ class EnviromentalData(db.Model):
         super(EnviromentalData, self).__init__(**kwargs)
 
     def __repr__(self):
-        return f"Fields(id={self.id!r}, temperature={self.temperature!r}, " \
+        return f"EnvData(id={self.id!r}, temperature={self.temperature!r}, " \
                f"pressure={self.pressure!r}, humidity={self.humidity!r}," \
                f"rainfall={self.rainfall!r}, soil_temp={self.soil.temperature!r}," \
                f"soil_moisture={self.soil_moisture!r}, soil_ph={self.soilph!r})"
