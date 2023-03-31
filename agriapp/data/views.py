@@ -764,6 +764,21 @@ def upload_environment_data():
     return render_template('add_env_data.html', form=form)
 
 
+@data_bp.route('/add/environmental-data/<file_name>', methods=['GET', 'POST'])
+def add_environment_data(file_name):
+    """read data from file and load it to db"""
+
+    # read file from assets folder to dataframe
+    file = os.path.join(appvar.create_app().config['UPLOAD_FOLDER'], file_name)
+    # prepare df from file
+    data_df = methods.prepare_env_data(file).compute()
+    # time_data = methods.get_time_stamp(data_df)
+    # get temperature humidity data with time stamps
+    # full_data = methods.get_temp_humid(data_df, time_data)
+
+    return None
+
+
 def check_land_present(land_objs):
     """check if all given land objects are present in db"""
 

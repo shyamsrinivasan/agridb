@@ -11,7 +11,7 @@ Environmental Data Entry
       <p class="fs-4">Upload file containing environmental information</p>
     </div>
 
-    <form action="{{ url_for('data.add_environment_data') }}", method="POST" class="g-3 rounded-3 bg-light px-2" enctype="multipart/form-data">
+    <form action="{{ url_for('data.upload_environment_data') }}", method="POST" class="g-3 rounded-3 bg-light px-2" enctype="multipart/form-data">
     	{{ form.csrf_token() }}
 
     	<!-- row 1 -->
