@@ -16,6 +16,9 @@ from .models import EnviromentalData
 from .forms import EnvironmentalDataForm
 from agriapp.data import methods
 from agriapp import db
+from werkzeug.utils import secure_filename
+import os
+import agriapp as appvar
 
 
 @data_bp.route('/add/field', methods=['GET', 'POST'])
@@ -716,26 +719,25 @@ def view_expense_category():
     return render_template('view_expense.html', form=form)
 
 
-@data_bp.route('/add/environmental-data', methods=['GET', 'POST'])
-def add_environment_data():
-    """add measured data pertaining to temperature, humidity, rainfall, soil pH"""
+@data_bp.route('/add/environmental-data/upload', methods=['GET', 'POST'])
+def upload_environment_data():
+    """add measured data pertaining to temperature, humidity, rainfall, soil pH.
+    Function only upload file to assets folder"""
 
     form = EnvironmentalDataForm()
     if form.validate_on_submit():
         file = request.files['single_file']
         if file.filename != '':
-            # filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename)
             # upload path
             # uploads = os.path.join(os.path.dirname(appvar.create_app().instance_path),
             #                        'assets', appvar.config.ProdConfig.UPLOAD_FOLDER)
+            uploads = appvar.create_app().config['UPLOAD_FOLDER']
             # save file to path
-            # file.save(os.path.join(uploads, filename))
+            # file_location =
+            file.save(os.path.join(uploads, filename))
 
-            # prepare df from file
-            data_df = methods.prepare_env_data(file)
-            time_data = methods.get_time_stamp(data_df)
-            # get temperature humidity data with time stamps
-            full_data = methods.get_temp_humid(data_df, time_data)
+
 
             # add and commit data to db
             # varieties_present = True
@@ -753,7 +755,8 @@ def add_environment_data():
             # else:
             #     flash(message='Some/All varieties already present in database not added',
             #           category='primary')
-            return redirect(url_for('admin.homepage'))
+            flash(message='Data file uploaded successfully', category='success')
+            return redirect(url_for('data.add_environment_data', file_name=filename))
 
         flash(message='No filename given', category='error')
         return redirect(url_for('data.add_environment_data'))
