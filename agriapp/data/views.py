@@ -734,25 +734,8 @@ def upload_environment_data():
             #                        'assets', appvar.config.ProdConfig.UPLOAD_FOLDER)
             uploads = appvar.create_app().config['UPLOAD_FOLDER']
             # save file to path
-            # file_location =
             file.save(os.path.join(uploads, filename))
 
-            # add and commit data to db
-            # varieties_present = True
-            # for j_seed_obj in seed_objs:
-            #     # check if variety exists in db (only add new varieties)
-            #     seed_present = j_seed_obj.is_present()
-            #     # add obj to session if not present in db
-            #     if not seed_present:
-            #         varieties_present = False
-            #         db.session.add(j_seed_obj)
-            # db.session.commit()
-
-            # if not varieties_present:
-            #     flash(message='New seed varieties added to database', category='success')
-            # else:
-            #     flash(message='Some/All varieties already present in database not added',
-            #           category='primary')
             flash(message='Data file uploaded successfully', category='success')
             return redirect(url_for('data.add_environment_data', file_name=filename))
 
@@ -770,7 +753,13 @@ def add_environment_data(file_name):
     file = os.path.join(appvar.create_app().config['UPLOAD_FOLDER'], file_name)
     # prepare df from file
     data_df = methods.prepare_env_data(file)
-    env_obj = create_env_obj(data_df)
+    env_objs = create_env_obj(data_df)
+
+    # add and commit data to db
+    for j_env_obj in env_objs:
+        # add obj to session
+        db.session.add(j_env_obj)
+    db.session.commit()
 
     flash(message='Data added successfully', category='success')
     return redirect(url_for('admin.homepage'))
@@ -1080,6 +1069,5 @@ def remove_option_fun(option, id):
 
 def create_env_obj(data):
     """create EnvironmentalData class object for each row in df"""
-    seed_objs = [j_row for j_row in data.itertuples(index=False)]
-
-    return seed_objs
+    env_objs = [EnviromentalData(j_row) for j_row in data.itertuples(index=False)]
+    return env_objs

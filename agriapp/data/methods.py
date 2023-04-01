@@ -16,7 +16,7 @@ def prepare_env_data(file_name, sep='\t'):
     # combine date and time into one new column
     # get full time
     time_only = data['Hour'] + ':' + data['Minute']  # + ':' + data['Second']
-    data = data.drop(['Hour', 'Minute', 'Second'], axis=1)
+    data = data.drop(['Second'], axis=1)
 
     # get full date
     date = data['Year'] + '-' + data['Month'] + '-' + data['Date']
@@ -43,8 +43,8 @@ def prepare_env_data(file_name, sep='\t'):
     if 'Soil_Moisture_Percentage' in data.columns and 'Soil_Moisture' in data.columns:
         data['Soil_Moisture_Percentage'] = data['Soil_Moisture_Percentage'].astype('float64')
 
-    data = data.assign(date_time=date_time)
-    data = data.assign(time_only=time_only)
+    # data = data.assign(date_time=date_time)
+    # data = data.assign(time_only=time_only)
 
     return data
 
@@ -59,8 +59,3 @@ def change_column_name_env(data):
     df = data.rename(columns=column_name_dict)
 
     return df
-
-
-def create_env_data_object(data):
-    """create a data object for env data to be added to db"""
-
