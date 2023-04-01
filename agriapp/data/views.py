@@ -737,8 +737,6 @@ def upload_environment_data():
             # file_location =
             file.save(os.path.join(uploads, filename))
 
-
-
             # add and commit data to db
             # varieties_present = True
             # for j_seed_obj in seed_objs:
@@ -772,11 +770,10 @@ def add_environment_data(file_name):
     file = os.path.join(appvar.create_app().config['UPLOAD_FOLDER'], file_name)
     # prepare df from file
     data_df = methods.prepare_env_data(file)
-    # time_data = methods.get_time_stamp(data_df)
-    # get temperature humidity data with time stamps
-    full_data = methods.get_temp_humid(data_df)
+    env_obj = create_env_obj(data_df)
 
-    return None
+    flash(message='Data added successfully', category='success')
+    return redirect(url_for('admin.homepage'))
 
 
 def check_land_present(land_objs):
@@ -1081,3 +1078,8 @@ def remove_option_fun(option, id):
         return None
 
 
+def create_env_obj(data):
+    """create EnvironmentalData class object for each row in df"""
+    seed_objs = [j_row for j_row in data.itertuples(index=False)]
+
+    return seed_objs
