@@ -575,8 +575,11 @@ class EnviromentalData(db.Model):
     __tablename__ = "envdata"
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, default=db.func.now())
-    time = db.Column(db.Time, nullable=False, default=db.func.now())
+    year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, nullable=False)
+    day = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime)
+    time = db.Column(db.Time, nullable=False)
     temperature = db.Column(db.Float)
     pressure = db.Column(db.Float)
     humidity = db.Column(db.Float)
@@ -584,6 +587,7 @@ class EnviromentalData(db.Model):
     soil_temperature = db.Column(db.Float)
     soil_moisture = db.Column(db.Float)
     soil_ph = db.Column(db.Float)
+    moisture_category = db.Column(db.String(10))
     # location = db.Column(db.String(15))
     # location = db.Column(db.Enum('tgudi', 'pallachi', 'potteri', 'pokonanthoki',
     #                              'mannamuti', 'trichy-home1', 'trichy-home2',
@@ -594,11 +598,30 @@ class EnviromentalData(db.Model):
                                                       ondelete='CASCADE'),
                             index=True)
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, data, **kwargs):
         super(EnviromentalData, self).__init__(**kwargs)
+        self.year = data.Year
+        self.month = data.Month
+        self.day = data.Date
+        self.temperature = data.Temperature
+        self.humidity = data.Humidity
+        if hasattr(data, 'Pressure'):
+            self.pressure = data.Pressure
+        if hasattr(data, 'rainfall'):
+            self.rainfall = data.rainfall
+        if hasattr(data, 'soil_temperature'):
+            self.soil_temperature = db.Column(db.Float)
+        if hasattr(data, 'soil_moisture'):
+            self.soil_moisture = data.soil_moisture
+        if hasattr(data, 'soil_pH'):
+            self.soil_ph = db.Column(db.Float)
+        if hasattr(data, 'moisture_category'):
+            self.moisture_category = data.moisture_category
+        self.date = dt(int(data.Year), int(data.Month), int(data.Date),
+                       hour=int(data.Hour), minute=int(data.Minute))
 
     def __repr__(self):
         return f"EnvData(id={self.id!r}, temperature={self.temperature!r}, " \
                f"pressure={self.pressure!r}, humidity={self.humidity!r}," \
-               f"rainfall={self.rainfall!r}, soil_temp={self.soil.temperature!r}," \
-               f"soil_moisture={self.soil_moisture!r}, soil_ph={self.soilph!r})"
+               f"rainfall={self.rainfall!r}, soil_temp={self.soil_temperature!r}," \
+               f"soil_moisture={self.soil_moisture!r}, soil_ph={self.soil_ph!r})"
